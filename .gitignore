@@ -1,0 +1,10 @@
+﻿node_modules/
+.vite/
+.npm-cache/
+*.log
+*.out
+*.err
+codex-*.txt
+codex-*.log
+codex-temp-server*.cjs
+run-webzad-lan-server.cmd

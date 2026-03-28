@@ -1,0 +1,900 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover"
+    />
+    <meta
+      name="description"
+      content="Webzad designs and develops premium websites and digital experiences for brands that want a sharper presence and stronger lead flow."
+    />
+    <meta name="theme-color" content="#070a14" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    
+    <!-- ===== SECURITY HEADERS (via meta tags for static hosting) ===== -->
+    <!-- Content Security Policy - Restricts resource loading -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://image2url.com data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:;">
+    
+    <!-- Referrer Policy - Limits data leakage -->
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    
+    <!-- X-Content-Type-Options - Prevents MIME sniffing -->
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    
+
+    
+    <!-- X-XSS-Protection - Legacy XSS filter (defense in depth) -->
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    
+    <!-- Permissions Policy - Restricts browser features -->
+    <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), xr-spatial-tracking=()">
+    
+    <!-- DNS Prefetch Control -->
+    <meta http-equiv="X-DNS-Prefetch-Control" content="on">
+    
+    <link rel="icon" href="./favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./favicon-192x192.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
+    <link rel="shortcut icon" href="./favicon.ico" />
+    <link rel="manifest" href="./site.webmanifest" />
+    <title>Webzad | Premium Web Design & Development</title>
+    <script type="module" crossorigin src="./assets/index-DtHSe2Ih.js" integrity="sha384-dNHrnOMZE7riaUMg2kdYFprUEk2X84LJbNcfiApLYO3FSnqSn33e1FET0NoysKzy"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-hRJU3xLE.css" integrity="sha384-O5+78b9MeHXAgopmGg1xmjTUteXbE0ofGRNFaX/QRGTsfPSy1Yn7ZTzIvp+qniaC">
+    <style>
+      /* ==========================================================
+         WEBZAD UI POLISH â€” Desktop + Mobile
+         Preserves: colors, layout, branding, animations, logic
+         Refines:   images, typography, spacing, consistency
+         ========================================================== */
+
+      /* --- 1. GLOBAL TEXT RENDERING --- */
+      body {
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        text-rendering: optimizeLegibility;
+      }
+      h1, h2, h3 { text-wrap: balance; }
+      p { text-wrap: pretty; }
+
+      /* --- 2. TYPOGRAPHY REFINEMENTS --- */
+      .section-heading {
+        margin-bottom: clamp(18px, 2.6vw, 28px);
+      }
+      .section-heading p {
+        max-width: 58ch;
+        line-height: 1.65;
+      }
+      .hero-copy-text {
+        line-height: 1.65;
+      }
+
+      /* --- 3. BUTTON CONSISTENCY --- */
+      .button {
+        min-height: 46px;
+        padding-inline: 20px;
+      }
+      .button-glass-cta {
+        min-height: 48px;
+        padding-inline: 24px;
+      }
+      .footer-cta-actions {
+        justify-content: center;
+      }
+
+      /* --- 4. CARD INTERNAL CONSISTENCY --- */
+      .action-card,
+      .navigator-card,
+      .service-card,
+      .benefit-card,
+      .project-card,
+      .process-card {
+        gap: clamp(10px, 1.2vw, 16px);
+      }
+      .inline-route-link {
+        margin-top: auto;
+      }
+      .signal-grid-hero {
+        margin-top: var(--space-3);
+      }
+
+      /* --- 5. IMAGE CONTAINERS â€” overflow hidden, clean edges --- */
+      .card-media,
+      .card-media--wide,
+      .card-media--portrait,
+      .card-media--dark,
+      .card-media--light,
+      .hero-object-screen-browser,
+      .hero-object-screen-phone,
+      .work-card-media,
+      .page-hero-device,
+      .brand-signature-frame,
+      .contact-panel-image-frame {
+        overflow: hidden;
+        position: relative;
+      }
+
+      /* --- 6. IMAGES â€” remove all clip-path, auto-fit to container --- */
+
+      /* All media-image variants: remove decorative clip, fill container */
+      .media-image--hero,
+      .media-image--card-showcase,
+      .media-image--work-card,
+      .media-image--work-hero,
+      .media-image--ux,
+      .media-image--laptops,
+      .media-image--city {
+        clip-path: none !important;
+        object-fit: cover;
+        object-position: center top;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      /* Generic card-media images */
+      .card-media img {
+        width: 100%;
+        height: 100%;
+        display: block;
+        object-fit: cover;
+        object-position: center top;
+      }
+
+      /* Project & service cards â€” show full image, let container clip */
+      .project-card .card-media,
+      .service-card-premium .card-media,
+      .service-card .card-media {
+        overflow: hidden;
+      }
+      .project-card .card-media > img,
+      .service-card-premium .card-media > img {
+        object-fit: cover;
+        object-position: center top;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Brand signature image frame */
+      .brand-signature-image {
+        object-fit: cover;
+        object-position: center center;
+        width: 100%;
+        height: 100%;
+      }
+      .studio-visual-image {
+        object-fit: cover !important;
+        object-position: center center !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: none !important;
+      }
+      .studio-visual-model {
+        position: absolute !important;
+        inset: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+        z-index: 0 !important;
+        background: transparent !important;
+        --poster-color: transparent;
+      }
+
+      /* What the work emphasizes card â€” specific image override */
+      .page-hero-device + .page-hero-note-list img,
+      .studio-visual ~ * .page-hero-note img,
+      .page-hero-media .page-hero-note img {
+        content: url("assets/city-showcase-D0WoMA8Q.png?v=4") !important;
+        object-fit: contain !important;
+        object-position: center center !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+
+      /* Webzad Signature container â€” specific image override */
+      .brand-signature,
+      .brand-signature-frame {
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+      }
+      .brand-signature img,
+      .brand-signature-image {
+        content: url("assets/webzad-signature-new.png?v=2") !important;
+        object-fit: contain !important;
+        object-position: center center !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+        background: transparent !important;
+      }
+      .site-main-home .brand-signature-copy {
+        padding-left: clamp(20px, 2vw, 30px) !important;
+      }
+
+      /* Contact panel image */
+      .contact-panel-image-asset {
+        object-fit: cover;
+        object-position: center center;
+        width: 100%;
+        height: 100%;
+      }
+
+      /* Page hero device images (Work, Services, etc.) */
+      .page-hero-device img {
+        object-fit: cover;
+        object-position: center top;
+        width: 100%;
+        height: 100%;
+      }      /* Studio page hero image — match Work hero container sizing */
+      .page-hero-media-studio {
+        min-width: 0 !important;
+        width: auto !important;
+        max-width: 100% !important;
+        overflow: hidden !important;
+        justify-self: stretch !important;
+      }
+      .page-hero-media-studio .page-hero-device {
+        aspect-ratio: 3 / 2 !important;
+        min-height: auto !important;
+        min-width: 0 !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+        border: none !important;
+        box-shadow: none !important;
+        overflow: hidden !important;
+        background: transparent !important;
+      }
+      .page-hero-media-studio .page-hero-device img {
+        object-fit: contain !important;
+        object-position: center center !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+      .page-hero-media-studio .page-hero-note-list {
+        width: 100% !important;
+        justify-self: stretch !important;
+      }
+      .page-hero-media-studio .page-hero-note {
+        width: 100% !important;
+      }
+
+
+
+
+      /* --- 7a. WORK â€” match 2:3 image ratio, no background, full image --- */
+      .work-hero-device {
+        aspect-ratio: 2 / 3 !important;
+        overflow: hidden !important;
+        min-height: auto !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+      }
+      .work-hero-device::before {
+        display: none !important;
+      }
+      .work-card-media {
+        aspect-ratio: 2 / 3 !important;
+        overflow: hidden !important;
+        background: transparent !important;
+        padding: 0 !important;
+      }
+      .page-hero-media-work .page-hero-device {
+        aspect-ratio: 2 / 3 !important;
+        background: transparent !important;
+      }
+      .media-image--work-card,
+      .media-image--work-hero {
+        clip-path: none !important;
+        object-fit: cover !important;
+        object-position: center center;
+        width: 100%;
+        height: 100%;
+        display: block;
+        image-rendering: -webkit-optimize-contrast;
+      }
+
+      /* Work page â€” showcase cards (all images are 2:3) */
+      .work-showcase-card .work-card-media {
+        aspect-ratio: 2 / 3 !important;
+        min-height: auto !important;
+        padding: 0 !important;
+        background: transparent !important;
+      }
+      .work-showcase-card .card-media--wide {
+        aspect-ratio: 2 / 3 !important;
+        min-height: auto !important;
+      }
+      .work-showcase-card .card-media--portrait {
+        aspect-ratio: 2 / 3 !important;
+        min-height: auto !important;
+      }
+
+      /* Work page hero device (city image 1536x1024 = 3:2 landscape) */
+      .page-hero-media-work {
+        min-width: 0 !important;
+        overflow: hidden !important;
+      }
+      .page-hero-media-work .page-hero-device {
+        aspect-ratio: 3 / 2 !important;
+        min-height: auto !important;
+        min-width: 0 !important;
+        background: transparent !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        overflow: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .page-hero-media-work .page-hero-device::before {
+        display: none !important;
+      }
+      .media-image--work-hero {
+        clip-path: none !important;
+        object-fit: contain !important;
+        object-position: center center !important;
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+
+      /* --- 7b. HERO â€” Signature websites (1024x1536 = 2:3) --- */
+      .hero-stage {
+        overflow: hidden;
+        min-height: auto !important;
+      }
+      .hero-object-screen-browser {
+        overflow: hidden;
+        aspect-ratio: 2 / 3 !important;
+      }
+      .media-image--hero {
+        clip-path: none !important;
+        object-fit: cover !important;
+        object-position: center center;
+        width: 100%;
+        height: 100%;
+        display: block;
+      }
+
+      /* --- 7c. CARD-MEDIA â€” match image ratios per type --- */
+      /* Portrait cards (most images are 2:3) */
+      .card-media--portrait {
+        aspect-ratio: 2 / 3 !important;
+        min-height: auto !important;
+      }
+      /* Wide/landscape cards (web-apps, city are 3:2) */
+      .card-media--wide {
+        aspect-ratio: 3 / 2 !important;
+        min-height: auto !important;
+      }
+      /* Service card media (mix of 2:3 and 3:2) */
+      .project-card .card-media,
+      .service-card-premium .card-media,
+      .service-card .card-media {
+        min-height: auto !important;
+        overflow: hidden;
+      }
+
+      /* ============================================================
+         8. MOBILE LAYOUT FIXES (â‰¤760px)
+         ============================================================ */
+      @media (max-width: 760px) {
+
+        /* Hero â€” single column stack */
+        .hero-organized-layout { gap: 20px !important; }
+
+        .hero-top-row {
+          grid-template-columns: 1fr !important;
+          gap: 16px !important;
+        }
+
+        .hero-bottom-row {
+          display: grid !important;
+          grid-template-columns: 1fr !important;
+          gap: 24px !important;
+          align-items: start !important;
+        }
+
+        .hero-bottom-copy {
+          max-width: none !important;
+          width: 100% !important;
+        }
+
+        .hero-bottom-copy h1 {
+          max-width: none !important;
+          font-size: clamp(1.7rem, 7vw, 2.4rem) !important;
+          line-height: 1.15 !important;
+        }
+
+        .hero-copy-text {
+          max-width: none !important;
+          line-height: 1.6 !important;
+        }
+
+        /* CTA buttons â€” stack */
+        .hero-copy-actions {
+          flex-direction: column !important;
+          gap: 10px !important;
+          width: 100% !important;
+          padding-top: 4px !important;
+        }
+        .hero-copy-actions .button {
+          width: 100% !important;
+          justify-content: center !important;
+        }
+
+        /* Route cards â€” below hero text */
+        .hero-bottom-actions {
+          justify-self: stretch !important;
+          max-width: none !important;
+          width: 100% !important;
+        }
+        .hero-route-grid {
+          display: grid !important;
+          grid-template-columns: 1fr !important;
+          gap: 10px !important;
+        }
+        .hero-route-card {
+          width: 100% !important;
+          min-height: 0 !important;
+        }
+
+        /* Signal cards â€” single column */
+        .signal-grid-hero {
+          grid-template-columns: 1fr !important;
+          gap: 12px !important;
+        }
+
+        /* Card grids â€” single column */
+        .card-grid,
+        .card-grid-large {
+          grid-template-columns: 1fr !important;
+          gap: 14px !important;
+        }
+
+        /* Card-media â€” let height breathe on mobile */
+        .card-media--wide {
+          min-height: 200px !important;
+        }
+        .card-media--portrait {
+          min-height: 260px !important;
+        }
+
+        /* Section heading tighter */
+        .section-heading {
+          margin-bottom: 14px !important;
+        }
+
+        /* Footer buttons stacked */
+        .footer-cta-actions {
+          flex-direction: column !important;
+          width: 100% !important;
+        }
+        .footer-cta-actions .button {
+          width: 100% !important;
+        }
+
+        /* Form fields single column */
+        .field-grid {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* Brand signature single column */
+        .brand-signature {
+          grid-template-columns: 1fr !important;
+        }
+
+        /* Quote / delivery / studio single column */
+        .quote-banner,
+        .delivery-band,
+        .studio-message {
+          grid-template-columns: 1fr !important;
+        }
+      }
+
+      /* ============================================================
+         9. SMALL MOBILE (â‰¤420px)
+         ============================================================ */
+      @media (max-width: 420px) {
+        .hero-bottom-copy h1 {
+          font-size: clamp(1.5rem, 6.5vw, 1.9rem) !important;
+        }
+        .hero-board {
+          padding: 14px !important;
+        }
+        .hero-route-card {
+          padding: 12px 13px !important;
+        }
+        .signal-card {
+          padding: 14px !important;
+        }
+        .action-card,
+        .navigator-card,
+        .service-card,
+        .benefit-card,
+        .project-card {
+          padding: 16px !important;
+        }
+        .button {
+          min-height: 44px !important;
+          font-size: 0.88rem !important;
+        }
+        .card-media--wide {
+          min-height: 160px !important;
+        }
+        .card-media--portrait {
+          min-height: 220px !important;
+        }
+      }
+
+      /* ===== 3D TUBES CURSOR EFFECT ===== */
+      #cursor-canvas-shell {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw !important;
+        height: 100vh !important;
+        z-index: 0 !important;
+        pointer-events: none !important;
+        overflow: hidden !important;
+      }
+      #cursor-canvas {
+        width: 100% !important;
+        height: 100% !important;
+        display: block !important;
+      }
+
+      /* Ensure root content stays above canvas */
+      #root {
+        position: relative !important;
+        z-index: 1 !important;
+      }
+
+      /* Hide default cursor when tubes effect is active */
+      body.tubes-cursor-active {
+        cursor: auto !important;
+      }
+
+      body.tubes-cursor-active a,
+      body.tubes-cursor-active button,
+      body.tubes-cursor-active [role="button"] {
+        cursor: pointer !important;
+      }
+
+      /* ============================================================
+         NEON GLOW HOVER EFFECTS â€” Cards & Containers
+         ============================================================ */
+
+      /* Base glow transition for all interactive elements */
+      .action-card,
+      .navigator-card,
+      .service-card,
+      .service-card-premium,
+      .benefit-card,
+      .project-card,
+      .process-card,
+      .principle-card,
+      .signal-card,
+      .hero-route-card,
+      .contact-panel,
+      .studio-visual,
+      .brand-signature,
+      .quote-card,
+      .delivery-band,
+      .studio-message,
+      .page-hero-device,
+      .work-card-media,
+      .hero-object-screen-browser,
+      .hero-object-screen-phone {
+        transition: box-shadow 0.3s ease, transform 0.3s ease, border-color 0.3s ease !important;
+        position: relative !important;
+      }
+
+      /* Desktop hover glow effects */
+      @media (hover: hover) {
+        .action-card:hover,
+        .navigator-card:hover,
+        .service-card:hover,
+        .service-card-premium:hover,
+        .benefit-card:hover,
+        .project-card:hover,
+        .process-card:hover,
+        .principle-card:hover,
+        .signal-card:hover,
+        .hero-route-card:hover,
+        .contact-panel:hover,
+        .studio-visual:hover,
+        .brand-signature:hover,
+        .quote-card:hover,
+        .delivery-band:hover,
+        .studio-message:hover {
+          box-shadow: 0 0 30px rgba(0, 247, 255, 0.15),
+                      0 0 60px rgba(0, 247, 255, 0.08),
+                      0 0 90px rgba(255, 0, 240, 0.05) !important;
+          border-color: rgba(0, 247, 255, 0.3) !important;
+          transform: translateY(-2px) !important;
+        }
+
+        /* Image/media specific glow */
+        .page-hero-device:hover,
+        .work-card-media:hover,
+        .hero-object-screen-browser:hover,
+        .hero-object-screen-phone:hover {
+          box-shadow: 0 0 40px rgba(0, 247, 255, 0.2),
+                      0 0 80px rgba(255, 0, 240, 0.1),
+                      inset 0 0 20px rgba(0, 247, 255, 0.05) !important;
+        }
+
+        /* Primary CTA cards get stronger glow */
+        .hero-route-card:hover,
+        .button-glass-cta:hover {
+          box-shadow: 0 0 40px rgba(0, 247, 255, 0.25),
+                      0 0 80px rgba(255, 0, 240, 0.12),
+                      0 0 120px rgba(128, 64, 255, 0.08) !important;
+        }
+      }
+
+      /* Touch device active state glow */
+      @media (hover: none) {
+        .action-card:active,
+        .navigator-card:active,
+        .service-card:active,
+        .service-card-premium:active,
+        .benefit-card:active,
+        .project-card:active,
+        .process-card:active,
+        .principle-card:active,
+        .signal-card:active,
+        .hero-route-card:active,
+        .contact-panel:active,
+        .studio-visual:active,
+        .brand-signature:active,
+        .quote-card:active,
+        .delivery-band:active,
+        .studio-message:active {
+          box-shadow: 0 0 25px rgba(0, 247, 255, 0.2),
+                      0 0 50px rgba(0, 247, 255, 0.1) !important;
+          border-color: rgba(0, 247, 255, 0.4) !important;
+        }
+      }
+
+      /* Button glow effects */
+      .button {
+        transition: box-shadow 0.3s ease, transform 0.2s ease !important;
+      }
+
+      .button:hover {
+        box-shadow: 0 0 20px rgba(0, 247, 255, 0.3),
+                    0 0 40px rgba(255, 0, 240, 0.15) !important;
+        transform: translateY(-1px) !important;
+      }
+
+      /* Footer CTA glow */
+      .footer-cta-actions .button:hover {
+        box-shadow: 0 0 30px rgba(0, 247, 255, 0.35),
+                    0 0 60px rgba(255, 0, 240, 0.2) !important;
+      }
+      /* Studio visual 3D layout overrides */
+      .studio-visual {
+        aspect-ratio: auto !important;
+        min-height: 620px !important;
+        max-height: none !important;
+        height: auto !important;
+      }
+      .studio-visual-overlay {
+        position: relative !important;
+        inset: auto !important;
+        z-index: 1 !important;
+        display: grid !important;
+        grid-template-rows: auto 280px auto !important;
+        align-content: start !important;
+        gap: 18px !important;
+        min-height: 100% !important;
+        padding: 24px !important;
+      }
+      .studio-visual-model {
+        position: relative !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: 280px !important;
+        min-height: 280px !important;
+        display: block !important;
+        z-index: 0 !important;
+      }
+      .studio-highlight-list {
+        align-content: start !important;
+        gap: 16px !important;
+      }
+      .studio-highlight-list article:nth-child(n + 3) {
+        display: none !important;
+      }
+      
+    </style>
+    <style id="studio-spacing-fix">
+      main > .page-hero + .section-shell.two-column-layout + .section-shell {
+        margin-top: 0 !important;
+        padding-top: calc(var(--section-space) * .56) !important;
+        position: static !important;
+        z-index: auto !important;
+      }
+
+      @media (min-width: 1181px) {
+        main > .page-hero + .section-shell.two-column-layout + .section-shell .section-heading {
+          position: relative;
+          transform: translateY(-16rem);
+          margin-bottom: -14.5rem !important;
+          max-width: 29rem !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="cursor-canvas-shell"><canvas id="cursor-canvas"></canvas></div>
+    <div id="root"></div>
+    
+        <script>
+      (function replaceStudioHeroImage() {
+        const studioHeroImageUrl = "https://image2url.com/r2/default/images/1774657530151-02de62d7-3811-483e-9f69-42e6fdb89456.blob";
+
+        function applyStudioHeroImage() {
+          const image = document.querySelector(".page-hero-media-studio .page-hero-device img");
+          if (!image) {
+            return;
+          }
+
+          if (image.src !== studioHeroImageUrl) {
+            image.src = studioHeroImageUrl;
+            image.srcset = "";
+          }
+
+          image.style.objectFit = "contain";
+          image.style.objectPosition = "center center";
+          image.style.width = "100%";
+          image.style.height = "100%";
+          image.style.display = "block";
+        }
+
+        const root = document.getElementById("root") || document.body;
+        const observer = new MutationObserver(() => {
+          window.requestAnimationFrame(applyStudioHeroImage);
+        });
+        observer.observe(root, { childList: true, subtree: true });
+
+        if (document.readyState === "loading") {
+          document.addEventListener("DOMContentLoaded", applyStudioHeroImage, { once: true });
+        } else {
+          applyStudioHeroImage();
+        }
+
+        window.addEventListener("hashchange", () => {
+          window.requestAnimationFrame(applyStudioHeroImage);
+        });
+      })();
+    </script>
+    <script type="module" src="./assets/studio-model-viewer.js"></script>
+
+    <!-- 3D Tubes Cursor Effect -->
+    <script type="module">
+      (function initTubesCursor() {
+        const canvas = document.getElementById("cursor-canvas");
+        const shell = document.getElementById("cursor-canvas-shell");
+        if (!canvas || !shell) {
+          return;
+        }
+
+        const cursorConfig = {
+          tubes: {
+            count: 22,
+            radius: 0.12,
+            colors: ["#00f7ff", "#ff00f0", "#8040ff"],
+            metalness: 0.9,
+            roughness: 0.15,
+            lights: {
+              intensity: 600,
+              colors: ["#00f7ff", "#ff00f0", "#c37eff", "#60aed5"]
+            }
+          }
+        };
+
+        function randomColors(count) {
+          return new Array(count)
+            .fill(0)
+            .map(() => "#" + Math.floor(Math.random() * 16777215).toString(16).padStart(6, "0"));
+        }
+
+        shell.style.display = "block";
+
+        import("https://cdn.jsdelivr.net/npm/threejs-components@0.0.19/build/cursors/tubes1.min.js")
+          .then(({ default: TubesCursor }) => {
+            const app = TubesCursor(canvas, cursorConfig);
+            document.body.classList.add("tubes-cursor-active");
+
+            document.body.addEventListener("click", () => {
+              const colors = randomColors(3);
+              const lightsColors = randomColors(4);
+              app.tubes.setColors(colors);
+              app.tubes.setLightsColors(lightsColors);
+            });
+          })
+          .catch((error) => {
+            console.error("Failed to initialize tubes cursor.", error);
+          });
+      })();
+
+      // Replace "What the work emphasizes" card image
+      (function replaceWorkEmphasizesImage() {
+        function doReplace() {
+          // Try multiple selector patterns
+          const selectors = [
+            '.page-hero-note img',
+            '.page-hero-note-list img', 
+            'article.page-hero-note img',
+            '.studio-visual ~ * img',
+            '[class*="note"] img',
+            '.page-hero-device + * img',
+            'img[src*="city-showcase"]',
+            'img[alt*="Webzad"]',
+            'img[alt*="Representative"]'
+          ];
+          
+          let replaced = false;
+          selectors.forEach(selector => {
+            try {
+              const imgs = document.querySelectorAll(selector);
+              imgs.forEach(img => {
+                if (img.src && (img.src.includes('city-showcase') || img.src.includes('D0WoMA8Q') || selector.includes('note'))) {
+                  img.src = 'assets/city-showcase-D0WoMA8Q.png?v=6';
+                  img.style.objectFit = 'contain';
+                  img.style.objectPosition = 'center center';
+                  img.style.width = '100%';
+                  img.style.height = '100%';
+                  replaced = true;
+                }
+              });
+            } catch(e) {}
+          });
+          return replaced;
+        }
+        
+        // Run multiple times with delays
+        [0, 100, 500, 1000, 2000, 3000].forEach(delay => {
+          setTimeout(doReplace, delay);
+        });
+        
+        // Also use observer for dynamic content
+        const observer = new MutationObserver(() => {
+          doReplace();
+        });
+        observer.observe(document.body, { childList: true, subtree: true });
+      })();
+    </script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
