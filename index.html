@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -15,7 +15,8 @@
     
     <!-- ===== SECURITY HEADERS (via meta tags for static hosting) ===== -->
     <!-- Content Security Policy - Restricts resource loading -->
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://image2url.com data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob:; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' mailto:;">
+    <!-- CHANGED: Updated CSP — removed mailto: from form-action, added formsubmit.co to connect-src and form-action for form service integration -->
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' https://image2url.com data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://formsubmit.co; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;">
     
     <!-- Referrer Policy - Limits data leakage -->
     <meta name="referrer" content="strict-origin-when-cross-origin">
@@ -34,18 +35,19 @@
     <!-- DNS Prefetch Control -->
     <meta http-equiv="X-DNS-Prefetch-Control" content="on">
     
-    <link rel="icon" href="./favicon.ico" sizes="any" />
-    <link rel="icon" type="image/png" sizes="32x32" href="./favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="192x192" href="./favicon-192x192.png" />
-    <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png" />
-    <link rel="shortcut icon" href="./favicon.ico" />
-    <link rel="manifest" href="./site.webmanifest" />
+    <!-- Favicons — Google requires ≥48x48; list largest-first for best detection -->
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <title>Webzad | Premium Web Design & Development</title>
-    <script type="module" crossorigin src="./assets/index-DtHSe2Ih.js" integrity="sha384-dNHrnOMZE7riaUMg2kdYFprUEk2X84LJbNcfiApLYO3FSnqSn33e1FET0NoysKzy"></script>
-    <link rel="stylesheet" crossorigin href="./assets/index-hRJU3xLE.css" integrity="sha384-O5+78b9MeHXAgopmGg1xmjTUteXbE0ofGRNFaX/QRGTsfPSy1Yn7ZTzIvp+qniaC">
+    <script type="module" crossorigin src="./assets/index-DtHSe2Ih.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-hRJU3xLE.css">
     <style>
       /* ==========================================================
-         WEBZAD UI POLISH â€” Desktop + Mobile
+         WEBZAD UI POLISH —
          Preserves: colors, layout, branding, animations, logic
          Refines:   images, typography, spacing, consistency
          ========================================================== */
@@ -93,6 +95,122 @@
       .process-card {
         gap: clamp(10px, 1.2vw, 16px);
       }
+
+      /* Shared container clipping — keep shadows, blur, gradients, and pseudo-layers
+         clipped to the same rounded shape as each card/container */
+      .panel,
+      .action-card,
+      .navigator-card,
+      .service-card,
+      .service-card-premium,
+      .benefit-card,
+      .project-card,
+      .process-card,
+      .principle-card,
+      .signal-card,
+      .hero-route-card,
+      .quote-card,
+      .quote-banner,
+      .contact-panel,
+      .contact-form,
+      .faq-item,
+      .studio-visual,
+      .brand-signature,
+      .delivery-band,
+      .studio-message,
+      .page-hero-device,
+      .work-card-media,
+      .hero-object-screen-browser,
+      .hero-object-screen-phone,
+      .brand-signature-frame,
+      .contact-panel-image-frame,
+      .contact-form-panel-clean,
+      .contact-sidebar-panel-clean,
+      .hero-board,
+      .footer-cta,
+      .engagement-note-panel,
+      .sidebar-card,
+      .hero-section,
+      .page-hero-copy,
+      .page-hero-note {
+        position: relative !important;
+        isolation: isolate;
+        overflow: hidden !important;
+        background-clip: padding-box !important;
+        -webkit-background-clip: padding-box !important;
+      }
+      .panel::before,
+      .panel::after,
+      .action-card::before,
+      .action-card::after,
+      .navigator-card::before,
+      .navigator-card::after,
+      .service-card::before,
+      .service-card::after,
+      .service-card-premium::before,
+      .service-card-premium::after,
+      .benefit-card::before,
+      .benefit-card::after,
+      .project-card::before,
+      .project-card::after,
+      .process-card::before,
+      .process-card::after,
+      .principle-card::before,
+      .principle-card::after,
+      .signal-card::before,
+      .signal-card::after,
+      .hero-route-card::before,
+      .hero-route-card::after,
+      .quote-card::before,
+      .quote-card::after,
+      .quote-banner::before,
+      .quote-banner::after,
+      .contact-panel::before,
+      .contact-panel::after,
+      .contact-form::before,
+      .contact-form::after,
+      .faq-item::before,
+      .faq-item::after,
+      .studio-visual::before,
+      .studio-visual::after,
+      .brand-signature::before,
+      .brand-signature::after,
+      .delivery-band::before,
+      .delivery-band::after,
+      .studio-message::before,
+      .studio-message::after,
+      .page-hero-device::before,
+      .page-hero-device::after,
+      .work-card-media::before,
+      .work-card-media::after,
+      .hero-object-screen-browser::before,
+      .hero-object-screen-browser::after,
+      .hero-object-screen-phone::before,
+      .hero-object-screen-phone::after,
+      .brand-signature-frame::before,
+      .brand-signature-frame::after,
+      .contact-panel-image-frame::before,
+      .contact-panel-image-frame::after,
+      .contact-form-panel-clean::before,
+      .contact-form-panel-clean::after,
+      .contact-sidebar-panel-clean::before,
+      .contact-sidebar-panel-clean::after,
+      .hero-board::before,
+      .hero-board::after,
+      .footer-cta::before,
+      .footer-cta::after,
+      .engagement-note-panel::before,
+      .engagement-note-panel::after,
+      .sidebar-card::before,
+      .sidebar-card::after,
+      .hero-section::before,
+      .hero-section::after,
+      .page-hero-copy::before,
+      .page-hero-copy::after,
+      .page-hero-note::before,
+      .page-hero-note::after {
+        border-radius: inherit !important;
+      }
       .inline-route-link {
         margin-top: auto;
       }
@@ -100,7 +218,7 @@
         margin-top: var(--space-3);
       }
 
-      /* --- 5. IMAGE CONTAINERS â€” overflow hidden, clean edges --- */
+      /* --- 5. IMAGE CONTAINERS --- */
       .card-media,
       .card-media--wide,
       .card-media--portrait,
@@ -116,7 +234,7 @@
         position: relative;
       }
 
-      /* --- 6. IMAGES â€” remove all clip-path, auto-fit to container --- */
+      /* --- 6. IMAGES --- */
 
       /* All media-image variants: remove decorative clip, fill container */
       .media-image--hero,
@@ -143,7 +261,7 @@
         object-position: center top;
       }
 
-      /* Project & service cards â€” show full image, let container clip */
+      /* Project & service cards --- */
       .project-card .card-media,
       .service-card-premium .card-media,
       .service-card .card-media {
@@ -182,7 +300,7 @@
         --poster-color: transparent;
       }
 
-      /* What the work emphasizes card â€” specific image override */
+      /* What the work emphasizes card --- */
       .page-hero-device + .page-hero-note-list img,
       .studio-visual ~ * .page-hero-note img,
       .page-hero-media .page-hero-note img {
@@ -194,18 +312,19 @@
         display: block !important;
       }
 
-      /* Webzad Signature container â€” specific image override */
-      .brand-signature,
-      .brand-signature-frame {
+      /* Webzad Signature container --- */
+            .brand-signature {
         background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
+      }
+      .brand-signature-frame {
+        background: linear-gradient(#0a0e18fa, #05070efa), #0a0e18f5 !important;
+        border: 1px solid #ffffff14 !important;
+        box-shadow: inset 0 1px #ffffff0a !important;
+        padding: clamp(12px, 1.4vw, 16px) !important;
         overflow: hidden !important;
       }
       .brand-signature img,
       .brand-signature-image {
-        content: url("assets/webzad-signature-new.png?v=2") !important;
         object-fit: contain !important;
         object-position: center center !important;
         width: 100% !important;
@@ -215,6 +334,15 @@
       }
       .site-main-home .brand-signature-copy {
         padding-left: clamp(20px, 2vw, 30px) !important;
+      }
+      @media (max-width: 760px) {
+        .site-main-home .brand-signature-media {
+          justify-items: center !important;
+        }
+        .site-main-home .brand-signature-frame {
+          justify-self: center !important;
+          padding: 14px !important;
+        }
       }
 
       /* Contact panel image */
@@ -231,7 +359,7 @@
         object-position: center top;
         width: 100%;
         height: 100%;
-      }      /* Studio page hero image — match Work hero container sizing */
+      }      /* Studio page hero image --- */
       .page-hero-media-studio {
         min-width: 0 !important;
         width: auto !important;
@@ -245,11 +373,11 @@
         min-width: 0 !important;
         width: 100% !important;
         max-width: 100% !important;
-        padding: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
+        padding: 14px !important;
+        border: 1px solid #ffffff14 !important;
+        box-shadow: inset 0 1px #ffffff0a !important;
         overflow: hidden !important;
-        background: transparent !important;
+        background: linear-gradient(#0a0e18fa, #05070efa), #0a0e18f5 !important;
       }
       .page-hero-media-studio .page-hero-device img {
         object-fit: contain !important;
@@ -269,7 +397,7 @@
 
 
 
-      /* --- 7a. WORK â€” match 2:3 image ratio, no background, full image --- */
+      /* --- 7a. WORK --- */
       .work-hero-device {
         aspect-ratio: 2 / 3 !important;
         overflow: hidden !important;
@@ -289,21 +417,19 @@
         padding: 0 !important;
       }
       .page-hero-media-work .page-hero-device {
-        aspect-ratio: 2 / 3 !important;
-        background: transparent !important;
-      }
-      .media-image--work-card,
-      .media-image--work-hero {
-        clip-path: none !important;
-        object-fit: cover !important;
-        object-position: center center;
-        width: 100%;
-        height: 100%;
-        display: block;
-        image-rendering: -webkit-optimize-contrast;
+        aspect-ratio: 3 / 2 !important;
+        min-height: auto !important;
+        min-width: 0 !important;
+        background: linear-gradient(#0a0e18fa, #05070efa), #0a0e18f5 !important;
+        border: 1px solid #ffffff14 !important;
+        box-shadow: inset 0 1px #ffffff0a !important;
+        padding: 14px !important;
+        overflow: hidden !important;
+        width: 100% !important;
+        max-width: 100% !important;
       }
 
-      /* Work page â€” showcase cards (all images are 2:3) */
+      /* Work page --- */
       .work-showcase-card .work-card-media {
         aspect-ratio: 2 / 3 !important;
         min-height: auto !important;
@@ -328,10 +454,10 @@
         aspect-ratio: 3 / 2 !important;
         min-height: auto !important;
         min-width: 0 !important;
-        background: transparent !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
+        background: linear-gradient(#0a0e18fa, #05070efa), #0a0e18f5 !important;
+        border: 1px solid #ffffff14 !important;
+        box-shadow: inset 0 1px #ffffff0a !important;
+        padding: 14px !important;
         overflow: hidden !important;
         width: 100% !important;
         max-width: 100% !important;
@@ -348,14 +474,14 @@
         display: block !important;
       }
 
-      /* --- 7b. HERO â€” Signature websites (1024x1536 = 2:3) --- */
+      /* --- 7b. HERO --- */
       .hero-stage {
         overflow: hidden;
         min-height: auto !important;
       }
       .hero-object-screen-browser {
         overflow: hidden;
-        aspect-ratio: 2 / 3 !important;
+        aspect-ratio: 20 / 27 !important;
       }
       .media-image--hero {
         clip-path: none !important;
@@ -366,7 +492,7 @@
         display: block;
       }
 
-      /* --- 7c. CARD-MEDIA â€” match image ratios per type --- */
+      /* --- 7c. CARD-MEDIA --- */
       /* Portrait cards (most images are 2:3) */
       .card-media--portrait {
         aspect-ratio: 2 / 3 !important;
@@ -386,11 +512,11 @@
       }
 
       /* ============================================================
-         8. MOBILE LAYOUT FIXES (â‰¤760px)
+         8. MOBILE LAYOUT FIXES (—
          ============================================================ */
       @media (max-width: 760px) {
 
-        /* Hero â€” single column stack */
+        /* Hero --- */
         .hero-organized-layout { gap: 20px !important; }
 
         .hero-top-row {
@@ -421,7 +547,7 @@
           line-height: 1.6 !important;
         }
 
-        /* CTA buttons â€” stack */
+        /* CTA buttons --- */
         .hero-copy-actions {
           flex-direction: column !important;
           gap: 10px !important;
@@ -433,7 +559,7 @@
           justify-content: center !important;
         }
 
-        /* Route cards â€” below hero text */
+        /* Route cards --- */
         .hero-bottom-actions {
           justify-self: stretch !important;
           max-width: none !important;
@@ -449,20 +575,20 @@
           min-height: 0 !important;
         }
 
-        /* Signal cards â€” single column */
+        /* Signal cards --- */
         .signal-grid-hero {
           grid-template-columns: 1fr !important;
           gap: 12px !important;
         }
 
-        /* Card grids â€” single column */
+        /* Card grids --- */
         .card-grid,
         .card-grid-large {
           grid-template-columns: 1fr !important;
           gap: 14px !important;
         }
 
-        /* Card-media â€” let height breathe on mobile */
+        /* Card-media --- */
         .card-media--wide {
           min-height: 200px !important;
         }
@@ -503,7 +629,7 @@
       }
 
       /* ============================================================
-         9. SMALL MOBILE (â‰¤420px)
+         9. SMALL MOBILE (—
          ============================================================ */
       @media (max-width: 420px) {
         .hero-bottom-copy h1 {
@@ -535,6 +661,28 @@
         .card-media--portrait {
           min-height: 220px !important;
         }
+      }
+
+      /* ============================================================
+         10. SERVICE CARDS SPACING FIX
+         ============================================================ */
+      .action-card:nth-last-child(-n+3),
+      .service-card:nth-last-child(-n+3) {
+        margin-bottom: 24px;
+      }
+
+      .services-grid + .section-copy,
+      .services-grid + .panel,
+      .action-card-container + .section-copy,
+      [class*="card-row"] + [class*="panel"],
+      [class*="grid"] + .panel {
+        margin-top: 32px;
+      }
+
+      .eyebrow + ul.bullet-list,
+      .section-copy + ul.bullet-list,
+      .panel > ul.bullet-list:first-of-type {
+        margin-top: 16px;
       }
 
       /* ===== 3D TUBES CURSOR EFFECT ===== */
@@ -571,7 +719,7 @@
       }
 
       /* ============================================================
-         NEON GLOW HOVER EFFECTS â€” Cards & Containers
+         NEON GLOW HOVER EFFECTS —
          ============================================================ */
 
       /* Base glow transition for all interactive elements */
@@ -718,8 +866,21 @@
         display: none !important;
       }
       
-    </style>
-    <style id="studio-spacing-fix">
+      .page-hero-media-services .page-hero-device {
+        padding: 14px !important;
+      }
+      .page-hero-media-services .page-hero-device > .media-image--laptops {
+        object-fit: cover !important;
+        object-position: center 25% !important;
+      }
+      .page-hero-media-work .page-hero-device > .media-image--work-hero,
+      .page-hero-media-studio .page-hero-device > .media-image--ux {
+        object-position: center center !important;
+      }
+
+      /* ============================================================
+         11. STUDIO SPACING FIX
+         ============================================================ */
       main > .page-hero + .section-shell.two-column-layout + .section-shell {
         margin-top: 0 !important;
         padding-top: calc(var(--section-space) * .56) !important;
@@ -733,6 +894,783 @@
           transform: translateY(-16rem);
           margin-bottom: -14.5rem !important;
           max-width: 29rem !important;
+        }
+      }
+
+      /* ============================================================
+         12. PAGE HERO FRAME ALIGNMENT FIX
+         ============================================================ */
+      .page-hero-media-services::before,
+      .page-hero-media-work::before,
+      .page-hero-media-studio::before,
+      .page-hero-media-services .ambient-orb,
+      .page-hero-media-work .ambient-orb,
+      .page-hero-media-studio .ambient-orb {
+        display: none !important;
+      }
+
+      .page-hero-media-services .page-hero-device,
+      .page-hero-media-work .page-hero-device,
+      .page-hero-media-studio .page-hero-device {
+        position: relative !important;
+        inset: auto !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        left: auto !important;
+        margin: 0 0 10px !important;
+        width: 100% !important;
+        max-width: 100% !important;
+        padding: 0 !important;
+      }
+
+      .page-hero-media-services .page-hero-device::after,
+      .page-hero-media-work .page-hero-device::after,
+      .page-hero-media-studio .page-hero-device::after {
+        position: absolute;
+        top: 14px;
+        left: 14px;
+        z-index: 2;
+        display: inline-flex;
+        align-items: center;
+        width: fit-content;
+        padding: 7px 12px;
+        border: 1px solid #00f7ff40;
+        border-radius: 999px;
+        background: rgba(7, 10, 20, 0.75);
+        color: #f4f7fb;
+        font-size: .72rem;
+        font-weight: 700;
+        letter-spacing: .08em;
+        text-transform: uppercase;
+        pointer-events: none;
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.4);
+        backdrop-filter: blur(4px);
+        box-shadow: 0 0 20px #00f7ff20, inset 0 0 10px #00f7ff08;
+      }
+
+      .page-hero-media-services .page-hero-device::after {
+        content: "Services";
+      }
+
+      .page-hero-media-work .page-hero-device::after {
+        content: "Work";
+      }
+
+      .page-hero-media-studio .page-hero-device::after {
+        content: "Studio";
+      }
+
+      .page-hero-media-services .page-hero-device > .media-image--laptops,
+      .page-hero-media-work .page-hero-device > .media-image--work-hero,
+      .page-hero-media-studio .page-hero-device > .media-image--ux {
+        object-fit: cover !important;
+        object-position: center center !important;
+      }
+
+      /* ============================================================
+         13. WEBZAD SIGNATURE IMAGE RADIUS FIX
+         ============================================================ */
+      .site-main-home .brand-signature-frame {
+        position: relative;
+      }
+      .site-main-home .brand-signature-frame::after {
+        content: "";
+        position: absolute;
+        inset: 16px;
+        border-radius: calc(var(--radius-xl) - 6px);
+        background: url("assets/webzad-signature-new.png?v=4") center / contain no-repeat;
+        pointer-events: none;
+      }
+      .site-main-home .brand-signature-image,
+      .site-main-home .brand-signature-frame img {
+        opacity: 0 !important;
+      }
+      @media (max-width: 760px) {
+        .site-main-home .brand-signature-frame::after {
+          inset: 14px;
+        }
+      }
+    </style>
+    <style id="typography-refinements">
+      /* ============================================================
+         TYPOGRAPHY & TEXT VISIBILITY REFINEMENTS
+         Text-only overrides — no layout, spacing, or visual changes
+         ============================================================ */
+
+      /* --- 1. GLOBAL MUTED TEXT CONTRAST BOOST ---
+         --muted is #d4ddecc2 (76% alpha) — too transparent on dark bg.
+         Raise to ~91% for crisper, more readable body text. */
+      :root {
+        --muted: #d4ddece8;
+      }
+
+      /* --- 2. GLOBAL TEXT RENDERING --- */
+      body {
+        font-feature-settings: "kern" 1, "liga" 1;
+      }
+
+      /* --- 3. HEADING HIERARCHY — consistent display font --- */
+      .hero-bottom-copy h1,
+      .page-hero-copy h1,
+      .section-heading h2,
+      .brand-signature h2,
+      .quote-banner h2,
+      .footer-cta h2,
+      .delivery-band h2,
+      .studio-message h2 {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+      }
+
+      /* Hero main heading — fix .98 line-height clipping descenders */
+      .hero-bottom-copy h1 {
+        line-height: 1.1;
+      }
+
+      /* Card headings — apply display font consistently */
+      .signal-card h2,
+      .service-card h3,
+      .benefit-card h3,
+      .project-card h3,
+      .process-card h3,
+      .action-card h3,
+      .navigator-card h3,
+      .quote-card h3,
+      .principle-card h3,
+      .contact-panel h3 {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+      }
+
+      /* --- 4. BODY COPY — improved contrast & line-height --- */
+      .section-copy,
+      .hero-copy-text,
+      .hero-kicker,
+      .page-hero-copy > p:not(.eyebrow),
+      .brand-signature p,
+      .quote-banner p,
+      .footer-cta p,
+      .delivery-band p,
+      .studio-message p {
+        color: #d4ddece8;
+        line-height: 1.65;
+        font-weight: 400;
+      }
+
+      /* Card body text — lift from washed-out muted */
+      .service-card p,
+      .benefit-card p,
+      .project-card p,
+      .process-card p,
+      .quote-card p,
+      .principle-card p,
+      .action-card p,
+      .navigator-card p,
+      .signal-card p,
+      .contact-panel p {
+        color: #d4ddece8;
+        line-height: 1.6;
+      }
+
+      /* Page hero note paragraphs */
+      .page-hero-note p {
+        color: #d4ddece8;
+        line-height: 1.6;
+      }
+
+      /* Bullet lists */
+      .bullet-list {
+        color: #d4ddece8;
+      }
+
+      /* --- 5. NAV LINKS — small text needs better contrast --- */
+      .nav-link,
+      .mobile-link {
+        color: #d4ddecd0;
+        font-weight: 600;
+      }
+      .nav-link:hover,
+      .mobile-link:hover,
+      .nav-link.is-active,
+      .mobile-link.is-active {
+        color: var(--text);
+      }
+
+      /* --- 6. BUTTONS — crisp text rendering --- */
+      .button {
+        font-weight: 600;
+        letter-spacing: -0.01em;
+      }
+      .button-primary {
+        font-weight: 700;
+      }
+
+      /* --- 7. LABELS & BADGES — ensure small text pops --- */
+      .eyebrow,
+      .mini-label,
+      .signal-index,
+      .process-step,
+      .media-chip,
+      .page-hero-badge {
+        font-weight: 700;
+        letter-spacing: 0.08em;
+      }
+
+      /* Media chips on images - need contrast on both dark and light backgrounds */
+      .media-chip {
+        color: #f4f7fb;
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5), 0 2px 6px rgba(0, 0, 0, 0.3);
+        background: rgba(7, 10, 20, 0.6);
+        padding: 4px 10px;
+        border-radius: 999px;
+        backdrop-filter: blur(4px);
+      }
+
+      .detail-columns h4 {
+        color: #ecf3fff0;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      /* --- 8. FORM FIELDS — placeholder too faint (#d4ddec7a) --- */
+      .field input::placeholder,
+      .field textarea::placeholder {
+        color: #d4ddec99;
+      }
+      .field span {
+        color: #ecf3fff0;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+      }
+
+      /* --- 9. FLOATING INFO & METADATA — lift from --muted --- */
+      .floating-info strong,
+      .page-hero-float strong {
+        color: #ecf3fff0;
+        font-weight: 700;
+      }
+
+      .brand-copy strong {
+        color: #ecf3fff0;
+        font-weight: 700;
+      }
+      .brand-copy small {
+        color: #d4ddecc0;
+      }
+
+      /* --- 10. DASHBOARD METRICS & SIDEBAR — display font --- */
+      .dashboard-metric strong,
+      .sidebar-card strong {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+        font-weight: 700;
+        color: var(--text);
+      }
+
+      /* --- 11. FAQ — readable summary text --- */
+      .faq-item summary {
+        font-weight: 600;
+        color: var(--text);
+        letter-spacing: -0.02em;
+      }
+
+      /* --- 12. FOOTER META — small text needs contrast boost --- */
+      .footer-meta {
+        color: #d4ddecc0;
+      }
+      .footer-meta a {
+        color: #d4ddece0;
+      }
+      .footer-meta a:hover {
+        color: var(--text);
+      }
+
+      /* --- 13. CONTACT PAGE TEXT --- */
+      .contact-hero-stat strong,
+      .contact-process-item strong,
+      .contact-email-copy h3,
+      .contact-support-card h3,
+      .contact-suite-item strong,
+      .contact-direct-copy strong,
+      .contact-route-copy strong,
+      .contact-direct-copy-clean strong,
+      .contact-expect-item strong,
+      .contact-support-card-elegant h3 {
+        color: #ecf3fff0;
+        font-weight: 700;
+      }
+      .contact-fact-item p {
+        color: #d4ddece8;
+      }
+      .contact-inline-note a {
+        color: #ecf3fff0;
+        font-weight: 600;
+      }
+
+      /* --- 14. TEXT-SHADOW ON IMAGE OVERLAYS ---
+         Protect text readability when overlapping images */
+      .hero-bottom-copy h1,
+      .hero-copy-text,
+      .hero-kicker,
+      .studio-visual-overlay h2,
+      .studio-visual-overlay p {
+        text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4),
+                     0 4px 12px rgba(0, 0, 0, 0.2);
+      }
+
+      /* --- 15. HERO KICKER — slightly bolder for scannability --- */
+      .hero-kicker {
+        font-weight: 500;
+      }
+
+      /* --- 16. INLINE ROUTE LINKS --- */
+      .inline-route-link {
+        font-weight: 600;
+      }
+
+      /* --- 17. HERO ROUTE CARD TEXT --- */
+      .hero-route-card strong {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1.3;
+      }
+      
+      /* Fix text cropping in hero route cards */
+      .hero-route-card {
+        overflow: hidden !important;
+      }
+      .hero-route-card p,
+      .hero-route-card .card-description {
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+        line-height: 1.5;
+      }
+
+      /* Fix text cropping in signal cards (Signature Websites card) */
+      .signal-card {
+        overflow: hidden !important;
+        height: auto !important;
+        min-height: auto !important;
+        max-height: 420px !important;
+        aspect-ratio: auto !important;
+        padding: 14px !important;
+      }
+      .signal-card .card-media,
+      .signal-card img {
+        max-height: 260px !important;
+        object-fit: contain !important;
+      }
+      .signal-card h2 {
+        font-size: 0.9rem !important;
+        margin-bottom: 6px !important;
+        line-height: 1.2 !important;
+      }
+      .signal-card p {
+        font-size: 0.78rem !important;
+        line-height: 1.35 !important;
+        margin: 0 !important;
+      }
+      .signal-card h2,
+      .signal-card h3,
+      .signal-card p {
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+        display: block !important;
+        -webkit-line-clamp: unset !important;
+        line-clamp: unset !important;
+        max-height: none !important;
+      }
+
+      /* Fix text cropping in action cards */
+      .action-card {
+        overflow: hidden !important;
+      }
+      .action-card h3,
+      .action-card p {
+        overflow: visible !important;
+        text-overflow: clip !important;
+        white-space: normal !important;
+        display: block !important;
+        -webkit-line-clamp: unset !important;
+        line-clamp: unset !important;
+        max-height: none !important;
+      }
+
+      /* --- 18. CONTACT PAGE HEADINGS --- */
+      .contact-brief-panel h2,
+      .contact-form-heading h2,
+      .contact-suite-copy h2,
+      .contact-panel-heading h2,
+      .contact-panel-heading-compact h2,
+      .contact-hero-aside-head h2 {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+        font-weight: 700;
+        letter-spacing: -0.04em;
+      }
+
+      /* --- 19. RESPONSIVE TEXT-SHADOW REDUCTION ---
+         Reduce shadow weight on smaller screens to avoid blur */
+      @media (max-width: 760px) {
+        .hero-bottom-copy h1,
+        .hero-copy-text,
+        .hero-kicker,
+        .studio-visual-overlay h2,
+        .studio-visual-overlay p {
+          text-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+        }
+      }
+    </style>
+    <style id="contact-page-redesign">
+      /* ============================================================
+         CONTACT PAGE — Premium Redesign
+         CHANGED: Elevated visual treatment for the contact section.
+         Text-first, form-focused, modern & high-end.
+         No layout structure changes — only visual refinements.
+         ============================================================ */
+
+      /* --- SECTION SHELL — remove default top padding for contact --- */
+      .contact-page-shell-clean {
+        padding-top: 0 !important;
+      }
+
+      /* --- GRID — refined proportions, wider form panel --- */
+      .contact-page-grid-clean {
+        gap: clamp(20px, 2.4vw, 32px) !important;
+      }
+      @media (min-width: 1181px) {
+        .contact-page-grid-clean {
+          grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr) !important;
+        }
+      }
+
+      /* --- FORM PANEL — premium glass card --- */
+      .contact-form-panel-clean {
+        background:
+          linear-gradient(160deg, #0e1526f0 0%, #080c18f8 50%, #060a14fa 100%),
+          #080c14 !important;
+        border: 1px solid #ffffff12 !important;
+        border-radius: var(--radius-2xl) !important;
+        box-shadow:
+          0 1px 0 0 #ffffff08 inset,
+          0 40px 120px -20px #00000060,
+          0 0 0 1px #00f7ff08 !important;
+        padding: clamp(28px, 3.2vw, 42px) !important;
+        gap: 24px !important;
+        position: relative !important;
+        overflow: hidden !important;
+      }
+      /* Subtle top-edge gradient accent */
+      .contact-form-panel-clean::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 20%;
+        right: 20%;
+        height: 1px;
+        background: linear-gradient(90deg, transparent, #00f7ff40, #ff00f030, transparent);
+        pointer-events: none;
+        z-index: 1;
+      }
+
+      /* --- SIDEBAR PANEL — matching glass treatment --- */
+      .contact-sidebar-panel-clean {
+        background:
+          linear-gradient(160deg, #0c1020f0 0%, #070b16f8 100%),
+          #070b14 !important;
+        border: 1px solid #ffffff0e !important;
+        border-radius: var(--radius-2xl) !important;
+        box-shadow:
+          0 1px 0 0 #ffffff06 inset,
+          0 30px 80px -20px #00000050 !important;
+        padding: clamp(26px, 2.8vw, 36px) !important;
+        gap: 22px !important;
+      }
+
+      /* --- PANEL HEADINGS — stronger hierarchy --- */
+      .contact-panel-heading {
+        gap: 12px !important;
+      }
+      .contact-panel-heading .eyebrow {
+        font-size: 0.72rem !important;
+        letter-spacing: 0.1em !important;
+        padding: 6px 12px !important;
+      }
+      .contact-panel-heading h2 {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif !important;
+        font-size: var(--step-3) !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.04em !important;
+        line-height: 1.15 !important;
+        color: var(--text) !important;
+        max-width: 20ch !important;
+      }
+      .contact-panel-heading-compact h2 {
+        font-size: var(--step-2) !important;
+        max-width: 22ch !important;
+      }
+      .contact-panel-heading p {
+        color: #d4ddece0 !important;
+        line-height: 1.6 !important;
+        max-width: 48ch !important;
+      }
+
+      /* --- FORM FIELDS — refined inputs --- */
+      .contact-form-embedded {
+        gap: 20px !important;
+      }
+      .contact-form-embedded .field-grid {
+        gap: 16px !important;
+      }
+      .contact-form-embedded .field {
+        gap: 8px !important;
+      }
+      .contact-form-embedded .field span {
+        font-size: 0.78rem !important;
+        font-weight: 700 !important;
+        letter-spacing: 0.04em !important;
+        color: #ecf3ffde !important;
+        text-transform: uppercase !important;
+      }
+      .contact-form-embedded .field input,
+      .contact-form-embedded .field select,
+      .contact-form-embedded .field textarea {
+        background: #ffffff06 !important;
+        border: 1px solid #ffffff14 !important;
+        border-radius: 14px !important;
+        padding: 14px 16px !important;
+        color: var(--text) !important;
+        font-size: 0.94rem !important;
+        min-height: 50px !important;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.2s !important;
+      }
+      .contact-form-embedded .field input:hover,
+      .contact-form-embedded .field select:hover,
+      .contact-form-embedded .field textarea:hover {
+        border-color: #ffffff24 !important;
+        background: #ffffff0a !important;
+      }
+      .contact-form-embedded .field input:focus,
+      .contact-form-embedded .field select:focus,
+      .contact-form-embedded .field textarea:focus {
+        border-color: #00f7ff50 !important;
+        background: #ffffff0d !important;
+        box-shadow: 0 0 0 3px #00f7ff12, 0 0 20px #00f7ff08 !important;
+        outline: none !important;
+      }
+      .contact-form-embedded .field input::placeholder,
+      .contact-form-embedded .field textarea::placeholder {
+        color: #d4ddec60 !important;
+      }
+      .contact-form-embedded .field textarea {
+        min-height: 130px !important;
+        resize: vertical !important;
+      }
+      .contact-form-embedded .field select {
+        cursor: pointer !important;
+      }
+
+      /* --- SUBMIT BUTTON — premium gradient CTA --- */
+      .contact-form-embedded .button-primary,
+      .contact-form .button-primary {
+        min-height: 52px !important;
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+        letter-spacing: -0.01em !important;
+        border-radius: 14px !important;
+        transition: transform 0.2s, box-shadow 0.3s !important;
+      }
+      .contact-form-embedded .button-primary:hover,
+      .contact-form .button-primary:hover {
+        transform: translateY(-1px) !important;
+        box-shadow:
+          0 0 30px #00f7ff30,
+          0 0 60px #ff00f018,
+          0 14px 36px #ff00f020 !important;
+      }
+      .contact-form-embedded .button-primary:active,
+      .contact-form .button-primary:active {
+        transform: translateY(0) !important;
+      }
+
+      /* --- FORM FOOTER TEXT --- */
+      .contact-form-footer {
+        color: #d4ddecaa !important;
+        font-size: 0.8rem !important;
+      }
+
+      /* --- CHECKLIST in sidebar — refined bullets --- */
+      .contact-checklist-list {
+        padding-left: 0 !important;
+        list-style: none !important;
+      }
+      .contact-checklist-list li {
+        position: relative !important;
+        padding-left: 20px !important;
+        color: #d4ddece0 !important;
+        line-height: 1.55 !important;
+        margin-bottom: 8px !important;
+      }
+      .contact-checklist-list li::before {
+        content: "" !important;
+        position: absolute !important;
+        left: 0 !important;
+        top: 8px !important;
+        width: 6px !important;
+        height: 6px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, #00f7ff, #ff8bf6) !important;
+        box-shadow: 0 0 6px #00f7ff40 !important;
+      }
+
+      /* --- DIRECT CONTACT SECTION in sidebar --- */
+      .contact-direct-panel-clean {
+        border-top: 1px solid #ffffff10 !important;
+        padding-top: 20px !important;
+        gap: 14px !important;
+      }
+      .contact-direct-copy-clean .mini-label {
+        font-size: 0.68rem !important;
+      }
+      .contact-direct-copy-clean strong {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif !important;
+        font-size: 1.05rem !important;
+        color: var(--text) !important;
+        letter-spacing: -0.02em !important;
+      }
+      .contact-direct-copy-clean p {
+        color: #d4ddecc8 !important;
+        font-size: 0.88rem !important;
+        line-height: 1.55 !important;
+      }
+
+      /* --- "Email Webzad" sidebar button --- */
+      .contact-direct-panel-clean .button-secondary {
+        border-radius: 12px !important;
+        min-height: 46px !important;
+        font-weight: 600 !important;
+        transition: border-color 0.2s, background 0.2s, box-shadow 0.3s !important;
+      }
+      .contact-direct-panel-clean .button-secondary:hover {
+        border-color: #00f7ff30 !important;
+        background: #00f7ff0a !important;
+        box-shadow: 0 0 20px #00f7ff15 !important;
+      }
+
+      /* --- SUCCESS STATE — polished confirmation --- */
+      .formspree-success {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        gap: 16px;
+        padding: clamp(40px, 5vw, 64px) 20px;
+        min-height: 340px;
+        animation: formSuccessFadeIn 0.5s ease-out;
+      }
+      @keyframes formSuccessFadeIn {
+        from { opacity: 0; transform: translateY(12px); }
+        to { opacity: 1; transform: translateY(0); }
+      }
+      .formspree-success-icon {
+        margin-bottom: 4px;
+        filter: drop-shadow(0 0 20px #00f7ff30) drop-shadow(0 0 40px #ff00f015);
+      }
+      .formspree-success-icon svg {
+        display: block;
+      }
+      .formspree-success-title {
+        font-family: 'Space Grotesk', 'Manrope', system-ui, sans-serif;
+        font-size: clamp(1.3rem, 2.5vw, 1.7rem);
+        font-weight: 700;
+        letter-spacing: -0.04em;
+        color: var(--text);
+        margin: 0;
+      }
+      .formspree-success-message {
+        font-size: clamp(0.95rem, 1.2vw, 1.05rem);
+        color: #d4ddece8;
+        line-height: 1.6;
+        max-width: 38ch;
+        margin: 0;
+      }
+      .formspree-success-sub {
+        font-size: 0.84rem;
+        color: #d4ddecaa;
+        margin: 0;
+      }
+
+      /* --- ERROR STATE --- */
+      .formspree-error {
+        color: #ff6b6b;
+        font-size: 0.88rem;
+        font-weight: 500;
+        padding: 12px 16px;
+        background: #ff6b6b0a;
+        border: 1px solid #ff6b6b20;
+        border-radius: 12px;
+        text-align: center;
+      }
+
+      /* --- Hide React's old mailto confirmation message --- */
+      .form-confirmation {
+        display: none !important;
+      }
+
+      /* --- HOVER GLOW refinement for contact panels --- */
+      @media (hover: hover) {
+        .contact-form-panel-clean:hover {
+          border-color: #ffffff1a !important;
+          box-shadow:
+            0 1px 0 0 #ffffff0a inset,
+            0 40px 120px -20px #00000060,
+            0 0 40px #00f7ff0a !important;
+        }
+        .contact-sidebar-panel-clean:hover {
+          border-color: #ffffff18 !important;
+          box-shadow:
+            0 1px 0 0 #ffffff08 inset,
+            0 30px 80px -20px #00000050,
+            0 0 30px #00f7ff08 !important;
+        }
+      }
+
+      /* --- RESPONSIVE — mobile adjustments --- */
+      @media (max-width: 760px) {
+        .contact-form-panel-clean {
+          padding: 22px !important;
+          gap: 20px !important;
+        }
+        .contact-sidebar-panel-clean {
+          padding: 22px !important;
+          gap: 18px !important;
+        }
+        .contact-panel-heading h2 {
+          font-size: var(--step-2) !important;
+          max-width: none !important;
+        }
+        .contact-form-embedded .field input,
+        .contact-form-embedded .field select,
+        .contact-form-embedded .field textarea {
+          font-size: 1rem !important;
+          min-height: 48px !important;
+        }
+        .formspree-success {
+          min-height: 280px;
+          padding: 32px 16px;
+        }
+      }
+      @media (max-width: 420px) {
+        .contact-form-panel-clean {
+          padding: 18px !important;
+        }
+        .contact-sidebar-panel-clean {
+          padding: 18px !important;
         }
       }
     </style>
@@ -877,24 +1815,170 @@
         observer.observe(document.body, { childList: true, subtree: true });
       })();
     </script>
+    <!-- Form interception script -->
+    <script>
+      (function webzadFormFix() {
+        /* Formsubmit.co endpoint */
+        var FORM_ENDPOINT = "https://formsubmit.co/ajax/f11c4df9cac5fcb3a134c796bf5ee19c";
+        var hookedForms = new WeakSet();
+
+        /* Block ALL mailto: link clicks */
+        document.addEventListener('click', function(e) {
+          var el = e.target;
+          while (el && el !== document.body) {
+            if (el.tagName === 'A') {
+              var href = el.getAttribute('href') || '';
+              if (href.indexOf('mailto:') === 0) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                var formSection = document.getElementById('contact-form-panel')
+                  || document.querySelector('.contact-form')
+                  || document.querySelector('.contact-page-shell-clean');
+                if (formSection) {
+                  formSection.scrollIntoView({ behavior: 'smooth' });
+                  var firstInput = formSection.querySelector('input[name="name"], input[type="text"], input');
+                  if (firstInput) setTimeout(function() { firstInput.focus(); }, 400);
+                } else {
+                  window.location.hash = '#contact';
+                }
+                return false;
+              }
+              break;
+            }
+            el = el.parentElement;
+          }
+        }, true);
+
+        /* Intercept form submission */
+        document.addEventListener('submit', function(e) {
+          var form = e.target;
+          if (!form.classList.contains('contact-form')) return;
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          if (hookedForms.has(form)) return false;
+          hookedForms.add(form);
+
+          var data = {};
+          var inputs = form.querySelectorAll('input, select, textarea');
+          for (var i = 0; i < inputs.length; i++) {
+            var inp = inputs[i];
+            if (inp.name) data[inp.name] = inp.value;
+          }
+
+          var payload = new FormData();
+          payload.append('name', data.name || '');
+          payload.append('email', data.email || '');
+          payload.append('company', data.company || '');
+          payload.append('service', data.service || 'Signature Website');
+          payload.append('timeline', data.timeline || '');
+          payload.append('goals', data.goals || '');
+          payload.append('_subject', data.company ? 'Webzad project inquiry from ' + data.company : 'Webzad project inquiry');
+          payload.append('_replyto', data.email || '');
+          payload.append('_template', 'table');
+
+          var btn = form.querySelector('button[type="submit"]') || form.querySelector('button:last-of-type') || form.querySelector('.button-primary');
+          var originalBtnText = btn ? btn.textContent : 'Send';
+          if (btn) {
+            btn.disabled = true;
+            btn.textContent = 'Sending...';
+          }
+
+          fetch(FORM_ENDPOINT, {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json'
+            },
+            body: payload
+          })
+          .then(function(res) {
+            if (res.ok) {
+              showSuccess(form, btn, originalBtnText);
+            } else {
+              throw new Error('Formsubmit returned ' + res.status);
+            }
+          })
+          .catch(function(err) {
+            hookedForms.delete(form);
+            console.error('[Webzad] Form error:', err);
+            showError(form, btn, originalBtnText);
+          });
+
+          return false;
+        }, true);
+
+        function showSuccess(form, btn, originalText) {
+          var oldMsg = form.querySelector('.form-confirmation');
+          if (oldMsg) oldMsg.style.display = 'none';
+          var successDiv = document.createElement('div');
+          successDiv.className = 'formspree-success';
+          successDiv.setAttribute('role', 'status');
+          successDiv.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:16px;padding:48px 20px;animation:fadeIn 0.5s ease-out;';
+          var iconSvg = '<svg width="56" height="56" viewBox="0 0 56 56" fill="none"><circle cx="28" cy="28" r="28" fill="url(#successGlow)"/><path d="M18 28.5L24.5 35L38 21" stroke="#070a14" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/><defs><linearGradient id="successGlow" x1="0" y1="0" x2="56" y2="56"><stop stop-color="#00f7ff"/><stop offset="1" stop-color="#ff00f6"/></linearGradient></defs></svg>';
+          successDiv.innerHTML = '<div style="filter:drop-shadow(0 0 20px #00f7ff30);">' + iconSvg + '</div>' +
+            '<h3 style="font-family:Space Grotesk,Manrope,system-ui,sans-serif;font-size:1.5rem;font-weight:700;letter-spacing:-0.04em;color:#f4f7fb;margin:0;">Thanks for contacting us</h3>' +
+            '<p style="font-size:1rem;color:#d4ddece8;line-height:1.6;max-width:36ch;margin:0;">We\'ve received your request and will be in contact soon.</p>' +
+            '<p style="font-size:0.84rem;color:#d4ddecaa;margin:0;">Expect a reply within 1 business day.</p>';
+          form.innerHTML = '';
+          form.appendChild(successDiv);
+          form.classList.add('form-submitted');
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = originalText;
+          }
+        }
+
+        function showError(form, btn, originalText) {
+          if (btn) {
+            btn.disabled = false;
+            btn.textContent = originalText;
+          }
+          var errDiv = form.querySelector('.formspree-error');
+          if (!errDiv) {
+            errDiv = document.createElement('p');
+            errDiv.className = 'formspree-error';
+            errDiv.style.cssText = 'color:#ff6b6b;font-size:0.88rem;font-weight:500;padding:12px 16px;background:#ff6b6b0a;border:1px solid #ff6b6b20;border-radius:12px;text-align:center;margin-top:12px;';
+            form.appendChild(errDiv);
+          }
+          errDiv.textContent = "Something went wrong. Please try again in a moment.";
+        }
+
+        if (!document.getElementById('form-success-animations')) {
+          var style = document.createElement('style');
+          style.id = 'form-success-animations';
+          style.textContent = '@keyframes fadeIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}';
+          document.head.appendChild(style);
+        }
+
+        /* DOM-based mailto fix backup */
+        function fixMailtoLinks() {
+          document.querySelectorAll('a[href^="mailto:"]').forEach(function(link) {
+            if (link.dataset.webzadFixed) return;
+            link.dataset.webzadFixed = 'true';
+            link.setAttribute('href', '#contact');
+            link.addEventListener('click', function(e) {
+              e.preventDefault();
+              var formSection = document.getElementById('contact-form-panel')
+                || document.querySelector('.contact-form')
+                || document.querySelector('.contact-page-shell-clean')
+                || document.getElementById('contact');
+              if (formSection) {
+                formSection.scrollIntoView({ behavior: 'smooth' });
+                var firstInput = formSection.querySelector('input[name="name"], input[type="text"], input');
+                if (firstInput) setTimeout(function() { firstInput.focus(); }, 400);
+              }
+            });
+          });
+        }
+        fixMailtoLinks();
+        setTimeout(fixMailtoLinks, 100);
+        setTimeout(fixMailtoLinks, 500);
+        setTimeout(fixMailtoLinks, 1000);
+        setTimeout(fixMailtoLinks, 2000);
+        if (window.MutationObserver) {
+          var linkObserver = new MutationObserver(function() { fixMailtoLinks(); });
+          linkObserver.observe(document.getElementById('root') || document.body, { childList: true, subtree: true });
+        }
+      })();
+    </script>
   </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
