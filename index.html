@@ -13,7 +13,6 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' https://formsubmit.co; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-<meta http-equiv="X-XSS-Protection" content="1; mode=block" />
 <meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), xr-spatial-tracking=()" />
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
@@ -201,6 +200,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 <div class="hero-vw">
 <video class="hero-v" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="studio-hero-inset-preview.png">
 <source src="Background.mp4" type="video/mp4" />
+<track kind="metadata" label="Background video" />
 </video>
 </div>
 <div class="hero-ov"></div>
@@ -423,9 +423,9 @@ window.addEventListener('scroll',onScroll,{passive:true});
 onScroll();
 
 /* Mobile menu */
-function closeMenu(){mobileMenu.classList.remove('open');navToggle.setAttribute('aria-label','Open menu');navToggle.setAttribute('aria-expanded','false');}
+function closeMenu(){mobileMenu.classList.remove('open');navToggle.setAttribute('aria-label','Open menu');navToggle.setAttribute('aria-expanded','false');navToggle.focus();}
 navToggle.addEventListener('click',function(){
-if(mobileMenu.classList.contains('open')){closeMenu();}else{mobileMenu.classList.add('open');navToggle.setAttribute('aria-label','Close menu');navToggle.setAttribute('aria-expanded','true');}
+if(mobileMenu.classList.contains('open')){closeMenu();}else{mobileMenu.classList.add('open');navToggle.setAttribute('aria-label','Close menu');navToggle.setAttribute('aria-expanded','true');var firstLink=mobileMenu.querySelector('a');if(firstLink)firstLink.focus();}
 });
 mobileMenu.querySelectorAll('a').forEach(function(a){a.addEventListener('click',closeMenu);});
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeMenu();}});
@@ -472,8 +472,8 @@ submitBtn.textContent='Send Project Brief';
 /* Lightbox */
 var lightbox=document.createElement('div');lightbox.className='lightbox';lightbox.setAttribute('role','dialog');lightbox.setAttribute('aria-modal','true');lightbox.innerHTML='<div class="lightbox-close" aria-label="Close"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"/><path d="M6 6l12 12"/></svg></div><img/><p class="lightbox-caption"></p>';document.body.appendChild(lightbox);
 var lbImg=lightbox.querySelector('img');var lbCap=lightbox.querySelector('.lightbox-caption');var lbClose=lightbox.querySelector('.lightbox-close');
-function openLightbox(src,caption){lbImg.src=src;lbCap.textContent=caption||'';lightbox.classList.add('open');document.body.style.overflow='hidden';}
-function closeLightbox(){lightbox.classList.remove('open');document.body.style.overflow='';lbImg.src='';}
+var lbPrevFocus=null;function openLightbox(src,caption){lbPrevFocus=document.activeElement;lbImg.src=src;lbCap.textContent=caption||'';lightbox.classList.add('open');document.body.style.overflow='hidden';lbClose.focus();}
+function closeLightbox(){lightbox.classList.remove('open');document.body.style.overflow='';lbImg.src='';if(lbPrevFocus){lbPrevFocus.focus();lbPrevFocus=null;}}
 document.querySelectorAll('[data-lightbox]').forEach(function(el){el.setAttribute('role','button');el.setAttribute('tabindex','0');el.addEventListener('click',function(){openLightbox(el.dataset.lightbox,el.dataset.caption);});el.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();openLightbox(el.dataset.lightbox,el.dataset.caption);}});});
 lbClose.addEventListener('click',closeLightbox);lightbox.addEventListener('click',function(e){if(e.target===lightbox)closeLightbox();});document.addEventListener('keydown',function(e){if(e.key==='Escape'&&lightbox.classList.contains('open'))closeLightbox();});
 
