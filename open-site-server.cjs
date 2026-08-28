@@ -13,7 +13,11 @@ const mime = {
   '.svg': 'image/svg+xml',
   '.ico': 'image/x-icon',
   '.webmanifest': 'application/manifest+json',
-  '.glb': 'model/gltf-binary'
+  '.glb': 'model/gltf-binary',
+  '.mp4': 'video/mp4',
+  '.webm': 'video/webm',
+  '.woff': 'font/woff',
+  '.woff2': 'font/woff2'
 };
 
 function sendFile(res, filePath, statusCode = 200) {

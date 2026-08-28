@@ -8,6 +8,7 @@ Allow: /favicon-32x32.png
 Allow: /favicon-48x48.png
 Allow: /favicon-192x192.png
 Allow: /favicon.png
+Allow: /favicon-google.png
 Allow: /apple-touch-icon.png
 Allow: /site.webmanifest
 

@@ -6,17 +6,7 @@
     <meta name="robots" content="noindex" />
     <title>Redirecting | Webzad</title>
     <script>
-      (function redirectToApp() {
-        const currentUrl = new URL(window.location.href);
-        const explicitHash =
-          currentUrl.hash && currentUrl.hash !== "#" ? currentUrl.hash : "";
-        const currentPath = currentUrl.pathname.replace(/\/+$/, "");
-        const isDirect404 = /\/404\.html$/i.test(currentPath);
-        const routeSegment = isDirect404 ? "" : currentPath.split("/").pop();
-        const target = new URL("./index.html", currentUrl);
-        target.hash = explicitHash || `#/${routeSegment || ""}${currentUrl.search}`.replace(/#\/\?/, "#/?");
-        window.location.replace(target.href);
-      })();
+      (function(){var u=new URL(window.location.href);var p=u.pathname.replace(/\/+$/,'');var s=p.split('/').pop();var t=new URL('./index.html',u);if(s&&s!=='404.html'){t.hash='#'+s;}window.location.replace(t.href);})();
     </script>
     <style>
       body {
@@ -36,7 +26,7 @@
   </head>
   <body>
     <noscript>
-      <p><a href="./index.html#/">Open Webzad</a></p>
+      <p><a href="./index.html">Open Webzad</a></p>
     </noscript>
   </body>
 </html>
