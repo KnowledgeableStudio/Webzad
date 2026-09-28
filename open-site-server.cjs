@@ -137,12 +137,18 @@ async function handleChatRequest(req, res, options = {}) {
     }
     const contents = formatGeminiContents(body.messages || body.message || 'Hello');
     const fetchFn = options.fetch || globalThis.fetch;
-    const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
-    const geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }, contents, tools: TOOL_DEFINITIONS }),
-      signal: AbortSignal.timeout(15000)
-    });
+    let model = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+    let geminiRes = null;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }, contents, tools: TOOL_DEFINITIONS }),
+        signal: AbortSignal.timeout(15000)
+      });
+      if (geminiRes.status !== 503) break;
+      model = 'gemini-3.1-flash-lite';
+      await new Promise(r => setTimeout(r, 600));
+    }
     const data = await geminiRes.json();
     if (!geminiRes.ok) {
       let errMsg = maskSensitiveError(data?.error?.message || 'Gemini API request failed', apiKey);
