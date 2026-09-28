@@ -52,7 +52,8 @@ class ZadaCompanion {
   async init(containerEl, config = {}) {
     if (!containerEl) return false;
     this.container = containerEl;
-    const create = config.createElement || ((t) => (typeof document !== 'undefined' ? document.createElement(t) : null));
+    this.createElement = config.createElement || this.options.createElement || null;
+    const create = this.createElement || ((t) => (typeof document !== 'undefined' ? document.createElement(t) : null));
     this.canvasWrapper = create('div');
     if (this.canvasWrapper) {
       this.canvasWrapper.className = 'zada-canvas-wrapper';
@@ -96,7 +97,10 @@ class ZadaCompanion {
         <div class="zada-chat-online-badge" aria-hidden="true"></div>
       </div>
     `;
-    this.podTrigger.addEventListener('click', () => this.holoUI?.toggle?.());
+    this.podTrigger.addEventListener('click', () => {
+      this.hideGreetingBubble();
+      this.holoUI?.toggle?.();
+    });
     if (containerEl.appendChild) containerEl.appendChild(this.podTrigger);
   }
 
@@ -251,7 +255,114 @@ class ZadaCompanion {
     };
   }
 
+  /**
+   * Displays an animated holographic speech bubble greeting above the pod trigger.
+   * @param {string} text - Greeting message text.
+   * @param {Function} [createElementFn] - Custom DOM element factory for headless testing.
+   * @returns {HTMLElement|null}
+   */
+  showGreetingBubble(text, createElementFn = null) {
+    this.hideGreetingBubble();
+    const create = createElementFn || this.createElement || this.options.createElement || ((t) => (typeof document !== 'undefined' ? document.createElement(t) : null));
+    if (!create) return null;
+    const bubble = create('div');
+    if (!bubble) return null;
+    bubble.className = 'zada-greeting-bubble';
+    bubble.classList?.add?.('zada-greeting-bubble');
+    bubble.setAttribute?.('role', 'status');
+    bubble.setAttribute?.('aria-live', 'polite');
+    bubble.innerHTML = `
+      <div class="zada-greeting-header">
+        <span class="zada-greeting-badge">
+          <span class="zada-greeting-dot" aria-hidden="true"></span>
+          ZADA AI
+        </span>
+        <button type="button" class="zada-greeting-close" aria-label="Dismiss greeting">×</button>
+      </div>
+      <p class="zada-greeting-text">${text}</p>
+      <div class="zada-greeting-actions">
+        <button type="button" class="zada-greeting-btn zada-greeting-chat">Chat with Zada</button>
+        <button type="button" class="zada-greeting-btn zada-greeting-prompt">Explore Services</button>
+      </div>
+    `;
+
+    const closeBtn = bubble.querySelector?.('.zada-greeting-close');
+    closeBtn?.addEventListener?.('click', (e) => {
+      e?.stopPropagation?.();
+      this.hideGreetingBubble();
+    });
+
+    const chatBtn = bubble.querySelector?.('.zada-greeting-chat');
+    chatBtn?.addEventListener?.('click', (e) => {
+      e?.stopPropagation?.();
+      this.hideGreetingBubble();
+      this.holoUI?.open?.();
+    });
+
+    const promptBtn = bubble.querySelector?.('.zada-greeting-prompt');
+    promptBtn?.addEventListener?.('click', (e) => {
+      e?.stopPropagation?.();
+      this.hideGreetingBubble();
+      this.actionDispatcher?.dispatch?.('scrollToSection', { target: 'services' });
+    });
+
+    bubble.addEventListener?.('click', () => {
+      this.hideGreetingBubble();
+      this.holoUI?.open?.();
+    });
+
+    const targetContainer = this.container || (typeof document !== 'undefined' ? document.body : null);
+    if (targetContainer?.appendChild) targetContainer.appendChild(bubble);
+    this.greetingBubble = bubble;
+
+    if (typeof requestAnimationFrame === 'function') {
+      requestAnimationFrame(() => bubble.classList?.add?.('visible'));
+    } else {
+      bubble.classList?.add?.('visible');
+    }
+    return bubble;
+  }
+
+  /**
+   * Smoothly hides and removes the greeting bubble.
+   */
+  hideGreetingBubble() {
+    if (this.greetingBubble) {
+      const bubble = this.greetingBubble;
+      bubble.classList?.remove?.('visible');
+      this.greetingBubble = null;
+      if (typeof setTimeout === 'function') {
+        setTimeout(() => {
+          if (bubble.parentNode) bubble.parentNode.removeChild(bubble);
+        }, 300);
+      } else if (bubble.parentNode) {
+        bubble.parentNode.removeChild(bubble);
+      }
+    }
+  }
+
+  /**
+   * Welcomes the visitor with both visual greeting and natural voice audio.
+   * @param {string} [customGreeting] - Optional custom greeting text.
+   * @returns {string}
+   */
+  greetVisitor(customGreeting = null) {
+    const greetingText = customGreeting || "Greetings! Welcome to Webzad. I'm Zada, your intelligent 3D companion. What can we help you build today?";
+    if (this.holoUI && this.holoUI.messages?.length === 0) {
+      this.holoUI.addMessage('zada', greetingText);
+    }
+    this.showGreetingBubble(greetingText);
+    if (this.audioSync && !this.audioSync.muted) {
+      this.stateManager?.setState?.('SPEAKING');
+      this.audioSync.speak(greetingText, () => {
+        this.stateManager?.setState?.('IDLE');
+      });
+    }
+    return greetingText;
+  }
+
   destroy() {
+    this.hideGreetingBubble();
     if (typeof window !== 'undefined') {
       window.removeEventListener('scroll', this._boundScroll);
       window.removeEventListener('mousemove', this._boundMouse);
@@ -261,7 +372,7 @@ class ZadaCompanion {
     this.holoUI?.unmount?.();
     if (this.podTrigger?.parentNode) this.podTrigger.parentNode.removeChild(this.podTrigger);
     if (this.canvasWrapper?.parentNode) this.canvasWrapper.parentNode.removeChild(this.canvasWrapper);
-    this.container = this.podTrigger = this.canvasWrapper = null;
+    this.container = this.podTrigger = this.canvasWrapper = this.greetingBubble = null;
     this.isInitialized = false;
   }
 }
@@ -279,6 +390,19 @@ if (typeof window !== 'undefined' && typeof document !== 'undefined') {
     const companion = new ZadaCompanion();
     await companion.init(container);
     window.zadaCompanion = companion;
+
+    // Trigger welcoming greeting once page is fully loaded
+    const triggerGreeting = () => {
+      setTimeout(() => {
+        companion.greetVisitor();
+      }, 1200);
+    };
+
+    if (document.readyState === 'complete') {
+      triggerGreeting();
+    } else {
+      window.addEventListener('load', triggerGreeting, { once: true });
+    }
   };
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mountZada);
   else setTimeout(mountZada, 0);

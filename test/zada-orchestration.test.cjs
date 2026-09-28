@@ -382,4 +382,47 @@ test('ZadaCompanion Master Orchestrator', async (t) => {
     assert.equal(disposed, true);
     assert.equal(companion.isInitialized, false);
   });
+
+  await t.test('greetVisitor adds welcome message, mounts greeting bubble, and speaks aloud', () => {
+    let spokenText = null;
+    const mockAudio = {
+      muted: false,
+      speak: (text) => { spokenText = text; },
+      interrupt: () => {},
+      getAmplitude: () => 0
+    };
+    const companion = new ZadaCompanion({ audioSync: mockAudio });
+    const container = createMockElement('div');
+    companion.init(container, { skipModelLoad: true, createElement: createMockElement });
+
+    // Clear initial message to test greetVisitor insertion
+    companion.holoUI.messages = [];
+    const greeting = companion.greetVisitor();
+
+    assert.ok(greeting.includes('Welcome') || greeting.includes('Zada'));
+    assert.equal(companion.holoUI.messages.length, 1);
+    assert.equal(companion.holoUI.messages[0].text, greeting);
+    assert.equal(spokenText, greeting);
+    assert.ok(companion.greetingBubble);
+    assert.ok(companion.greetingBubble.classList.contains('zada-greeting-bubble'));
+
+    companion.destroy();
+    assert.equal(companion.greetingBubble, null);
+  });
+
+  await t.test('pod trigger click dismisses active greeting bubble and toggles HUD', () => {
+    const companion = new ZadaCompanion();
+    const container = createMockElement('div');
+    companion.init(container, { skipModelLoad: true, createElement: createMockElement });
+
+    companion.showGreetingBubble('Hello from Zada', createMockElement);
+    assert.ok(companion.greetingBubble);
+
+    companion.podTrigger.click();
+    assert.equal(companion.greetingBubble, null);
+    assert.equal(companion.holoUI.isOpen, true);
+
+    companion.destroy();
+  });
 });
+

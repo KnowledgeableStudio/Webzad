@@ -59,30 +59,34 @@ class ZadaAura {
   }
 
   /**
-   * Constructs the inner inverted-normal Fresnel aura sphere (1.15x scale).
+   * Constructs the inner inverted-normal Fresnel aura shell (1.15x scale).
+   * Contoured to match the humanoid body silhouette.
    * @private
    * @param {number} radius - Base model radius.
    */
   _buildCore(radius) {
     const THREE = this.THREE;
-    const coreGeo = new THREE.SphereGeometry(radius * ZadaAuraConfig.CORE_SCALE_FACTOR, 16, 16);
+    const coreGeo = new THREE.SphereGeometry(radius * ZadaAuraConfig.CORE_SCALE_FACTOR, 32, 32);
     const coreMat = new THREE.MeshBasicMaterial({
       color: ZadaAuraConfig.COLOR, transparent: true, opacity: ZadaAuraConfig.CORE_BASE_OPACITY,
-      wireframe: true, blending: THREE.AdditiveBlending, depthWrite: false
+      wireframe: false, side: THREE.BackSide || 1, blending: THREE.AdditiveBlending, depthWrite: false
     });
     this.coreMesh = new THREE.Mesh(coreGeo, coreMat);
+    // Conform subtle glow field to humanoid body dimensions (width ~0.48, height ~0.98)
+    if (this.coreMesh.scale?.set) this.coreMesh.scale.set(0.48, 0.98, 0.48);
     this.group.add(this.coreMesh);
   }
 
   /**
    * Constructs the tilted holographic signal ring (1.25x scale).
+   * Scaled to orbit tightly around the character's mid-body.
    * @private
    * @param {number} radius - Base model radius.
    */
   _buildRing(radius) {
     const THREE = this.THREE;
     const ringGeo = new THREE.TorusGeometry(
-      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.0025 * radius, 16, 64
+      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.0018 * radius, 16, 64
     );
     const ringMat = new THREE.MeshBasicMaterial({
       color: ZadaAuraConfig.COLOR, transparent: true, opacity: ZadaAuraConfig.RING_OPACITY,
@@ -90,11 +94,43 @@ class ZadaAura {
     });
     this.ringMesh = new THREE.Mesh(ringGeo, ringMat);
     this.ringMesh.rotation.x = Math.PI / 2.3;
+    // Scale ring to encircle the torso/waist gracefully
+    if (this.ringMesh.scale?.set) this.ringMesh.scale.set(0.55, 0.55, 0.55);
     this.group.add(this.ringMesh);
   }
 
   /**
+   * Creates a high-end cinematic sci-fi radial glow texture for particles.
+   * @private
+   * @returns {Object|null} Three.js CanvasTexture or null.
+   */
+  _createGlowTexture() {
+    const THREE = this.THREE;
+    if (typeof document === 'undefined' || !THREE?.CanvasTexture) return null;
+    try {
+      const canvas = document.createElement('canvas');
+      canvas.width = 32;
+      canvas.height = 32;
+      const ctx = canvas.getContext('2d');
+      if (!ctx) return null;
+      const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
+      grad.addColorStop(0.2, 'rgba(0, 247, 255, 0.9)');
+      grad.addColorStop(0.55, 'rgba(0, 247, 255, 0.25)');
+      grad.addColorStop(1, 'rgba(0, 247, 255, 0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, 32, 32);
+      const tex = new THREE.CanvasTexture(canvas);
+      tex.needsUpdate = true;
+      return tex;
+    } catch {
+      return null;
+    }
+  }
+
+  /**
    * Constructs micro-particle dust strictly clamped between 1.15x and 1.35x.
+   * Contoured to match the humanoid body silhouette.
    * @private
    * @param {number} radius - Base model radius.
    * @param {number} qualityTier - Dynamic GPU quality tier.
@@ -115,11 +151,19 @@ class ZadaAura {
     }
 
     partGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    this.glowTexture = this._createGlowTexture();
     const partMat = new THREE.PointsMaterial({
-      color: ZadaAuraConfig.COLOR, size: 0.008 * radius, transparent: true,
-      opacity: ZadaAuraConfig.PARTICLE_OPACITY, blending: THREE.AdditiveBlending, depthWrite: false
+      color: ZadaAuraConfig.COLOR,
+      size: this.glowTexture ? (0.014 * radius) : (0.004 * radius),
+      map: this.glowTexture || undefined,
+      transparent: true,
+      opacity: ZadaAuraConfig.PARTICLE_OPACITY,
+      blending: THREE.AdditiveBlending,
+      depthWrite: false
     });
     this.particles = new THREE.Points(partGeo, partMat);
+    // Hug the humanoid silhouette (torso, arms, head, legs)
+    if (this.particles.scale?.set) this.particles.scale.set(0.50, 1.0, 0.50);
     this.group.add(this.particles);
   }
 
@@ -179,6 +223,8 @@ class ZadaAura {
     this._disposeObject(this.coreMesh);
     this._disposeObject(this.ringMesh);
     this._disposeObject(this.particles);
+    if (this.glowTexture?.dispose) this.glowTexture.dispose();
+    this.glowTexture = null;
   }
 }
 
