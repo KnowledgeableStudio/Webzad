@@ -9,7 +9,7 @@
  * @readonly
  * @type {ReadonlyArray<string>}
  */
-const APPROVED_SECTIONS = Object.freeze(['hero', 'services', 'work', 'process', 'contact']);
+const APPROVED_SECTIONS = Object.freeze(['hero', 'services', 'automation', 'work', 'process', 'contact']);
 
 /**
  * Whitelist of approved project preview identifiers.
@@ -24,7 +24,7 @@ const APPROVED_PROJECTS = Object.freeze(['growth', 'hospitality', 'services']);
  * @type {ReadonlyArray<string>}
  */
 const APPROVED_SERVICES = Object.freeze([
-  'signature-website', 'landing-page', 'web-app', 'autonomous-business', 'custom-ai'
+  'signature-website', 'landing-page', 'web-app', 'autonomous-business', 'custom-ai', 'ai-automation'
 ]);
 
 /**

@@ -1,4 +1,4 @@
-﻿const test = require('node:test');
+const test = require('node:test');
 const assert = require('node:assert/strict');
 const {
   ZadaActionDispatcher,
@@ -166,5 +166,23 @@ test('ZadaActionDispatcher security whitelist & parameter checking', async (t) =
     assert.ok(APPROVED_SECTIONS.includes('hero'));
     assert.ok(APPROVED_PROJECTS.includes('growth'));
     assert.ok(APPROVED_SERVICES.includes('signature-website'));
+  });
+
+  await t.test('automation section and ai-automation service are whitelisted', () => {
+    assert.ok(APPROVED_SECTIONS.includes('automation'), 'APPROVED_SECTIONS must include automation');
+    assert.ok(APPROVED_SERVICES.includes('ai-automation'), 'APPROVED_SERVICES must include ai-automation');
+    const scrollRes = dispatcher.validateAction({
+      name: 'scrollToSection',
+      params: { sectionId: 'automation' }
+    });
+    assert.equal(scrollRes.valid, true);
+    assert.equal(scrollRes.sanitized.sectionId, 'automation');
+
+    const prefillRes = dispatcher.validateAction({
+      name: 'prefillContactBrief',
+      params: { serviceType: 'ai-automation', details: 'Interested in AI workflows' }
+    });
+    assert.equal(prefillRes.valid, true);
+    assert.equal(prefillRes.sanitized.serviceType, 'ai-automation');
   });
 });

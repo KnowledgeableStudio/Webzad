@@ -13,9 +13,9 @@ const decl = (name, description, properties = {}, required) => {
 
 /** Whitelisted tool definitions for Zada website interaction. */
 const TOOL_DEFINITIONS = [{ functionDeclarations: [
-  decl('scrollToSection', 'Scroll to website section', { sectionId: { type: 'string', enum: ['hero', 'services', 'work', 'process', 'contact'] } }, ['sectionId']),
+  decl('scrollToSection', 'Scroll to website section', { sectionId: { type: 'string', enum: ['hero', 'services', 'automation', 'work', 'process', 'contact'] } }, ['sectionId']),
   decl('openProjectPreview', 'Open project preview lightbox', { projectId: { type: 'string', enum: ['growth', 'hospitality', 'services'] } }, ['projectId']),
-  decl('prefillContactBrief', 'Prefill contact brief form', { serviceType: { type: 'string', enum: ['signature-website', 'landing-page', 'web-app', 'autonomous-business', 'custom-ai'] }, details: { type: 'string' } }),
+  decl('prefillContactBrief', 'Prefill contact brief form', { serviceType: { type: 'string', enum: ['signature-website', 'landing-page', 'web-app', 'autonomous-business', 'custom-ai', 'ai-automation'] }, details: { type: 'string' } }),
   decl('toggleAudioOutput', 'Toggle audio voice output', { enabled: { type: 'boolean', description: 'Mute or enable voice' } }, ['enabled']),
   decl('openDevSettings', 'Open developer settings modal')
 ] }];
