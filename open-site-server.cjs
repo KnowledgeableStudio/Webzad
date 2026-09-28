@@ -4,6 +4,7 @@
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
 
 const root = __dirname;
 const MAX_BODY_BYTES = 64 * 1024;
@@ -192,6 +193,95 @@ async function handleVerifyKeyRequest(req, res, options = {}) {
   }
 }
 
+const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/f11c4df9cac5fcb3a134c796bf5ee19c';
+const VISITOR_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour cooldown per visitor
+
+const visitorDedupStore = new Map();
+
+/** Clears all stored visitor deduplication entries for testing teardown. */
+function clearVisitorDedup() {
+  visitorDedupStore.clear();
+}
+
+/** Hashes visitor IP using a daily salt to protect user privacy. */
+function hashVisitorIp(ip, salt = new Date().toISOString().slice(0, 10)) {
+  return crypto.createHash('sha256').update(String(ip || '127.0.0.1') + salt).digest('hex').slice(0, 24);
+}
+
+/** Extracts approximate location from standard reverse-proxy headers. */
+function extractLocationFromHeaders(headers = {}) {
+  const country = headers['cf-ipcountry'] || headers['x-vercel-ip-country'] || headers['x-country'] || '';
+  const city = headers['cf-ipcity'] || headers['x-vercel-ip-city'] || headers['x-city'] || '';
+  if (city && country) return `${city}, ${country}`;
+  if (country) return country;
+  if (city) return city;
+  return 'Undisclosed / Direct';
+}
+
+/** Handles POST /api/notify-visitor */
+async function handleVisitorNotification(req, res, options = {}) {
+  const ip = getClientIp(req);
+  if (isRateLimited(ip)) return sendJson(res, 429, { error: 'Too Many Requests' });
+  try {
+    const body = await readJsonBody(req, res);
+    if (!body) return;
+
+    const hashKey = hashVisitorIp(ip);
+    const now = Date.now();
+    const lastNotified = visitorDedupStore.get(hashKey) || 0;
+
+    if (now - lastNotified < VISITOR_COOLDOWN_MS) {
+      return sendJson(res, 200, { success: true, notified: false, reason: 'cooldown' });
+    }
+
+    visitorDedupStore.set(hashKey, now);
+
+    const location = extractLocationFromHeaders(req.headers);
+    const device = String(body.device || 'Desktop');
+    const browser = String(body.browser || req.headers['user-agent'] || 'Modern Web Browser');
+    const screen = String(body.screen || 'Unknown');
+    const referrer = String(body.referrer || 'Direct Visit');
+    const landingPath = String(body.path || '/');
+    const timezone = String(body.timezone || 'UTC');
+    let visitDate;
+    try {
+      visitDate = new Date().toLocaleString('en-US', { timeZone: timezone || 'UTC', dateStyle: 'full', timeStyle: 'long' });
+    } catch {
+      visitDate = new Date().toUTCString();
+    }
+
+    const emailPayload = {
+      _subject: `🚀 New Webzad Visitor [${device} | ${location}]`,
+      'Visitor Time': visitDate,
+      'Device & Platform': `${device} (${browser})`,
+      'Screen Resolution': screen,
+      'Approximate Location': location,
+      'Referral Source': referrer,
+      'Landing Page': landingPath,
+      _template: 'table'
+    };
+
+    const fetchFn = options.fetchFn || globalThis.fetch;
+    try {
+      await fetchFn(FORMSUBMIT_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(emailPayload)
+      });
+    } catch (e) {
+      console.warn('[API/notify-visitor] FormSubmit notification dispatch failed:', e.message);
+    }
+
+    return sendJson(res, 200, { success: true, notified: true });
+  } catch (err) {
+    console.error('[API/notify-visitor] Internal catch error:', err.message);
+    return sendJson(res, 500, { error: 'Failed to process visitor notification' });
+  }
+}
+
 /** Serves static file buffer or 404 with single read and SPA fallback. */
 function handleStaticRequest(res, relativePath) {
   const resolvedRoot = path.resolve(root);
@@ -214,12 +304,14 @@ function handleRequest(req, res) {
   } catch {
     return send(res, 400, 'text/plain; charset=utf-8', 'Bad Request');
   }
-  if (cleanUrl === '/api/chat' || cleanUrl === '/api/verify-key') {
+  if (cleanUrl === '/api/chat' || cleanUrl === '/api/verify-key' || cleanUrl === '/api/notify-visitor') {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
       return send(res, 405, 'text/plain; charset=utf-8', 'Method Not Allowed');
     }
-    return cleanUrl === '/api/chat' ? handleChatRequest(req, res) : handleVerifyKeyRequest(req, res);
+    if (cleanUrl === '/api/chat') return handleChatRequest(req, res);
+    if (cleanUrl === '/api/verify-key') return handleVerifyKeyRequest(req, res);
+    return handleVisitorNotification(req, res);
   }
   handleStaticRequest(res, cleanUrl === '/' ? '/index.html' : cleanUrl);
 }
@@ -230,7 +322,8 @@ if (require.main === module) {
 }
 
 module.exports = {
-  handleChatRequest, handleVerifyKeyRequest, handleRequest, isRateLimited,
-  clearRateLimits, maskSensitiveError, rateLimitStore,
+  handleChatRequest, handleVerifyKeyRequest, handleVisitorNotification, handleRequest,
+  isRateLimited, clearRateLimits, clearVisitorDedup, hashVisitorIp, extractLocationFromHeaders,
+  maskSensitiveError, rateLimitStore, visitorDedupStore,
   TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, MAX_BODY_BYTES, MAX_TURNS, server
 };
