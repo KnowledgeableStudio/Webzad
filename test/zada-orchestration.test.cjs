@@ -169,6 +169,22 @@ test('ZadaCompanion Master Orchestrator', async (t) => {
     assert.deepEqual(companion.holoUI.promptChips, SECTION_PROMPTS.work);
   });
 
+  await t.test('wires scrollToSection for hero falling back to #top element', async () => {
+    const topEl = createMockElement('section');
+    const companion = new ZadaCompanion({
+      getElement: (id) => (id === 'hero' ? topEl : null)
+    });
+    companion.init(createMockElement('div'), { skipModelLoad: true, createElement: createMockElement });
+
+    const res = await companion.actionDispatcher.dispatch({
+      name: 'scrollToSection',
+      params: { sectionId: 'hero' }
+    });
+
+    assert.equal(res.success, true);
+    assert.ok(topEl._scrolledIntoView);
+  });
+
   await t.test('wires openProjectPreview action to matching project media click', async () => {
     let clickedProject = null;
     const cards = [
@@ -225,6 +241,45 @@ test('ZadaCompanion Master Orchestrator', async (t) => {
     assert.ok(mockForm._scrolledIntoView);
   });
 
+  await t.test('wires toggleAudioOutput action and synchronizes mute button', async () => {
+    const audioSync = new ZadaAudioSync();
+    assert.equal(audioSync.isMuted(), false);
+
+    const companion = new ZadaCompanion({ audioSync });
+    companion.init(createMockElement('div'), { skipModelLoad: true, createElement: createMockElement });
+
+    const res = await companion.actionDispatcher.dispatch({
+      name: 'toggleAudioOutput',
+      params: { enabled: false }
+    });
+
+    assert.equal(res.success, true);
+    assert.equal(audioSync.isMuted(), true);
+    assert.equal(companion.holoUI.muteBtnEl.textContent, '🔇');
+    assert.ok(companion.holoUI.muteBtnEl.classList.contains('muted'));
+
+    await companion.actionDispatcher.dispatch({
+      name: 'toggleAudioOutput',
+      params: { enabled: true }
+    });
+    assert.equal(audioSync.isMuted(), false);
+    assert.equal(companion.holoUI.muteBtnEl.textContent, '🔊');
+  });
+
+  await t.test('wires openDevSettings action to open developer configuration modal', async () => {
+    const companion = new ZadaCompanion();
+    companion.init(createMockElement('div'), { skipModelLoad: true, createElement: createMockElement });
+
+    assert.equal(companion.holoUI.isDevModalOpen, false);
+    const res = await companion.actionDispatcher.dispatch({
+      name: 'openDevSettings',
+      params: {}
+    });
+
+    assert.equal(res.success, true);
+    assert.equal(companion.holoUI.isDevModalOpen, true);
+  });
+
   await t.test('executes handleUserMessage with API communication, tool dispatch, and speech', async () => {
     let speechText = '';
     const mockAudio = {
@@ -235,10 +290,11 @@ test('ZadaCompanion Master Orchestrator', async (t) => {
     };
 
     let dispatchedAction = null;
+    let sentBody = null;
     const companion = new ZadaCompanion({
       audioSync: mockAudio,
       fetchFn: async (url, opts) => {
-        const body = JSON.parse(opts.body);
+        sentBody = JSON.parse(opts.body);
         return {
           ok: true,
           status: 200,
@@ -262,9 +318,39 @@ test('ZadaCompanion Master Orchestrator', async (t) => {
 
     await companion.handleUserMessage('Take me to services');
 
+    assert.ok(sentBody.messages.some(m => m.content === 'Take me to services'), 'Request body must include user message');
     assert.equal(dispatchedAction?.name, 'scrollToSection');
     assert.equal(speechText, 'I will navigate to services for you.');
     assert.equal(companion.stateManager.getState(), 'IDLE');
+  });
+
+  await t.test('prompt chip click records user message in HUD and forwards to API', async () => {
+    let sentBody = null;
+    const companion = new ZadaCompanion({
+      fetchFn: async (url, opts) => {
+        sentBody = JSON.parse(opts.body);
+        return {
+          ok: true,
+          status: 200,
+          json: async () => ({ text: 'Webzad builds websites.', toolCalls: [] })
+        };
+      }
+    });
+
+    const container = createMockElement('div');
+    companion.init(container, { skipModelLoad: true, createElement: createMockElement });
+
+    // Find the first prompt chip and click it
+    const chip = companion.holoUI.chipsContainerEl.children[0];
+    assert.ok(chip, 'Prompt chip must exist');
+    chip.click();
+
+    // Allow promise tick
+    await new Promise(r => setTimeout(r, 10));
+
+    assert.ok(sentBody.messages.some(m => m.content === 'What is Webzad?'));
+    const userMsg = companion.holoUI.messages.find(m => m.role === 'user' && m.text === 'What is Webzad?');
+    assert.ok(userMsg, 'User prompt must appear in HUD dialogue stream');
   });
 
   await t.test('handles network failure gracefully without crashing', async () => {

@@ -28,13 +28,11 @@ const SECTION_PROMPTS = Object.freeze({
   contact: Object.freeze(['Prefill Signature Website', 'Direct Email', 'Schedule Discovery'])
 });
 
-/** Master coordinator connecting 3D WebGL companion, audio sync, state machine, and HUD. */
 class ZadaCompanion {
   constructor(options = {}) {
     this.options = options;
     this.cursor = { x: 0, y: 0 };
-    this.dockMode = 'hero';
-    this.activeSection = 'hero';
+    this.dockMode = this.activeSection = 'hero';
     this.isInitialized = false;
     this.stateManager = options.stateManager || (ZadaStateManager ? new ZadaStateManager() : null);
     this.audioSync = options.audioSync || (ZadaAudioSync ? new ZadaAudioSync() : null);
@@ -43,7 +41,7 @@ class ZadaCompanion {
     this.actionDispatcher = options.actionDispatcher || (ZadaActionDispatcher ? new ZadaActionDispatcher(this._createActionHandlers()) : null);
     this.holoUI = options.holoUI || (ZadaHoloUI ? new ZadaHoloUI({
       stateManager: this.stateManager, audioSync: this.audioSync, actionDispatcher: this.actionDispatcher,
-      promptChips: SECTION_PROMPTS.hero, onSendMessage: (msg) => this.handleUserMessage(msg), onPromptSelect: (p) => this.handleUserMessage(p)
+      promptChips: SECTION_PROMPTS.hero, onSendMessage: (msg) => this.handleUserMessage(msg)
     }) : null);
     this.renderer = options.renderer || (ZadaRenderer ? new ZadaRenderer({
       THREE: options.THREE, aura: this.aura, motion: this.motion, stateManager: this.stateManager, audioSync: this.audioSync, cursor: this.cursor
@@ -62,20 +60,16 @@ class ZadaCompanion {
     }
     if (!config.skipModelLoad && typeof window !== 'undefined') {
       try {
-        const threeMod = await import('../vendor/three.module.js');
-        const gltfMod = await import('../vendor/GLTFLoader.js');
+        const [threeMod, gltfMod] = await Promise.all([import('../vendor/three.module.js'), import('../vendor/GLTFLoader.js')]);
         if (this.renderer) {
-          this.renderer.THREE = threeMod;
-          this.renderer.options.THREE = threeMod;
+          this.renderer.THREE = this.renderer.options.THREE = threeMod;
           this.renderer.options.GLTFLoader = gltfMod.GLTFLoader;
         }
         if (!this.aura && ZadaAura) {
           this.aura = new ZadaAura(threeMod);
           if (this.renderer) this.renderer.aura = this.aura;
         }
-      } catch (e) {
-        console.warn('[Zada] 3D vendor dependencies failed to load:', e.message);
-      }
+      } catch (e) { console.warn('[Zada] 3D vendor load failed:', e.message); }
     }
     if (this.renderer?.init) this.renderer.init(this.canvasWrapper || containerEl);
     if (this.holoUI?.mount) this.holoUI.mount(containerEl, config);
@@ -108,19 +102,13 @@ class ZadaCompanion {
     window.addEventListener('scroll', this._boundScroll, { passive: true });
     window.addEventListener('mousemove', this._boundMouse, { passive: true });
     window.addEventListener('resize', this._boundResize, { passive: true });
+    this.handleScroll();
   }
 
   async _loadCompanionModel() {
     try {
-      if (!this.renderer?.loadModel) return;
-      if (!this.renderer.options.GLTFLoader && typeof window !== 'undefined') {
-        const gltfMod = await import('../vendor/GLTFLoader.js');
-        this.renderer.options.GLTFLoader = gltfMod.GLTFLoader;
-      }
-      await this.renderer.loadModel('assets/zada.glb');
-    } catch (e) {
-      console.warn('[Zada] 3D model failed to load, falling back to HUD mode:', e.message);
-    }
+      if (this.renderer?.loadModel) await this.renderer.loadModel('assets/zada.glb');
+    } catch (e) { console.warn('[Zada] 3D model load failed:', e.message); }
   }
 
   handleScroll(scrollY) {
@@ -142,6 +130,11 @@ class ZadaCompanion {
   async handleUserMessage(text) {
     if (!text) return;
     this.audioSync?.interrupt?.();
+    const msgs = this.holoUI?.messages || [];
+    const lastMsg = msgs[msgs.length - 1];
+    if (!lastMsg || lastMsg.role !== 'user' || lastMsg.text !== text) {
+      this.holoUI?.addMessage?.('user', text);
+    }
     this.stateManager?.setState?.('THINKING');
     try {
       const devKey = this.holoUI?.getDevKey?.() || '';
@@ -178,7 +171,10 @@ class ZadaCompanion {
     return {
       scrollToSection: async (p) => {
         const sid = p?.sectionId || 'hero';
-        const el = (this.options.getElement ? this.options.getElement(sid) : null) || (typeof document !== 'undefined' ? document.getElementById(sid) : null);
+        let el = this.options.getElement ? this.options.getElement(sid) : null;
+        if (!el && typeof document !== 'undefined') {
+          el = document.getElementById(sid) || (sid === 'hero' ? (document.getElementById('top') || document.querySelector('.hero')) : null);
+        }
         el?.scrollIntoView?.({ behavior: 'smooth' });
         this.activeSection = sid;
         if (this.holoUI && SECTION_PROMPTS[sid]) this.holoUI.setContextPrompts(SECTION_PROMPTS[sid]);
@@ -212,6 +208,10 @@ class ZadaCompanion {
       toggleAudioOutput: async (p) => {
         const enabled = Boolean(p?.enabled);
         this.audioSync?.setMuted?.(!enabled);
+        if (this.holoUI?.muteBtnEl) {
+          this.holoUI.muteBtnEl.textContent = !enabled ? '🔇' : '🔊';
+          this.holoUI.muteBtnEl.classList.toggle('muted', !enabled);
+        }
         return { success: true, enabled };
       },
       openDevSettings: async () => {
@@ -236,7 +236,7 @@ class ZadaCompanion {
   }
 }
 
-// Auto-bootstrap in browser environment when script is loaded
+// Auto-bootstrap in browser environment
 if (typeof window !== 'undefined' && typeof document !== 'undefined') {
   const mountZada = async () => {
     let container = document.getElementById('zada-container');
