@@ -9,8 +9,8 @@ const ZadaRendererConfig = Object.freeze({
   CAMERA_FOV: 45, CAMERA_NEAR: 0.1, CAMERA_FAR: 100, CAMERA_Z: 3.5,
   DOCK_MODES: Object.freeze({ HERO: 'hero', DOCK: 'dock' }),
   DOCK_TRANSFORMS: Object.freeze({
-    hero: Object.freeze({ x: 1.15, y: -0.28, z: 0, scale: 0.17 }),
-    dock: Object.freeze({ x: 0.95, y: -0.68, z: 0, scale: 0.13 })
+    hero: Object.freeze({ x: 1.15, y: -0.28, z: 0, scale: 0.20 }),
+    dock: Object.freeze({ x: 0.95, y: -0.68, z: 0, scale: 0.15 })
   })
 });
 const _raf = (cb) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(cb) : setTimeout(cb, 16)), _caf = (id) => (typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame(id) : clearTimeout(id)), _now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
@@ -213,8 +213,8 @@ class ZadaRenderer {
     const baseTransforms = (this.options && this.options.dockTransforms) || ZadaRendererConfig.DOCK_TRANSFORMS;
     const base = baseTransforms[this.dockMode] || baseTransforms.hero;
     if (isMob) {
-      if (this.dockMode === 'dock') return { x: 0.52, y: -0.72, z: 0, scale: 0.11 };
-      return { x: 0.48, y: -0.58, z: 0, scale: 0.12 };
+      if (this.dockMode === 'dock') return { x: 0.52, y: -0.72, z: 0, scale: 0.13 };
+      return { x: 0.48, y: -0.58, z: 0, scale: 0.14 };
     }
     return base;
   }
