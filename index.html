@@ -313,7 +313,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 </div>
 <div class="auto-actions">
 <a href="#contact" class="btn btn-p">Automate Your Operations</a>
-<button type="button" class="btn btn-s" onclick="if(window.zadaCompanion?.holoUI){window.zadaCompanion.holoUI.open();window.zadaCompanion.handleUserMessage('Tell me about your automation services');}">Ask Zada About Automation</button>
+<button type="button" class="btn btn-s" id="askZadaAutomationBtn">Ask Zada About Automation</button>
 </div>
 </div>
 <div class="auto-visual" data-lightbox="assets/automation-visual.jpg" data-caption="Webzad Intelligent AI Automation &amp; Connected Workflows">
@@ -568,6 +568,12 @@ heroVideo.play().catch(function(){});
 document.getElementById('zadaFooterTrigger')?.addEventListener('click', function() {
   if (window.zadaCompanion?.holoUI) {
     window.zadaCompanion.holoUI.open();
+  }
+});
+document.getElementById('askZadaAutomationBtn')?.addEventListener('click', function() {
+  if (window.zadaCompanion?.holoUI) {
+    window.zadaCompanion.holoUI.open();
+    window.zadaCompanion.handleUserMessage('Tell me about your automation services');
   }
 });
 </script>
