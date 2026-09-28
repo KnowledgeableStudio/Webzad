@@ -162,7 +162,9 @@ class ZadaCompanion {
       if (!this.stateManager?.setState?.('ERROR')) this.stateManager?.interrupt?.('ERROR');
       this.holoUI?.addMessage?.('zada', "I'm having trouble connecting right now. Please try again in a moment.");
       setTimeout(() => {
-        if (!this.stateManager?.setState?.('IDLE')) this.stateManager?.interrupt?.('IDLE');
+        if (this.stateManager?.getState() === 'ERROR') {
+          if (!this.stateManager?.setState?.('IDLE')) this.stateManager?.interrupt?.('IDLE');
+        }
       }, 2500);
     }
   }

@@ -157,7 +157,9 @@ async function handleVerifyKeyRequest(req, res, options = {}) {
 
 /** Serves static file buffer or 404 with single read and SPA fallback. */
 function handleStaticRequest(res, relativePath) {
-  const filePath = path.join(root, relativePath);
+  const resolvedRoot = path.resolve(root);
+  const filePath = path.resolve(path.join(root, relativePath));
+  if (!filePath.startsWith(resolvedRoot)) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden');
   fs.readFile(filePath, (err, data) => {
     if (!err) return send(res, 200, MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream', data);
     if (path.extname(relativePath)) return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
