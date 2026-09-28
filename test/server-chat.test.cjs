@@ -1,4 +1,4 @@
-﻿/**
+/**
  * Integration & unit tests for Gemini API Proxy (/api/chat, /api/verify-key)
  * and Rate Limiting on open-site-server.cjs.
  */
@@ -13,6 +13,8 @@ const {
   handleRequest,
   isRateLimited,
   clearRateLimits,
+  maskSensitiveError,
+  rateLimitStore,
   TOOL_DEFINITIONS,
   SYSTEM_INSTRUCTION,
   MAX_BODY_BYTES,
@@ -21,6 +23,7 @@ const {
 
 test('server-side chat API and rate limiting', async (t) => {
   t.beforeEach(() => {
+    delete process.env.GEMINI_API_KEY;
     if (typeof clearRateLimits === 'function') {
       clearRateLimits();
     }
@@ -143,7 +146,8 @@ test('server-side chat API and rate limiting', async (t) => {
       headers: {},
       setHeader(k, v) { this.headers[k] = v; },
       end(payload) {
-        process.env.GEMINI_API_KEY = savedKey;
+        if (savedKey) process.env.GEMINI_API_KEY = savedKey;
+        else delete process.env.GEMINI_API_KEY;
         assert.equal(this.statusCode, 401);
         const parsed = JSON.parse(payload);
         assert.ok(parsed.error.includes('Gemini API key is not configured'));
@@ -190,7 +194,8 @@ test('server-side chat API and rate limiting', async (t) => {
       headers: {},
       setHeader(k, v) { this.headers[k] = v; },
       end(payload) {
-        process.env.GEMINI_API_KEY = savedKey;
+        if (savedKey) process.env.GEMINI_API_KEY = savedKey;
+        else delete process.env.GEMINI_API_KEY;
         assert.equal(this.statusCode, 200);
         assert.ok(interceptedUrl.includes('key=dev-override-key-123'));
         const parsed = JSON.parse(payload);
@@ -328,14 +333,57 @@ test('server-side chat API and rate limiting', async (t) => {
         if (ev === 'end') cb();
       }
     };
+    let endCalls = 0;
     const mockRes = {
       statusCode: 200,
       headers: {},
       setHeader(k, v) { this.headers[k] = v; },
       end(payload) {
+        endCalls++;
+        assert.equal(endCalls, 1, 'res.end should only be called once');
         assert.notEqual(this.statusCode, 200);
         assert.ok(!payload.includes(sensitiveKey), 'Payload MUST NOT contain sensitive API key');
         assert.ok(!payload.includes('/internal/lib/gemini.ts'), 'Payload MUST NOT contain internal stack or file paths');
+        assert.ok(!payload.includes(':145'), 'Payload MUST NOT contain line numbers from stack or file paths');
+        done();
+      }
+    };
+
+    handleChatRequest(mockReq, mockRes, { fetch: mockFetch });
+  });
+
+  await t.test('safe error masking sanitizes Windows paths, line numbers, and stack frames', (t, done) => {
+    const sensitiveKey = 'AIzaSyB_TEST_WIN_KEY_67890';
+    const winPath = 'C:\\Users\\Developer\\Webzad\\open-site-server.cjs:145:10';
+    const mockFetch = async () => {
+      throw new Error(`Failure with ${sensitiveKey} at ${winPath}\n    at handleChatRequest (C:\\Users\\Developer\\Webzad\\open-site-server.cjs:145:10)`);
+    };
+
+    const mockReq = {
+      method: 'POST',
+      url: '/api/chat',
+      headers: { 'x-gemini-api-key': sensitiveKey },
+      socket: { remoteAddress: '127.0.0.18' },
+      on: (ev, cb) => {
+        if (ev === 'data') cb(Buffer.from(JSON.stringify({ message: 'Hello' })));
+        if (ev === 'end') cb();
+      }
+    };
+
+    let endCalls = 0;
+    const mockRes = {
+      statusCode: 200,
+      headers: {},
+      setHeader(k, v) { this.headers[k] = v; },
+      end(payload) {
+        endCalls++;
+        assert.equal(endCalls, 1, 'res.end should only be called once');
+        assert.equal(this.statusCode, 502);
+        assert.ok(!payload.includes(sensitiveKey), 'Payload MUST NOT contain API key');
+        assert.ok(!payload.includes('C:\\Users'), 'Payload MUST NOT contain Windows directory path');
+        assert.ok(!payload.includes(':145:10'), 'Payload MUST NOT contain line and column numbers');
+        assert.ok(!payload.includes(':145'), 'Payload MUST NOT contain line numbers');
+        assert.ok(!payload.includes('at handleChatRequest'), 'Payload MUST NOT contain stack frame identifiers');
         done();
       }
     };
@@ -436,6 +484,78 @@ test('server-side chat API and rate limiting', async (t) => {
       }
     };
     handleRequest(mockReq, mockRes);
+  });
+
+  await t.test('handleRequest responds with 400 Bad Request on malformed URI', (t, done) => {
+    let endCalls = 0;
+    const mockReq = {
+      method: 'GET',
+      url: '/%E0%A4%A',
+      headers: {},
+      socket: { remoteAddress: '127.0.0.19' }
+    };
+    const mockRes = {
+      statusCode: 200,
+      headers: {},
+      setHeader(k, v) { this.headers[k] = v; },
+      end(payload) {
+        endCalls++;
+        assert.equal(endCalls, 1, 'res.end should only be called once');
+        assert.equal(this.statusCode, 400);
+        assert.ok(payload.includes('Bad Request'));
+        done();
+      }
+    };
+    handleRequest(mockReq, mockRes);
+  });
+
+  await t.test('handleChatRequest catches stream error in readJsonBody without unhandled rejection', async () => {
+    const mockReq = {
+      method: 'POST',
+      url: '/api/chat',
+      headers: {},
+      socket: { remoteAddress: '127.0.0.20' },
+      on: (ev, cb) => {
+        if (ev === 'error') {
+          process.nextTick(() => cb(new Error('Simulated socket stream error: C:\\test\\stream.js:42')));
+        }
+      }
+    };
+    let endCalled = false;
+    let endPayload = '';
+    const mockRes = {
+      statusCode: 200,
+      headers: {},
+      setHeader(k, v) { this.headers[k] = v; },
+      end(payload) {
+        endCalled = true;
+        endPayload = payload;
+      }
+    };
+    await handleChatRequest(mockReq, mockRes);
+    assert.equal(mockRes.statusCode, 502);
+    assert.ok(endCalled, 'Response should end on stream error');
+    const parsed = JSON.parse(endPayload);
+    assert.ok(!parsed.error.includes('C:\\test\\stream.js'));
+    assert.ok(!parsed.error.includes(':42'));
+  });
+
+  await t.test('rateLimitStore deletes expired IP key when sliding window expires', () => {
+    const ip = '192.168.1.201';
+    const baseTime = 1000000;
+    rateLimitStore.set(ip, [baseTime - 70000]);
+    let deletedKey = null;
+    const origDelete = rateLimitStore.delete.bind(rateLimitStore);
+    rateLimitStore.delete = (k) => {
+      deletedKey = k;
+      return origDelete(k);
+    };
+    try {
+      isRateLimited(ip, 60000, 15, baseTime);
+      assert.equal(deletedKey, ip, 'rateLimitStore.delete should be called for expired IP');
+    } finally {
+      rateLimitStore.delete = origDelete;
+    }
   });
 
   await t.test('full HTTP server responds to static files and routes', async () => {

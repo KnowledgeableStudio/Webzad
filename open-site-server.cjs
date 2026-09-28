@@ -1,38 +1,42 @@
-﻿/**
- * open-site-server.cjs - Static web server with secure Gemini AI Chat Proxy & Rate Limiting.
+/**
+ * open-site-server.cjs - Static web server with Gemini AI Chat Proxy & Rate Limiting.
  */
 const http = require('http');
 const fs = require('fs');
 const path = require('path');
 
-const root = __dirname, MAX_BODY_BYTES = 64 * 1024, MAX_TURNS = 20, RATE_LIMIT_WINDOW_MS = 60000, RATE_LIMIT_MAX = 15;
+const root = __dirname;
+const MAX_BODY_BYTES = 64 * 1024;
+const MAX_TURNS = 20;
+const RATE_LIMIT_WINDOW_MS = 60000;
+const RATE_LIMIT_MAX = 15;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 const MIME_TYPES = {
-  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
-  '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.webmanifest': 'application/manifest+json', '.glb': 'model/gltf-binary', '.mp4': 'video/mp4', '.webm': 'video/webm', '.woff': 'font/woff', '.woff2': 'font/woff2'
+  '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
+  '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.glb': 'model/gltf-binary',
+  '.webmanifest': 'application/manifest+json', '.mp4': 'video/mp4', '.webm': 'video/webm',
+  '.woff': 'font/woff', '.woff2': 'font/woff2'
 };
 
-const decl = (name, description, properties = {}, required) => ({ name, description, parameters: { type: 'object', properties, ...(required ? { required } : {}) } });
-const TOOL_DEFINITIONS = [{ functionDeclarations: [
-  decl('scrollToSection', 'Scroll to website section', { sectionId: { type: 'string', enum: ['hero', 'services', 'work', 'process', 'contact'] } }, ['sectionId']),
-  decl('openProjectPreview', 'Open project preview lightbox', { projectId: { type: 'string', enum: ['growth', 'hospitality', 'services'] } }, ['projectId']),
-  decl('prefillContactBrief', 'Prefill contact brief form', { serviceType: { type: 'string', enum: ['signature-website', 'landing-page', 'web-app', 'autonomous-business', 'custom-ai'] }, details: { type: 'string' } }),
-  decl('toggleAudioOutput', 'Toggle audio voice output', { enabled: { type: 'boolean' } }, ['enabled']),
-  decl('openDevSettings', 'Open developer settings modal')
-] }];
+const { TOOL_DEFINITIONS, SYSTEM_INSTRUCTION,
+  formatGeminiContents, extractGeminiResponse } = require('./server-gemini-tools.cjs');
 
-const SYSTEM_INSTRUCTION = 'You are Zada, an intelligent sci-fi 3D AI companion for Webzad (webzad.dev). Voice: Friendly, professional, concise, family-friendly. Services: Signature Websites, Landing Pages, Web Apps, Autonomous Business, Custom AI. Sections: hero, services, work, process, contact. Projects: growth, hospitality, services. Use tools when navigating, previewing projects, prefilling contact details, or toggling audio. Never auto-submit forms.';
 const rateLimitStore = new Map();
 
 /** Clears all stored rate limit timestamps for testing teardown. */
 function clearRateLimits() { rateLimitStore.clear(); }
-
-/** Checks and updates sliding window rate limit for client IP. */
+/** Checks and updates sliding window rate limit for client IP, deleting expired keys. */
 function isRateLimited(ip, windowMs = RATE_LIMIT_WINDOW_MS, maxRequests = RATE_LIMIT_MAX, now = Date.now()) {
   if (!ip) return false;
-  const timestamps = (rateLimitStore.get(ip) || []).filter(t => now - t < windowMs);
-  if (timestamps.length >= maxRequests) return rateLimitStore.set(ip, timestamps), true;
+  const stored = rateLimitStore.get(ip) || [];
+  const timestamps = stored.filter(t => now - t < windowMs);
+  if (timestamps.length === 0 && stored.length > 0) rateLimitStore.delete(ip);
+  if (timestamps.length >= maxRequests) {
+    rateLimitStore.set(ip, timestamps);
+    return true;
+  }
   timestamps.push(now);
   rateLimitStore.set(ip, timestamps);
   return false;
@@ -43,36 +47,44 @@ function getClientIp(req) {
   return req.headers['x-forwarded-for']?.split(',')[0].trim() || req.socket?.remoteAddress || '127.0.0.1';
 }
 
-/** Helper to send JSON responses consistently. */
-function sendJson(res, statusCode, payload) {
-  res.statusCode = statusCode;
-  res.setHeader('Content-Type', 'application/json; charset=utf-8');
-  res.end(JSON.stringify(payload));
+/** Dispatches HTTP response with headers and guards against multiple writes. */
+function send(res, status, type, body) {
+  if (res.headersSent || res.writableEnded) return;
+  res.statusCode = status;
+  res.setHeader('Content-Type', type);
+  res.writableEnded = true;
+  res.end(body);
 }
 
-/** Masks API keys and internal file paths to prevent secret leakage. */
+/** Helper to send JSON responses consistently. */
+function sendJson(res, statusCode, payload) {
+  send(res, statusCode, 'application/json; charset=utf-8', JSON.stringify(payload));
+}
+/** Masks API keys, file paths, line numbers, and stack traces to prevent secret leakage. */
 function maskSensitiveError(errMessage, sensitiveKey = '') {
   let masked = String(errMessage || '');
   if (sensitiveKey && sensitiveKey.length > 5) masked = masked.split(sensitiveKey).join('[REDACTED]');
-  return masked.replace(/AIza[0-9A-Za-z_-]{35}/g, '[REDACTED]').replace(/(?:\/[^\s:]+)+:\d+:\d+/g, '[REDACTED_PATH]');
+  return masked.replace(/AIza[0-9A-Za-z_-]+/g, '[REDACTED]')
+    .replace(/(?:[a-zA-Z]:)?[\\/][^\s:]+:\d+(?::\d+)?/g, '[REDACTED_PATH]')
+    .replace(/[a-zA-Z]:\\[^\s:]+/g, '[REDACTED_PATH]')
+    .replace(/^\s*at\s+.*$/gm, '').trim();
 }
 
 /** Reads streaming request body with strict 64KB size enforcement. */
 function readJsonBody(req, res, maxBytes = MAX_BODY_BYTES) {
   return new Promise((resolve, reject) => {
-    if (Number(req.headers['content-length'] || 0) > maxBytes) {
-      return sendJson(res, 413, { error: 'Payload Too Large: Maximum allowed size is 64KB' }), resolve(null);
-    }
+    const rejectTooLarge = () => {
+      sendJson(res, 413, { error: 'Payload Too Large: Maximum allowed size is 64KB' });
+      resolve(null);
+    };
+    if (Number(req.headers['content-length'] || 0) > maxBytes) return rejectTooLarge();
     let received = 0;
     const chunks = [];
     req.on('data', chunk => {
       received += chunk.length;
-      if (received > maxBytes) {
-        if (!res.writableEnded) sendJson(res, 413, { error: 'Payload Too Large: Maximum allowed size is 64KB' });
-        if (typeof req.destroy === 'function') req.destroy();
-        return resolve(null);
-      }
-      chunks.push(chunk);
+      if (received <= maxBytes) return chunks.push(chunk);
+      rejectTooLarge();
+      if (typeof req.destroy === 'function') req.destroy();
     });
     req.on('end', () => {
       if (res.writableEnded) return resolve(null);
@@ -87,53 +99,37 @@ function readJsonBody(req, res, maxBytes = MAX_BODY_BYTES) {
   });
 }
 
-/** Formats chat history into Gemini contents schema clamped to maxTurns. */
-function formatGeminiContents(rawMessages, maxTurns = MAX_TURNS) {
-  return (Array.isArray(rawMessages) ? rawMessages : [{ role: 'user', content: String(rawMessages || '') }])
-    .slice(-maxTurns).map(m => ({
-      role: (m.role === 'model' || m.sender === 'zada' || m.role === 'assistant') ? 'model' : 'user',
-      parts: [{ text: String(m.parts?.[0]?.text || m.content || m.text || '') }]
-    }));
-}
-
-/** Extracts text and toolCalls from Gemini candidate parts. */
-function extractGeminiResponse(data) {
-  const parts = data.candidates?.[0]?.content?.parts || [];
-  return {
-    text: parts.filter(p => p.text).map(p => p.text).join('\n'),
-    toolCalls: parts.filter(p => p.functionCall).map(p => ({ name: p.functionCall.name, params: p.functionCall.args || {}, args: p.functionCall.args || {} })),
-    candidates: data.candidates
-  };
-}
-
 /** Handles POST /api/chat requests with Gemini proxying and rate limiting. */
 async function handleChatRequest(req, res, options = {}) {
   const ip = getClientIp(req);
   if (isRateLimited(ip)) return sendJson(res, 429, { error: 'Too Many Requests: Rate limit exceeded (max 15/min)' });
-  const body = await readJsonBody(req, res);
-  if (!body) return;
-  const apiKey = process.env.GEMINI_API_KEY || req.headers['x-gemini-api-key'] || body.apiKey;
-  if (!apiKey) return sendJson(res, 401, { error: 'Gemini API key is not configured' });
-
-  const contents = formatGeminiContents(body.messages || body.message || 'Hello');
-  const fetchFn = options.fetch || globalThis.fetch;
-  const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
-  const url = `${GEMINI_API_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`;
+  let apiKey = '';
   try {
-    const geminiRes = await fetchFn(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+    const body = await readJsonBody(req, res);
+    if (!body) return;
+    const headerKey = req.headers['x-gemini-api-key'];
+    const serverKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'undefined') ? process.env.GEMINI_API_KEY : '';
+    apiKey = serverKey || headerKey || body.apiKey;
+    if (!apiKey) return sendJson(res, 401, { error: 'Gemini API key is not configured' });
+    const contents = formatGeminiContents(body.messages || body.message || 'Hello');
+    const fetchFn = options.fetch || globalThis.fetch;
+    const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    const geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }, contents, tools: TOOL_DEFINITIONS }),
       signal: AbortSignal.timeout(15000)
     });
     const data = await geminiRes.json();
     if (!geminiRes.ok) {
-      const errMsg = maskSensitiveError(data?.error?.message || 'Gemini API request failed', apiKey);
+      let errMsg = maskSensitiveError(data?.error?.message || 'Gemini API request failed', apiKey);
+      if (headerKey) errMsg = maskSensitiveError(errMsg, headerKey);
       return sendJson(res, geminiRes.status >= 400 && geminiRes.status < 600 ? geminiRes.status : 502, { error: errMsg });
     }
     return sendJson(res, 200, extractGeminiResponse(data));
   } catch (err) {
-    return sendJson(res, 502, { error: maskSensitiveError(err.message, apiKey) || 'Service temporarily unavailable' });
+    let errMsg = maskSensitiveError(err.message, apiKey);
+    if (req.headers['x-gemini-api-key']) errMsg = maskSensitiveError(errMsg, req.headers['x-gemini-api-key']);
+    return sendJson(res, 502, { error: errMsg || 'Service temporarily unavailable' });
   }
 }
 
@@ -141,56 +137,61 @@ async function handleChatRequest(req, res, options = {}) {
 async function handleVerifyKeyRequest(req, res, options = {}) {
   const ip = getClientIp(req);
   if (isRateLimited(ip)) return sendJson(res, 429, { error: 'Too Many Requests: Rate limit exceeded (max 15/min)' });
-  const body = await readJsonBody(req, res);
-  if (!body) return;
-  const headerKey = req.headers['x-gemini-api-key'];
-  const apiKey = headerKey || body.apiKey || process.env.GEMINI_API_KEY;
-  const mode = (headerKey || body.apiKey) ? 'client' : 'server';
-  if (!apiKey) return sendJson(res, 200, { valid: false, error: 'No API key provided or configured' });
-
-  const fetchFn = options.fetch || globalThis.fetch;
   try {
-    const probeRes = await fetchFn(`${GEMINI_API_URL}?key=${encodeURIComponent(apiKey)}`, { method: 'GET', signal: AbortSignal.timeout(5000) });
+    const body = await readJsonBody(req, res);
+    if (!body) return;
+    const headerKey = req.headers['x-gemini-api-key'];
+    const serverKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'undefined') ? process.env.GEMINI_API_KEY : '';
+    const apiKey = headerKey || body.apiKey || serverKey;
+    if (!apiKey) return sendJson(res, 200, { valid: false, error: 'No API key provided or configured' });
+    const mode = (headerKey || body.apiKey) ? 'client' : 'server';
+    const fetchFn = options.fetch || globalThis.fetch;
+    const probeRes = await fetchFn(`${GEMINI_API_URL}?key=${encodeURIComponent(apiKey)}`, {
+      method: 'GET', signal: AbortSignal.timeout(5000)
+    });
     return sendJson(res, 200, probeRes.ok ? { valid: true, mode } : { valid: false, error: 'Invalid API key or unauthorized' });
   } catch {
     return sendJson(res, 200, { valid: false, error: 'Failed to verify key with Gemini API' });
   }
 }
 
-/** Sends static file with appropriate Content-Type header. */
-function sendFile(res, filePath, statusCode = 200) {
-  fs.readFile(filePath, (error, data) => {
-    if (error) return res.statusCode = 404, res.setHeader('Content-Type', 'text/plain; charset=utf-8'), res.end('Not found');
-    res.statusCode = statusCode;
-    res.setHeader('Content-Type', MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream');
-    res.end(data);
+/** Serves static file buffer or 404 with single read and SPA fallback. */
+function handleStaticRequest(res, relativePath) {
+  const filePath = path.join(root, relativePath);
+  fs.readFile(filePath, (err, data) => {
+    if (!err) return send(res, 200, MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream', data);
+    if (path.extname(relativePath)) return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
+    fs.readFile(path.join(root, 'index.html'), (spaErr, spaData) => {
+      send(res, spaErr ? 404 : 200, spaErr ? 'text/plain; charset=utf-8' : 'text/html; charset=utf-8', spaErr ? 'Not found' : spaData);
+    });
   });
 }
 
 /** Main request handler routing API and static file requests. */
 function handleRequest(req, res) {
-  const cleanUrl = decodeURIComponent((req.url || '/').split('?')[0]);
+  let cleanUrl;
+  try {
+    cleanUrl = decodeURIComponent((req.url || '/').split('?')[0]);
+  } catch {
+    return send(res, 400, 'text/plain; charset=utf-8', 'Bad Request');
+  }
   if (cleanUrl === '/api/chat' || cleanUrl === '/api/verify-key') {
-    if (req.method !== 'POST') return res.statusCode = 405, res.setHeader('Allow', 'POST'), res.end('Method Not Allowed');
+    if (req.method !== 'POST') {
+      res.setHeader('Allow', 'POST');
+      return send(res, 405, 'text/plain; charset=utf-8', 'Method Not Allowed');
+    }
     return cleanUrl === '/api/chat' ? handleChatRequest(req, res) : handleVerifyKeyRequest(req, res);
   }
-  const relativePath = cleanUrl === '/' ? '/index.html' : cleanUrl;
-  const filePath = path.join(root, relativePath);
-  fs.readFile(filePath, error => {
-    if (!error) return sendFile(res, filePath);
-    if (!path.extname(relativePath)) return sendFile(res, path.join(root, 'index.html'));
-    res.statusCode = 404;
-    res.setHeader('Content-Type', 'text/plain; charset=utf-8');
-    res.end('Not found');
-  });
+  handleStaticRequest(res, cleanUrl === '/' ? '/index.html' : cleanUrl);
 }
 
 const server = http.createServer(handleRequest);
 if (require.main === module) {
-  server.listen(process.env.PORT || 4173, '127.0.0.1', () => console.log(`Webzad server running at http://127.0.0.1:4173/`));
+  server.listen(process.env.PORT || 4173, '127.0.0.1', () => console.log('Webzad server running at http://127.0.0.1:4173/'));
 }
 
 module.exports = {
   handleChatRequest, handleVerifyKeyRequest, handleRequest, isRateLimited,
-  clearRateLimits, TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, MAX_BODY_BYTES, MAX_TURNS, server
+  clearRateLimits, maskSensitiveError, rateLimitStore,
+  TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, MAX_BODY_BYTES, MAX_TURNS, server
 };
