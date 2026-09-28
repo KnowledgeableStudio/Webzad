@@ -9,8 +9,8 @@ const ZadaRendererConfig = Object.freeze({
   CAMERA_FOV: 45, CAMERA_NEAR: 0.1, CAMERA_FAR: 100, CAMERA_Z: 3.5,
   DOCK_MODES: Object.freeze({ HERO: 'hero', DOCK: 'dock' }),
   DOCK_TRANSFORMS: Object.freeze({
-    hero: Object.freeze({ x: 0, y: 0, z: 0, scale: 1.0 }),
-    dock: Object.freeze({ x: 0.8, y: -0.6, z: 0, scale: 0.55 })
+    hero: Object.freeze({ x: 0.54, y: 0.05, z: 0, scale: 0.40 }),
+    dock: Object.freeze({ x: 0.74, y: -0.62, z: 0, scale: 0.28 })
   })
 });
 const _raf = (cb) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(cb) : setTimeout(cb, 16)), _caf = (id) => (typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame(id) : clearTimeout(id)), _now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
@@ -26,7 +26,7 @@ class ZadaRenderer {
     this.container = this.canvas = this.renderer = this.scene = this.camera = this.modelGroup = this.model = null;
     this.isInitialized = this.isPlaying = this.isContextLost = this.isDocumentHidden = false;
     this.isIntersecting = true; this.dockMode = ZadaRendererConfig.DOCK_MODES.HERO;
-    this.currentDockOffset = { x: 0, y: 0, z: 0, scale: 1.0 }; this.animationFrameId = this.intersectionObserver = null;
+    this.currentDockOffset = { x: 0.54, y: 0.05, z: 0, scale: 0.40 }; this.animationFrameId = this.intersectionObserver = null;
     this.lastFrameTime = 0; this._boundLoop = (t) => this._renderLoop(t);
     this._boundVisibility = () => this.handleVisibilityChange(typeof document !== 'undefined' && document.hidden);
   }
@@ -55,8 +55,14 @@ class ZadaRenderer {
 
   /** @private */
   _setupLights() {
-    const k = new this.THREE.DirectionalLight(0x00f7ff, 1.2), a = new this.THREE.DirectionalLight(0xff00f0, 0.8);
-    k.position.set(2, 3, 4); a.position.set(-3, -1, -2); this.scene.add(new this.THREE.AmbientLight(0xffffff, 0.8), k, a);
+    const ambient = new this.THREE.AmbientLight(0xffffff, 1.2);
+    const key = new this.THREE.DirectionalLight(0xffffff, 1.6);
+    key.position.set(2, 4, 3);
+    const cyanRim = new this.THREE.DirectionalLight(0x00f7ff, 1.4);
+    cyanRim.position.set(-3, 1, -2);
+    const magentaFill = new this.THREE.DirectionalLight(0xff00f0, 0.9);
+    magentaFill.position.set(1, -2, 2);
+    this.scene.add(ambient, key, cyanRim, magentaFill);
   }
 
   /** @private */
@@ -83,12 +89,38 @@ class ZadaRenderer {
   /** Centers model to origin and scales to unit bounding radius. */
   normalizeModel(object) {
     if (!object || !this.THREE) return 1.0;
-    const box = new this.THREE.Box3().setFromObject(object);
-    const radius = Math.max(1e-4, box.getBoundingSphere(new this.THREE.Sphere())?.radius || 1.0), scale = 1.0 / radius;
+    const box = new this.THREE.Box3();
+    let hasValidMesh = false;
+    object.updateMatrixWorld?.(true);
+    object.traverse?.((o) => {
+      if (o.isMesh && o.geometry) {
+        o.geometry.computeBoundingBox?.();
+        if (o.geometry.boundingBox) {
+          const b = o.geometry.boundingBox.clone();
+          b.applyMatrix4(o.matrixWorld || o.matrix);
+          if (Number.isFinite(b.min.x) && Number.isFinite(b.max.x) &&
+              Math.abs(b.min.x) < 1e10 && Math.abs(b.max.x) < 1e10) {
+            box.union(b);
+            hasValidMesh = true;
+          }
+        }
+      }
+    });
+    if (!hasValidMesh || box.isEmpty()) {
+      box.setFromObject(object);
+    }
+    const sphere = box.getBoundingSphere(new this.THREE.Sphere());
+    let radius = sphere?.radius || 1.0;
+    if (!Number.isFinite(radius) || radius <= 1e-4 || radius > 1e6) {
+      radius = 1.0;
+    }
+    const scale = 1.0 / radius;
     object.scale.setScalar(scale);
     const center = box.getCenter(new this.THREE.Vector3());
-    if (object.position?.copy) object.position.copy(center).multiplyScalar(-scale);
-    else object.position?.set?.(-center.x * scale, -center.y * scale, -center.z * scale);
+    if (Number.isFinite(center.x) && Number.isFinite(center.y) && Number.isFinite(center.z)) {
+      if (object.position?.copy) object.position.copy(center).multiplyScalar(-scale);
+      else object.position?.set?.(-center.x * scale, -center.y * scale, -center.z * scale);
+    }
     return radius;
   }
 
@@ -155,9 +187,21 @@ class ZadaRenderer {
     if (this.isPlaying && this.canRender()) this.animationFrameId = _raf(this._boundLoop);
   }
 
+  /** Calculates target docking transforms with mobile responsiveness. */
+  getTargetDockTransform() {
+    const isMob = this.detectMobile() || (typeof window !== 'undefined' && window.innerWidth < 768);
+    const baseTransforms = (this.options && this.options.dockTransforms) || ZadaRendererConfig.DOCK_TRANSFORMS;
+    const base = baseTransforms[this.dockMode] || baseTransforms.hero;
+    if (isMob) {
+      if (this.dockMode === 'dock') return { x: 0.58, y: -0.70, z: 0, scale: 0.22 };
+      return { x: 0, y: 0.44, z: 0, scale: 0.30 };
+    }
+    return base;
+  }
+
   /** @private */
   _updateKinematics(dt) {
-    const target = ZadaRendererConfig.DOCK_TRANSFORMS[this.dockMode] || ZadaRendererConfig.DOCK_TRANSFORMS.hero, lerp = Math.min(1.0, dt * 5.0);
+    const target = this.getTargetDockTransform(), lerp = Math.min(1.0, dt * 5.0);
     for (const k of ['x', 'y', 'z', 'scale']) this.currentDockOffset[k] += (target[k] - this.currentDockOffset[k]) * lerp;
     const audio = this.audioSync ? this.audioSync.getAmplitude() : 0, state = this.stateManager ? this.stateManager.getState() : 'IDLE';
     if (this.motion) {

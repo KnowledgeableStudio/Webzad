@@ -140,11 +140,21 @@ class ZadaCompanion {
       const devKey = this.holoUI?.getDevKey?.() || '';
       const headers = { 'Content-Type': 'application/json' };
       if (devKey) headers['x-gemini-api-key'] = devKey;
-      const messages = (this.holoUI?.messages || []).map(m => ({ role: m.role, content: m.text }));
+      const allMsgs = (this.holoUI?.messages || []).map(m => ({ role: m.role, content: m.text }));
+      const messages = [...allMsgs];
+      while (messages.length > 0 && messages[0].role === 'zada') messages.shift();
       const fetchFn = this.options.fetchFn || globalThis.fetch;
-      const res = await fetchFn('/api/chat', { method: 'POST', headers, body: JSON.stringify({ messages }) });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const data = await res.json();
+      const res = await fetchFn('/api/chat', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, apiKey: devKey })
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        const errorMsg = data?.error || `HTTP ${res.status}`;
+        console.error('[Zada] Chat API error:', res.status, errorMsg);
+        throw new Error(errorMsg);
+      }
       const reply = data.text || 'Understood.';
       let primaryTool = null;
       if (Array.isArray(data.toolCalls) && data.toolCalls.length > 0) {
@@ -158,14 +168,21 @@ class ZadaCompanion {
       this.audioSync?.speak?.(reply, () => {
         if (!this.stateManager?.setState?.('IDLE')) this.stateManager?.interrupt?.('IDLE');
       });
-    } catch {
+    } catch (err) {
+      console.error('[Zada] handleUserMessage error:', err);
       if (!this.stateManager?.setState?.('ERROR')) this.stateManager?.interrupt?.('ERROR');
-      this.holoUI?.addMessage?.('zada', "I'm having trouble connecting right now. Please try again in a moment.");
+      let notice = "I'm having trouble connecting right now. Please verify your API key in Developer Settings (⚙).";
+      if (err.message && (err.message.toLowerCase().includes('key') || err.message.includes('401'))) {
+        notice = "Gemini API key is missing or invalid. Please open Developer Settings (⚙) to enter your Gemini API key.";
+      } else if (err.message && !err.message.startsWith('HTTP')) {
+        notice = `I'm having trouble connecting right now: ${err.message}. Please check Developer Settings (⚙).`;
+      }
+      this.holoUI?.addMessage?.('zada', notice);
       setTimeout(() => {
         if (this.stateManager?.getState() === 'ERROR') {
           if (!this.stateManager?.setState?.('IDLE')) this.stateManager?.interrupt?.('IDLE');
         }
-      }, 2500);
+      }, 3500);
     }
   }
 

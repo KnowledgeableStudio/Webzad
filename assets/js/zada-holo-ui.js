@@ -87,8 +87,13 @@ class ZadaHoloUI {
   openDevSettings() {
     this.isDevModalOpen = true; this.devModalEl?.classList?.add('open');
     if (this.devKeyInputEl) { this.devKeyInputEl.value = this.getDevKey(); this.devKeyInputEl.focus?.(); }
+    if (this.getDevKey()) this._setDevStatus('API key active from localStorage.', 'info');
   }
-  closeDevSettings() { this.isDevModalOpen = false; this.devModalEl?.classList?.remove('open'); }
+  closeDevSettings() {
+    const v = this.devKeyInputEl?.value?.trim();
+    if (v) this.setDevKey(v);
+    this.isDevModalOpen = false; this.devModalEl?.classList?.remove('open');
+  }
   toggleDevSettings() { this.isDevModalOpen ? this.closeDevSettings() : this.openDevSettings(); }
   getDevKey() { try { return (this.storage && this.storage.getItem(STORAGE_KEY)) || ''; } catch { return ''; } }
   setDevKey(key) { try { if (this.storage) this.storage.setItem(STORAGE_KEY, String(key || '').trim()); } catch {} }
@@ -97,8 +102,9 @@ class ZadaHoloUI {
     if (this.devKeyInputEl) this.devKeyInputEl.value = ''; this._setDevStatus('Developer key cleared from localStorage.', 'info');
   }
   async testDevKey(key) {
-    const k = String(key || this.getDevKey()).trim();
+    const k = String(key || this.devKeyInputEl?.value || this.getDevKey()).trim();
     if (!k) { this._setDevStatus('Please enter an API key first.', 'error'); return false; }
+    this.setDevKey(k);
     this._setDevStatus('Verifying API key...', 'info');
     if (typeof this.onVerifyKey === 'function') {
       try {
@@ -161,6 +167,13 @@ class ZadaHoloUI {
       if (txt) { this.addMessage('user', txt); if (this.inputEl) this.inputEl.value = ''; this.onSendMessage?.(txt); }
     });
     this.devModalEl?.querySelector('.zada-dev-modal-close')?.addEventListener('click', () => this.closeDevSettings());
+    const onKeyInput = () => {
+      const val = this.devKeyInputEl?.value?.trim() || '';
+      if (val) this.setDevKey(val);
+    };
+    this.devKeyInputEl?.addEventListener('input', onKeyInput);
+    this.devKeyInputEl?.addEventListener('change', onKeyInput);
+    this.devKeyInputEl?.addEventListener('paste', () => setTimeout(onKeyInput, 50));
     this.devModalEl?.querySelector('.zada-btn-dev-save')?.addEventListener('click', () => {
       const v = this.devKeyInputEl?.value?.trim() || ''; this.setDevKey(v); this._setDevStatus(v ? 'Key saved to localStorage.' : 'Empty key saved.', 'success');
     });

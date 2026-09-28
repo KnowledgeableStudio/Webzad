@@ -109,8 +109,11 @@ async function handleChatRequest(req, res, options = {}) {
     if (!body) return;
     const headerKey = req.headers['x-gemini-api-key'];
     const serverKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'undefined') ? process.env.GEMINI_API_KEY : '';
-    apiKey = serverKey || headerKey || body.apiKey;
-    if (!apiKey) return sendJson(res, 401, { error: 'Gemini API key is not configured' });
+    apiKey = serverKey || headerKey || body.apiKey || body.key;
+    if (!apiKey) {
+      console.warn('[API/chat] 401: No Gemini API key provided in server env, headers, or body');
+      return sendJson(res, 401, { error: 'Gemini API key is not configured' });
+    }
     const contents = formatGeminiContents(body.messages || body.message || 'Hello');
     const fetchFn = options.fetch || globalThis.fetch;
     const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
@@ -123,12 +126,14 @@ async function handleChatRequest(req, res, options = {}) {
     if (!geminiRes.ok) {
       let errMsg = maskSensitiveError(data?.error?.message || 'Gemini API request failed', apiKey);
       if (headerKey) errMsg = maskSensitiveError(errMsg, headerKey);
+      console.error('[API/chat] Gemini API error:', geminiRes.status, errMsg);
       return sendJson(res, geminiRes.status >= 400 && geminiRes.status < 600 ? geminiRes.status : 502, { error: errMsg });
     }
     return sendJson(res, 200, extractGeminiResponse(data));
   } catch (err) {
     let errMsg = maskSensitiveError(err.message, apiKey);
     if (req.headers['x-gemini-api-key']) errMsg = maskSensitiveError(errMsg, req.headers['x-gemini-api-key']);
+    console.error('[API/chat] Internal catch error:', errMsg);
     return sendJson(res, 502, { error: errMsg || 'Service temporarily unavailable' });
   }
 }
@@ -142,15 +147,17 @@ async function handleVerifyKeyRequest(req, res, options = {}) {
     if (!body) return;
     const headerKey = req.headers['x-gemini-api-key'];
     const serverKey = (process.env.GEMINI_API_KEY && process.env.GEMINI_API_KEY !== 'undefined') ? process.env.GEMINI_API_KEY : '';
-    const apiKey = headerKey || body.apiKey || serverKey;
+    const apiKey = headerKey || body.apiKey || body.key || serverKey;
     if (!apiKey) return sendJson(res, 200, { valid: false, error: 'No API key provided or configured' });
-    const mode = (headerKey || body.apiKey) ? 'client' : 'server';
+    const mode = (headerKey || body.apiKey || body.key) ? 'client' : 'server';
     const fetchFn = options.fetch || globalThis.fetch;
     const probeRes = await fetchFn(`${GEMINI_API_URL}?key=${encodeURIComponent(apiKey)}`, {
       method: 'GET', signal: AbortSignal.timeout(5000)
     });
+    console.log('[API/verify-key] Verification probe result:', probeRes.ok, 'status:', probeRes.status);
     return sendJson(res, 200, probeRes.ok ? { valid: true, mode } : { valid: false, error: 'Invalid API key or unauthorized' });
-  } catch {
+  } catch (err) {
+    console.error('[API/verify-key] Verification failed:', err.message);
     return sendJson(res, 200, { valid: false, error: 'Failed to verify key with Gemini API' });
   }
 }

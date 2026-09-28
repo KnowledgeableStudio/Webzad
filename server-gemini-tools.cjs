@@ -3,9 +3,13 @@
  */
 
 /** Helper to construct a Gemini function declaration schema object. */
-const decl = (name, description, properties = {}, required) => ({
-  name, description, parameters: { type: 'object', properties, ...(required ? { required } : {}) }
-});
+const decl = (name, description, properties = {}, required) => {
+  const schema = { name, description };
+  if (properties && Object.keys(properties).length > 0) {
+    schema.parameters = { type: 'object', properties, ...(required ? { required } : {}) };
+  }
+  return schema;
+};
 
 /** Whitelisted tool definitions for Zada website interaction. */
 const TOOL_DEFINITIONS = [{ functionDeclarations: [
@@ -23,7 +27,7 @@ const SYSTEM_INSTRUCTION = 'You are Zada, an intelligent sci-fi 3D AI companion 
 function formatGeminiContents(rawMessages, maxTurns = 20) {
   const list = Array.isArray(rawMessages) ? rawMessages : [{ role: 'user', content: String(rawMessages || '') }];
   return list.slice(-maxTurns).map(m => ({
-    role: (m.role === 'model' || m.sender === 'zada' || m.role === 'assistant') ? 'model' : 'user',
+    role: (m.role === 'model' || m.role === 'zada' || m.sender === 'zada' || m.role === 'assistant') ? 'model' : 'user',
     parts: [{ text: String(m.parts?.[0]?.text || m.content || m.text || '') }]
   }));
 }
