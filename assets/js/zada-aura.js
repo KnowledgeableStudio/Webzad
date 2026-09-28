@@ -61,12 +61,13 @@ class ZadaAura {
   /**
    * Constructs the inner inverted-normal Fresnel aura shell (1.15x scale).
    * Generates undulating fluid ribbon waves with neon green/cyan/blue gradient.
+   * Proportioned to match the 3D object height (0.58) and width (0.52).
    * @private
    * @param {number} radius - Base model radius.
    */
   _buildCore(radius) {
     const THREE = this.THREE;
-    const coreGeo = new THREE.SphereGeometry(radius * ZadaAuraConfig.CORE_SCALE_FACTOR, 64, 32);
+    const coreGeo = new THREE.SphereGeometry(radius * ZadaAuraConfig.CORE_SCALE_FACTOR, 96, 48);
 
     // Compute neon gradient vertex colors: Electric Lime-Green (bottom) -> Cyan (mid) -> Royal Blue (top)
     if (coreGeo.attributes?.position && THREE.BufferAttribute) {
@@ -80,17 +81,17 @@ class ZadaAura {
         const y = pos.array[i * 3 + 1];
         const t = Math.max(0, Math.min(1, (y / rCore + 1) * 0.5));
         let r = 0, g = 0, b = 0;
-        if (t < 0.42) {
-          // Bottom: Electric Lime Green (#14ff45: 0.08, 1.0, 0.27) to Radiant Cyan (#00f7ff: 0.0, 0.97, 1.0)
-          const k = t / 0.42;
-          r = 0.08 * (1 - k);
+        if (t < 0.40) {
+          // Bottom: Electric Lime Green (#14ff45: 0.05, 1.0, 0.25) to Radiant Cyan (#00f7ff: 0.0, 0.97, 1.0)
+          const k = t / 0.40;
+          r = 0.05 * (1 - k);
           g = 1.0 * (1 - k) + 0.97 * k;
-          b = 0.27 * (1 - k) + 1.0 * k;
+          b = 0.25 * (1 - k) + 1.0 * k;
         } else {
-          // Top: Radiant Cyan (#00f7ff: 0.0, 0.97, 1.0) to Deep Electric Blue (#0048ff: 0.0, 0.28, 1.0)
-          const k = (t - 0.42) / 0.58;
-          r = 0.0 * (1 - k);
-          g = 0.97 * (1 - k) + 0.28 * k;
+          // Top: Radiant Cyan (#00f7ff: 0.0, 0.97, 1.0) to Deep Electric Blue (#0048ff: 0.04, 0.25, 1.0)
+          const k = (t - 0.40) / 0.60;
+          r = 0.0 * (1 - k) + 0.04 * k;
+          g = 0.97 * (1 - k) + 0.25 * k;
           b = 1.0 * (1 - k) + 1.0 * k;
         }
         colors[i * 3] = r;
@@ -113,8 +114,8 @@ class ZadaAura {
       depthWrite: false
     });
     this.coreMesh = new THREE.Mesh(coreGeo, coreMat);
-    // Conform subtle glow field to humanoid body dimensions (width ~0.55, height ~1.0)
-    if (this.coreMesh.scale?.set) this.coreMesh.scale.set(0.55, 1.0, 0.55);
+    // Conform aura strictly to 3D object body: width 0.52, height 0.58, depth 0.54
+    if (this.coreMesh.scale?.set) this.coreMesh.scale.set(0.52, 0.58, 0.54);
     this.group.add(this.coreMesh);
   }
 
@@ -127,7 +128,7 @@ class ZadaAura {
   _buildRing(radius) {
     const THREE = this.THREE;
     const ringGeo = new THREE.TorusGeometry(
-      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.0018 * radius, 16, 64
+      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.0016 * radius, 16, 64
     );
     const ringMat = new THREE.MeshBasicMaterial({
       color: ZadaAuraConfig.COLOR, transparent: true, opacity: ZadaAuraConfig.RING_OPACITY,
@@ -135,8 +136,8 @@ class ZadaAura {
     });
     this.ringMesh = new THREE.Mesh(ringGeo, ringMat);
     this.ringMesh.rotation.x = Math.PI / 2.3;
-    // Scale ring to encircle the torso/waist gracefully
-    if (this.ringMesh.scale?.set) this.ringMesh.scale.set(0.58, 0.58, 0.58);
+    // Scale ring to encircle the torso/waist gracefully matching model dimensions
+    if (this.ringMesh.scale?.set) this.ringMesh.scale.set(0.52, 0.52, 0.52);
     this.group.add(this.ringMesh);
   }
 
@@ -150,17 +151,18 @@ class ZadaAura {
     if (typeof document === 'undefined' || !THREE?.CanvasTexture) return null;
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = 32;
-      canvas.height = 32;
+      canvas.width = 64;
+      canvas.height = 64;
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
-      const grad = ctx.createRadialGradient(16, 16, 0, 16, 16, 16);
+      const grad = ctx.createRadialGradient(32, 32, 0, 32, 32, 32);
       grad.addColorStop(0, 'rgba(255, 255, 255, 1)');
-      grad.addColorStop(0.2, 'rgba(0, 247, 255, 0.9)');
-      grad.addColorStop(0.55, 'rgba(0, 247, 255, 0.25)');
-      grad.addColorStop(1, 'rgba(0, 247, 255, 0)');
+      grad.addColorStop(0.18, 'rgba(180, 255, 255, 0.95)');
+      grad.addColorStop(0.38, 'rgba(0, 247, 255, 0.65)');
+      grad.addColorStop(0.65, 'rgba(0, 160, 255, 0.22)');
+      grad.addColorStop(1, 'rgba(0, 72, 255, 0)');
       ctx.fillStyle = grad;
-      ctx.fillRect(0, 0, 32, 32);
+      ctx.fillRect(0, 0, 64, 64);
       const tex = new THREE.CanvasTexture(canvas);
       tex.needsUpdate = true;
       return tex;
@@ -171,6 +173,7 @@ class ZadaAura {
 
   /**
    * Creates horizontal flowing ribbon strands alpha texture matching the reference video.
+   * High-resolution 128x512 canvas with 28 anti-aliased glowing ribbons.
    * @private
    * @returns {Object|null} Three.js CanvasTexture or null.
    */
@@ -179,26 +182,26 @@ class ZadaAura {
     if (typeof document === 'undefined' || !THREE?.CanvasTexture) return null;
     try {
       const canvas = document.createElement('canvas');
-      canvas.width = 64;
-      canvas.height = 256;
+      canvas.width = 128;
+      canvas.height = 512;
       const ctx = canvas.getContext('2d');
       if (!ctx) return null;
-      ctx.clearRect(0, 0, 64, 256);
+      ctx.clearRect(0, 0, 128, 512);
 
-      // Draw 24 horizontal glowing ribbons with smooth dark gaps
-      const numRibbons = 24;
-      const ribbonSpacing = 256 / numRibbons;
+      // Draw 28 horizontal glowing ribbons with smooth dark gaps and silky bloom
+      const numRibbons = 28;
+      const ribbonSpacing = 512 / numRibbons;
       for (let i = 0; i < numRibbons; i++) {
         const cy = (i + 0.5) * ribbonSpacing;
-        const h = ribbonSpacing * 0.42;
+        const h = ribbonSpacing * 0.44;
         const grad = ctx.createLinearGradient(0, cy - h, 0, cy + h);
         grad.addColorStop(0, 'rgba(255, 255, 255, 0)');
-        grad.addColorStop(0.3, 'rgba(255, 255, 255, 0.4)');
+        grad.addColorStop(0.25, 'rgba(255, 255, 255, 0.35)');
         grad.addColorStop(0.5, 'rgba(255, 255, 255, 1)');
-        grad.addColorStop(0.7, 'rgba(255, 255, 255, 0.4)');
+        grad.addColorStop(0.75, 'rgba(255, 255, 255, 0.35)');
         grad.addColorStop(1, 'rgba(255, 255, 255, 0)');
         ctx.fillStyle = grad;
-        ctx.fillRect(0, cy - h, 64, h * 2);
+        ctx.fillRect(0, cy - h, 128, h * 2);
       }
 
       const tex = new THREE.CanvasTexture(canvas);
@@ -262,8 +265,8 @@ class ZadaAura {
       depthWrite: false
     });
     this.particles = new THREE.Points(partGeo, partMat);
-    // Hug the humanoid silhouette (torso, arms, head, legs)
-    if (this.particles.scale?.set) this.particles.scale.set(0.55, 1.0, 0.55);
+    // Hug the humanoid silhouette matching model dimensions (width 0.52, height 0.58, depth 0.54)
+    if (this.particles.scale?.set) this.particles.scale.set(0.52, 0.58, 0.54);
     this.group.add(this.particles);
   }
 
@@ -318,13 +321,14 @@ class ZadaAura {
         const phi = by / (this.baseRadius * ZadaAuraConfig.CORE_SCALE_FACTOR);
 
         const w1 = Math.sin(2.4 * theta + time * 2.2) * Math.cos(2.8 * phi - time * 1.5);
-        const w2 = Math.sin(4.2 * theta - time * 3.2) * 0.30;
+        const w2 = Math.sin(4.2 * theta - time * 3.2) * 0.28;
         const w3 = Math.cos(3.2 * phi + time * 1.8 + theta) * 0.20;
+        const w4 = Math.sin(1.8 * theta - 2.2 * phi + time * 2.6) * 0.14;
 
-        const waveFactor = 1.0 + (w1 + w2 + w3) * (0.07 + waveAudio);
+        const waveFactor = 1.0 + (w1 + w2 + w3 + w4) * (0.05 + waveAudio);
 
         posArr[i * 3] = bx * waveFactor;
-        posArr[i * 3 + 1] = by * waveFactor + w1 * 0.05 * this.baseRadius;
+        posArr[i * 3 + 1] = by * waveFactor + w1 * 0.04 * this.baseRadius;
         posArr[i * 3 + 2] = bz * waveFactor;
       }
       posAttr.needsUpdate = true;
