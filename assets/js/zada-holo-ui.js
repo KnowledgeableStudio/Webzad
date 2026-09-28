@@ -142,7 +142,7 @@ class ZadaHoloUI {
     const hdr = _createNode(c, 'div', 'zada-hud-header', null, this.hudEl), pill = _createNode(c, 'div', 'zada-status-pill', null, hdr), act = _createNode(c, 'div', 'zada-hud-actions', null, hdr);
     this.statusDotEl = _createNode(c, 'span', 'zada-status-dot', null, pill); this.statusEl = _createNode(c, 'span', null, '● READY', pill);
     this.muteBtnEl = _createNode(c, 'button', 'zada-btn-icon zada-btn-mute', '🔊', act, { 'aria-label': 'Toggle Voice' });
-    _createNode(c, 'button', 'zada-btn-icon zada-btn-dev-trigger', '⚙', act, { 'aria-label': 'Developer Settings' }); _createNode(c, 'button', 'zada-btn-icon zada-btn-close', '✕', act, { 'aria-label': 'Close HUD' });
+    _createNode(c, 'button', 'zada-btn-icon zada-btn-close', '✕', act, { 'aria-label': 'Close HUD' });
     this.dialogueEl = _createNode(c, 'div', 'zada-dialogue', null, this.hudEl); this.chipsContainerEl = _createNode(c, 'div', 'zada-chips', null, this.hudEl);
     const form = _createNode(c, 'form', 'zada-input-form', null, this.hudEl), wrap = _createNode(c, 'div', 'zada-input-wrapper', null, form);
     this.inputEl = _createNode(c, 'input', 'zada-input-field', null, wrap, { type: 'text', placeholder: 'Ask Zada anything...', 'aria-label': 'Chat input' });

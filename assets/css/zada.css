@@ -486,19 +486,20 @@
   pointer-events: none;
 }
 
-/* --- Floating Companion Pod Trigger --- */
-.zada-pod-trigger {
+/* --- Floating Companion Pod / Chat Circle Trigger --- */
+.zada-pod-trigger,
+.zada-chat-circle {
   position: fixed;
   bottom: max(24px, env(safe-area-inset-bottom));
   right: max(24px, env(safe-area-inset-right));
-  width: 58px;
-  height: 58px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   background: var(--zada-bg);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
-  border: 1px solid var(--zada-border);
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(0, 247, 255, 0.2);
+  border: 2px solid var(--zada-cyan);
+  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.6), 0 0 20px rgba(0, 247, 255, 0.35);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -506,15 +507,47 @@
   pointer-events: auto;
   z-index: 115;
   transition: transform 0.25s var(--zada-ease), box-shadow 0.25s var(--zada-ease), border-color 0.25s;
-  color: var(--zada-cyan);
+  padding: 0;
+  overflow: visible;
 }
-.zada-pod-trigger:hover {
-  transform: translateY(-2px) scale(1.05);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 247, 255, 0.4);
-  border-color: var(--zada-cyan);
+.zada-pod-trigger:hover,
+.zada-chat-circle:hover {
+  transform: translateY(-3px) scale(1.08);
+  box-shadow: 0 10px 36px rgba(0, 0, 0, 0.75), 0 0 28px rgba(0, 247, 255, 0.6);
+  border-color: #ffffff;
 }
-.zada-pod-trigger:active {
-  transform: translateY(0) scale(0.98);
+.zada-pod-trigger:active,
+.zada-chat-circle:active {
+  transform: translateY(0) scale(0.96);
+}
+.zada-chat-avatar-wrap {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.zada-chat-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+.zada-chat-online-badge {
+  position: absolute;
+  bottom: 2px;
+  right: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #00f7ff;
+  border: 2px solid #050710;
+  box-shadow: 0 0 8px #00f7ff;
+  animation: zada-status-pulse 2s infinite ease-in-out;
 }
 .zada-pod-icon {
   width: 28px;

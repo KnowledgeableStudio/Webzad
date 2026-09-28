@@ -86,10 +86,16 @@ class ZadaCompanion {
   _mountPodTrigger(containerEl, create) {
     this.podTrigger = create('button');
     if (!this.podTrigger) return;
-    this.podTrigger.className = 'zada-pod-trigger';
+    this.podTrigger.className = 'zada-pod-trigger zada-chat-circle';
     this.podTrigger.setAttribute('type', 'button');
-    this.podTrigger.setAttribute('aria-label', 'Open Zada AI Companion');
-    this.podTrigger.innerHTML = '<svg class="zada-pod-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>';
+    this.podTrigger.setAttribute('aria-label', 'Open Zada AI Assistant');
+    this.podTrigger.setAttribute('title', 'Chat with Zada AI Specialist');
+    this.podTrigger.innerHTML = `
+      <div class="zada-chat-avatar-wrap">
+        <img src="assets/zada-avatar.jpg" alt="Zada AI Specialist" class="zada-chat-avatar-img" />
+        <div class="zada-chat-online-badge" aria-hidden="true"></div>
+      </div>
+    `;
     this.podTrigger.addEventListener('click', () => this.holoUI?.toggle?.());
     if (containerEl.appendChild) containerEl.appendChild(this.podTrigger);
   }

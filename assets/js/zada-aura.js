@@ -65,10 +65,10 @@ class ZadaAura {
    */
   _buildCore(radius) {
     const THREE = this.THREE;
-    const coreGeo = new THREE.SphereGeometry(radius * ZadaAuraConfig.CORE_SCALE_FACTOR, 32, 32);
+    const coreGeo = new THREE.SphereGeometry(radius * ZadaAuraConfig.CORE_SCALE_FACTOR, 16, 16);
     const coreMat = new THREE.MeshBasicMaterial({
       color: ZadaAuraConfig.COLOR, transparent: true, opacity: ZadaAuraConfig.CORE_BASE_OPACITY,
-      wireframe: false, blending: THREE.AdditiveBlending, side: THREE.BackSide, depthWrite: false
+      wireframe: true, blending: THREE.AdditiveBlending, depthWrite: false
     });
     this.coreMesh = new THREE.Mesh(coreGeo, coreMat);
     this.group.add(this.coreMesh);
@@ -82,7 +82,7 @@ class ZadaAura {
   _buildRing(radius) {
     const THREE = this.THREE;
     const ringGeo = new THREE.TorusGeometry(
-      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.0035 * radius, 16, 64
+      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.0025 * radius, 16, 64
     );
     const ringMat = new THREE.MeshBasicMaterial({
       color: ZadaAuraConfig.COLOR, transparent: true, opacity: ZadaAuraConfig.RING_OPACITY,
@@ -116,7 +116,7 @@ class ZadaAura {
 
     partGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const partMat = new THREE.PointsMaterial({
-      color: ZadaAuraConfig.COLOR, size: 0.012 * radius, transparent: true,
+      color: ZadaAuraConfig.COLOR, size: 0.008 * radius, transparent: true,
       opacity: ZadaAuraConfig.PARTICLE_OPACITY, blending: THREE.AdditiveBlending, depthWrite: false
     });
     this.particles = new THREE.Points(partGeo, partMat);
@@ -132,6 +132,11 @@ class ZadaAura {
   update(dt, state = 'IDLE', audioEnvelope = 0) {
     const validDt = (typeof dt === 'number' && Number.isFinite(dt) && dt > 0) ? dt : 0;
     this.elapsedTime += validDt;
+
+    // Counter-rotation on nano-cage for subtle mechanical liveliness
+    if (this.coreMesh) {
+      this.coreMesh.rotation.y += validDt * 0.10;
+    }
 
     // Accelerated spin during cognitive analysis (THINKING)
     const ringSpeed = state === 'THINKING' ? 3.0 : 0.8;

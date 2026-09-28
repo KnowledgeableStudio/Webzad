@@ -108,8 +108,32 @@ class ZadaAudioSync {
 
     try {
       const utterance = new SpeechSynthesisUtterance(text);
-      utterance.rate = 1.05;
-      utterance.pitch = 1.0;
+      utterance.rate = 1.0;
+      utterance.pitch = 1.06;
+
+      // Select high-quality natural female voice if available
+      if (typeof window.speechSynthesis.getVoices === 'function') {
+        const voices = window.speechSynthesis.getVoices() || [];
+        const preferredFemale = voices.find((v) => {
+          const name = (v.name || '').toLowerCase();
+          const lang = (v.lang || '').toLowerCase();
+          const isEn = lang.startsWith('en');
+          return isEn && (
+            name.includes('female') ||
+            name.includes('natural') ||
+            name.includes('samantha') ||
+            name.includes('jenny') ||
+            name.includes('zira') ||
+            name.includes('sonia') ||
+            name.includes('victoria') ||
+            name.includes('karen') ||
+            name.includes('fiona') ||
+            name.includes('serena') ||
+            name.includes('aria')
+          );
+        }) || voices.find((v) => (v.lang || '').startsWith('en') && !v.name?.toLowerCase().includes('david'));
+        if (preferredFemale) utterance.voice = preferredFemale;
+      }
 
       utterance.onstart = () => {
         if (this.playing) this.amplitude = 0.4;
