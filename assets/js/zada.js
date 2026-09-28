@@ -172,17 +172,20 @@ class ZadaCompanion {
       console.error('[Zada] handleUserMessage error:', err);
       if (!this.stateManager?.setState?.('ERROR')) this.stateManager?.interrupt?.('ERROR');
       let notice = "I'm having trouble connecting right now. Please verify your API key in Developer Settings (⚙).";
-      if (err.message && (err.message.toLowerCase().includes('key') || err.message.includes('401'))) {
+      if (err.message && (err.message.toLowerCase().includes('prepayment') || err.message.toLowerCase().includes('credits') || err.message.includes('402'))) {
+        notice = "Google AI Studio notice: Your prepayment credits are depleted. Please visit https://ai.studio/projects to manage your project billing.";
+      } else if (err.message && (err.message.toLowerCase().includes('key') || err.message.includes('401'))) {
         notice = "Gemini API key is missing or invalid. Please open Developer Settings (⚙) to enter your Gemini API key.";
       } else if (err.message && !err.message.startsWith('HTTP')) {
         notice = `I'm having trouble connecting right now: ${err.message}. Please check Developer Settings (⚙).`;
       }
       this.holoUI?.addMessage?.('zada', notice);
-      setTimeout(() => {
+      const errTimer = setTimeout(() => {
         if (this.stateManager?.getState() === 'ERROR') {
           if (!this.stateManager?.setState?.('IDLE')) this.stateManager?.interrupt?.('IDLE');
         }
       }, 3500);
+      if (typeof errTimer?.unref === 'function') errTimer.unref();
     }
   }
 

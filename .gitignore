@@ -8,3 +8,4 @@ codex-*.txt
 codex-*.log
 codex-temp-server*.cjs
 run-webzad-lan-server.cmd
+.env

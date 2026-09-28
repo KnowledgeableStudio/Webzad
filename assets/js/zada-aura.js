@@ -1,4 +1,4 @@
-﻿/**
+/**
  * ZadaAura - Restrained Sci-Fi Energy Field & Holographic Signal Ring.
  * Strictly clamped to <= 1.40x bounding scale under all states.
  */
@@ -82,7 +82,7 @@ class ZadaAura {
   _buildRing(radius) {
     const THREE = this.THREE;
     const ringGeo = new THREE.TorusGeometry(
-      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.008 * radius, 16, 64
+      radius * ZadaAuraConfig.RING_SCALE_FACTOR, 0.0035 * radius, 16, 64
     );
     const ringMat = new THREE.MeshBasicMaterial({
       color: ZadaAuraConfig.COLOR, transparent: true, opacity: ZadaAuraConfig.RING_OPACITY,
@@ -116,7 +116,7 @@ class ZadaAura {
 
     partGeo.setAttribute('position', new THREE.BufferAttribute(positions, 3));
     const partMat = new THREE.PointsMaterial({
-      color: ZadaAuraConfig.COLOR, size: 0.025 * radius, transparent: true,
+      color: ZadaAuraConfig.COLOR, size: 0.012 * radius, transparent: true,
       opacity: ZadaAuraConfig.PARTICLE_OPACITY, blending: THREE.AdditiveBlending, depthWrite: false
     });
     this.particles = new THREE.Points(partGeo, partMat);

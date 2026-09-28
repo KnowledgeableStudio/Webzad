@@ -12,6 +12,27 @@ const RATE_LIMIT_WINDOW_MS = 60000;
 const RATE_LIMIT_MAX = 15;
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
+/** Automatically loads local .env variables into process.env if present. */
+function loadEnv() {
+  const envPath = path.join(__dirname, '.env');
+  if (fs.existsSync(envPath)) {
+    try {
+      const content = fs.readFileSync(envPath, 'utf8');
+      for (const raw of content.split('\n')) {
+        const line = raw.trim();
+        if (!line || line.startsWith('#')) continue;
+        const eq = line.indexOf('=');
+        if (eq > 0) {
+          const k = line.slice(0, eq).trim();
+          const v = line.slice(eq + 1).trim().replace(/^['"](.*)['"]$/, '$1');
+          if (k && !(k in process.env)) process.env[k] = v;
+        }
+      }
+    } catch {}
+  }
+}
+loadEnv();
+
 const MIME_TYPES = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
   '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
@@ -116,7 +137,7 @@ async function handleChatRequest(req, res, options = {}) {
     }
     const contents = formatGeminiContents(body.messages || body.message || 'Hello');
     const fetchFn = options.fetch || globalThis.fetch;
-    const model = process.env.GEMINI_MODEL || 'gemini-1.5-flash';
+    const model = process.env.GEMINI_MODEL || 'gemini-3.8-flash';
     const geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }, contents, tools: TOOL_DEFINITIONS }),
@@ -126,6 +147,9 @@ async function handleChatRequest(req, res, options = {}) {
     if (!geminiRes.ok) {
       let errMsg = maskSensitiveError(data?.error?.message || 'Gemini API request failed', apiKey);
       if (headerKey) errMsg = maskSensitiveError(errMsg, headerKey);
+      if (geminiRes.status === 402 || data?.error?.status === 'RESOURCE_EXHAUSTED' || errMsg.toLowerCase().includes('prepayment')) {
+        errMsg = 'Your Google AI Studio prepayment credits are depleted. Please visit https://ai.studio/projects to manage your project and billing.';
+      }
       console.error('[API/chat] Gemini API error:', geminiRes.status, errMsg);
       return sendJson(res, geminiRes.status >= 400 && geminiRes.status < 600 ? geminiRes.status : 502, { error: errMsg });
     }

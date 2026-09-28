@@ -26,7 +26,7 @@ class ZadaRenderer {
     this.container = this.canvas = this.renderer = this.scene = this.camera = this.modelGroup = this.model = null;
     this.isInitialized = this.isPlaying = this.isContextLost = this.isDocumentHidden = false;
     this.isIntersecting = true; this.dockMode = ZadaRendererConfig.DOCK_MODES.HERO;
-    this.currentDockOffset = { x: 0.54, y: 0.05, z: 0, scale: 0.40 }; this.animationFrameId = this.intersectionObserver = null;
+    this.currentDockOffset = { x: 0, y: 0, z: 0, scale: 1.0 }; this.animationFrameId = this.intersectionObserver = null;
     this.lastFrameTime = 0; this._boundLoop = (t) => this._renderLoop(t);
     this._boundVisibility = () => this.handleVisibilityChange(typeof document !== 'undefined' && document.hidden);
   }
@@ -44,7 +44,7 @@ class ZadaRenderer {
     const w = containerEl.clientWidth || 300, h = containerEl.clientHeight || 300;
     this.camera = new this.THREE.PerspectiveCamera(ZadaRendererConfig.CAMERA_FOV, w / (h || 1), ZadaRendererConfig.CAMERA_NEAR, ZadaRendererConfig.CAMERA_FAR);
     this.camera.position.z = ZadaRendererConfig.CAMERA_Z;
-    this.renderer = new this.THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: false });
+    this.renderer = new this.THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: true });
     this.renderer.setClearColor(ZadaRendererConfig.CLEAR_COLOR, ZadaRendererConfig.CLEAR_ALPHA);
     this.renderer.setPixelRatio(this.calculateDPR(this.detectMobile())); this.renderer.setSize(w, h);
     this.canvas = this.renderer.domElement;
@@ -131,11 +131,31 @@ class ZadaRenderer {
       if (!Loader) return reject(new Error('GLTFLoader not available'));
       new Loader().load(url, (gltf) => {
         if (this.model && this.modelGroup) {
-          this.modelGroup.remove(this.model); this.model.traverse?.((o) => { o.geometry?.dispose?.(); (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m?.dispose?.()); });
+          this.modelGroup.remove(this.model);
+          this.model.traverse?.((o) => {
+            o.geometry?.dispose?.();
+            (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m?.dispose?.());
+          });
         }
-        this.model = gltf.scene || gltf; this.normalizeModel(this.model);
+        const rawScene = gltf.scene || gltf;
+        const cleanGroup = new this.THREE.Group();
+        cleanGroup.name = 'ZadaModelRoot';
+        let foundMeshes = 0;
+        rawScene.traverse?.((o) => {
+          if (o.isMesh && o.geometry && o.material) {
+            foundMeshes++;
+            const cleanMesh = new this.THREE.Mesh(o.geometry, o.material);
+            cleanMesh.name = o.name || 'ZadaMesh';
+            cleanMesh.castShadow = true;
+            cleanMesh.receiveShadow = true;
+            cleanGroup.add(cleanMesh);
+          }
+        });
+        this.model = foundMeshes > 0 ? cleanGroup : rawScene;
+        this.normalizeModel(this.model);
         if (this.modelGroup) this.modelGroup.add(this.model);
-        this._rebuildAura(); resolve({ model: this.model, gltf });
+        this._rebuildAura();
+        resolve({ model: this.model, gltf });
       }, onProgress, reject);
     });
   }
