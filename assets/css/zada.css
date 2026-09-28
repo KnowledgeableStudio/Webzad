@@ -467,10 +467,93 @@
   }
 }
 
+/* --- Container & Canvas Elements --- */
+.zada-container {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 110;
+  overflow: hidden;
+}
+
+.zada-canvas-wrapper {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+/* --- Floating Companion Pod Trigger --- */
+.zada-pod-trigger {
+  position: fixed;
+  bottom: max(24px, env(safe-area-inset-bottom));
+  right: max(24px, env(safe-area-inset-right));
+  width: 58px;
+  height: 58px;
+  border-radius: 50%;
+  background: var(--zada-bg);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--zada-border);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5), 0 0 16px rgba(0, 247, 255, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 115;
+  transition: transform 0.25s var(--zada-ease), box-shadow 0.25s var(--zada-ease), border-color 0.25s;
+  color: var(--zada-cyan);
+}
+.zada-pod-trigger:hover {
+  transform: translateY(-2px) scale(1.05);
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6), 0 0 24px rgba(0, 247, 255, 0.4);
+  border-color: var(--zada-cyan);
+}
+.zada-pod-trigger:active {
+  transform: translateY(0) scale(0.98);
+}
+.zada-pod-icon {
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+/* --- Footer Companion Trigger Button --- */
+.zada-footer-trigger {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--zada-border-subtle);
+  background: rgba(255, 255, 255, 0.03);
+  color: var(--zada-muted);
+  font-family: 'Space Grotesk', monospace, sans-serif;
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.25s var(--zada-ease);
+}
+.zada-footer-trigger:hover {
+  border-color: var(--zada-border);
+  background: rgba(0, 247, 255, 0.08);
+  color: var(--zada-cyan);
+  box-shadow: 0 0 16px rgba(0, 247, 255, 0.15);
+}
+
 /* --- Prefers Reduced Motion --- */
 @media (prefers-reduced-motion: reduce) {
-  .zada-hud, .zada-dev-modal, .zada-dev-card, .zada-mic-btn, .zada-send-btn, .zada-status-dot {
+  .zada-hud, .zada-dev-modal, .zada-dev-card, .zada-mic-btn, .zada-send-btn, .zada-status-dot, .zada-pod-trigger, .zada-footer-trigger {
     transition: none !important;
     animation: none !important;
   }
-}\n
+}
+\n
