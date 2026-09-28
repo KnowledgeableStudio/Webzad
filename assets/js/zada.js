@@ -23,6 +23,7 @@ const ZadaHoloUI = _HoloMod.ZadaHoloUI || globalThis.ZadaHoloUI;
 const SECTION_PROMPTS = Object.freeze({
   hero: Object.freeze(['What is Webzad?', 'Show Selected Work', 'Start Project Brief']),
   services: Object.freeze(['Explain Signature Websites', 'Custom Web Apps', 'Get Tailored Scope']),
+  automation: Object.freeze(['AI Workflow Agents', 'Connect Business Tools', 'Automate Onboarding']),
   work: Object.freeze(['Authority Websites', 'Hospitality Experience', 'Growth Campaigns']),
   process: Object.freeze(['How do we start?', 'Design & Build Phase', 'Turnaround Times']),
   contact: Object.freeze(['Prefill Signature Website', 'Direct Email', 'Schedule Discovery'])
@@ -229,7 +230,14 @@ class ZadaCompanion {
         if (form) {
           const select = form.querySelector ? form.querySelector('select[name="service"]') : null;
           if (select) {
-            const map = { 'signature-website': 'Signature Website', 'landing-page': 'Landing Page', 'web-app': 'Custom Web App', 'autonomous-business': 'Custom Web App', 'custom-ai': 'Custom Web App' };
+            const map = {
+              'signature-website': 'Signature Website',
+              'landing-page': 'Landing Page',
+              'web-app': 'Custom Web App',
+              'autonomous-business': 'AI & Workflow Automation',
+              'custom-ai': 'AI & Workflow Automation',
+              'ai-automation': 'AI & Workflow Automation'
+            };
             select.value = map[p.serviceType] || 'Signature Website';
           }
           const textarea = form.querySelector ? form.querySelector('textarea[name="goals"]') : null;

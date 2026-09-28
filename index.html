@@ -121,6 +121,24 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 .lightbox-close:hover{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.2)}
 .lightbox-close svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .lightbox-caption{position:absolute;bottom:32px;left:50%;transform:translateX(-50%);font-size:.85rem;color:var(--muted);text-align:center;max-width:80vw}
+.auto-wrap{display:grid;grid-template-columns:1.1fr 0.9fr;gap:clamp(28px,3.5vw,48px);align-items:center;padding:clamp(32px,4vw,52px);border-radius:var(--r);background:var(--surface);border:1px solid var(--border);position:relative;overflow:hidden}
+.auto-wrap::before{content:'';position:absolute;top:0;left:10%;right:10%;height:1px;background:linear-gradient(90deg,transparent,rgba(0,247,255,.4),rgba(255,0,240,.3),transparent)}
+.auto-content h2{font-size:clamp(1.7rem,3.5vw,2.5rem);margin:14px 0 16px;line-height:1.15}
+.auto-content p{color:var(--muted);font-size:1rem;line-height:1.65;margin-bottom:24px}
+.auto-features{display:grid;grid-template-columns:1fr;gap:14px;margin-bottom:28px}
+.auto-feat{display:flex;align-items:flex-start;gap:14px;padding:14px 18px;border-radius:var(--rs);background:rgba(255,255,255,.02);border:1px solid rgba(255,255,255,.04);transition:background .3s,border-color .3s}
+.auto-feat:hover{background:var(--surface-h);border-color:var(--border-h)}
+.auto-feat-icon{width:36px;height:36px;flex-shrink:0;border-radius:10px;background:rgba(0,247,255,.1);color:var(--cyan);display:flex;align-items:center;justify-content:center}
+.auto-feat-icon svg{width:18px;height:18px}
+.auto-feat h4{font-size:.96rem;font-weight:700;margin-bottom:4px;color:var(--text)}
+.auto-feat p{font-size:.84rem;color:var(--muted);line-height:1.45;margin-bottom:0}
+.auto-actions{display:flex;gap:14px;flex-wrap:wrap}
+.auto-visual{position:relative;border-radius:var(--r);overflow:hidden;border:1px solid var(--border);box-shadow:var(--sg);aspect-ratio:16/9;background:var(--bg-alt);cursor:zoom-in}
+.auto-visual img{width:100%;height:100%;object-fit:cover;transition:transform .5s var(--ease)}
+.auto-visual:hover img{transform:scale(1.03)}
+.auto-visual-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,rgba(0,247,255,.08) 0%,transparent 70%);pointer-events:none}
+@media(max-width:1024px){.auto-wrap{grid-template-columns:1fr;gap:32px}}
+@media(max-width:768px){.auto-wrap{padding:24px 20px}.auto-actions{flex-direction:column;width:100%}.auto-actions .btn{width:100%}}
 </style>
 <style>
 .pr-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:var(--gap);position:relative}
@@ -180,6 +198,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 <a href="#top" class="nav-logo" translate="no" aria-label="Webzad home"><img src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" width="192" height="192" /></a>
 <div class="nav-links">
 <a href="#services" class="nav-link">Services</a>
+<a href="#automation" class="nav-link">Automation</a>
 <a href="#work" class="nav-link">Work</a>
 <a href="#process" class="nav-link">Process</a>
 <a href="#contact" class="nav-link">Contact</a>
@@ -192,6 +211,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 </nav>
 <div class="mm" id="mobileMenu">
 <a href="#services">Services</a>
+<a href="#automation">Automation</a>
 <a href="#work">Work</a>
 <a href="#process">Process</a>
 <a href="#contact">Contact</a>
@@ -256,6 +276,50 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></div>
 <h3>Website Redesigns</h3>
 <p>Transform an outdated site into something that commands respect and reflects your quality.</p>
+</div>
+</div>
+</div>
+</section>
+
+<section class="sec" id="automation">
+<div class="ct">
+<div class="auto-wrap" data-r>
+<div class="auto-content">
+<span class="ey">Intelligent Automation</span>
+<h2>Custom AI workflows that eliminate repetitive work.</h2>
+<p>I design and build AI-powered automations, intelligent pipelines, and system integrations that reduce administrative toil, accelerate customer inquiries, and let your business operate at maximum velocity.</p>
+<div class="auto-features">
+<div class="auto-feat">
+<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+<div>
+<h4>Autonomous AI Agents</h4>
+<p>Domain-trained AI specialists and knowledge engines that handle customer inquiries and lead triage around the clock.</p>
+</div>
+</div>
+<div class="auto-feat">
+<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+<div>
+<h4>Connected System Integrations</h4>
+<p>Direct API synchronization between your website, CRMs, email, payment platforms, and back-office databases.</p>
+</div>
+</div>
+<div class="auto-feat">
+<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+<div>
+<h4>Intelligent Business Scaling</h4>
+<p>Replace hours of manual spreadsheets and repetitive data handling with zero-error, reliable automation pipelines.</p>
+</div>
+</div>
+</div>
+<div class="auto-actions">
+<a href="#contact" class="btn btn-p">Automate Your Operations</a>
+<button type="button" class="btn btn-s" onclick="if(window.zadaCompanion?.holoUI){window.zadaCompanion.holoUI.open();window.zadaCompanion.handleUserMessage('Tell me about your automation services');}">Ask Zada About Automation</button>
+</div>
+</div>
+<div class="auto-visual" data-lightbox="assets/automation-visual.jpg" data-caption="Webzad Intelligent AI Automation &amp; Connected Workflows">
+<img src="assets/automation-visual.jpg" alt="Intelligent AI Automation and Connected Workflows" loading="lazy" decoding="async" />
+<div class="auto-visual-glow" aria-hidden="true"></div>
+<div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div>
 </div>
 </div>
 </div>
@@ -348,7 +412,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 </div>
 <div class="fd-grid">
 <label class="fd"><span>Company</span><input type="text" name="company" autocomplete="organization" placeholder="Company or brand" /></label>
-<label class="fd"><span>Service</span><select name="service"><option value="">Select a service</option><option>Signature Website</option><option>Website Redesign</option><option>Landing Page</option><option>E-Commerce</option><option>Custom Web App</option><option>Branding &amp; Graphics</option></select></label>
+<label class="fd"><span>Service</span><select name="service"><option value="">Select a service</option><option>Signature Website</option><option>AI &amp; Workflow Automation</option><option>Website Redesign</option><option>Landing Page</option><option>E-Commerce</option><option>Custom Web App</option><option>Branding &amp; Graphics</option></select></label>
 </div>
 <label class="fd"><span>Timeline</span><input type="text" name="timeline" placeholder="Example: within 4-6 weeks" /></label>
 <label class="fd"><span>Project Goals</span><textarea name="goals" rows="5" required placeholder="Tell me what you need, who the site is for, and what a strong outcome looks like…"></textarea></label>
@@ -391,6 +455,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 </div>
 <div class="ft-links">
 <a href="#services">Services</a>
+<a href="#automation">Automation</a>
 <a href="#work">Work</a>
 <a href="#process">Process</a>
 <a href="#contact">Contact</a>
