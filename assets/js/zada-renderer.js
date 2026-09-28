@@ -13,7 +13,7 @@ const ZadaRendererConfig = Object.freeze({
     dock: Object.freeze({ x: 0.8, y: -0.6, z: 0, scale: 0.55 })
   })
 });
-const _raf = (cb) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(cb) : setTimeout(cb, 16)), _caf = (id) => (typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame(id) : clearTimeout(id));
+const _raf = (cb) => (typeof requestAnimationFrame === 'function' ? requestAnimationFrame(cb) : setTimeout(cb, 16)), _caf = (id) => (typeof cancelAnimationFrame === 'function' ? cancelAnimationFrame(id) : clearTimeout(id)), _now = () => (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
 
 /** Adaptive WebGL renderer managing scene lifecycle, quality governor, and docking. */
 class ZadaRenderer {
@@ -26,9 +26,9 @@ class ZadaRenderer {
     this.container = this.canvas = this.renderer = this.scene = this.camera = this.modelGroup = this.model = null;
     this.isInitialized = this.isPlaying = this.isContextLost = this.isDocumentHidden = false;
     this.isIntersecting = true; this.dockMode = ZadaRendererConfig.DOCK_MODES.HERO;
-    this.currentDockOffset = { x: 0, y: 0, z: 0, scale: 1.0 };
-    this.animationFrameId = this.intersectionObserver = null;
+    this.currentDockOffset = { x: 0, y: 0, z: 0, scale: 1.0 }; this.animationFrameId = this.intersectionObserver = null;
     this.lastFrameTime = 0; this._boundLoop = (t) => this._renderLoop(t);
+    this._boundVisibility = () => this.handleVisibilityChange(typeof document !== 'undefined' && document.hidden);
   }
 
   /** Initializes Three.js scene, transparent canvas, lighting, and event hooks. */
@@ -37,10 +37,10 @@ class ZadaRenderer {
     this.options = { ...this.options, ...options };
     this.THREE = this.options.THREE || this.THREE || (typeof window !== 'undefined' ? window.THREE : null);
     if (!this.THREE) return false;
-    this.container = containerEl;
-    this.scene = new this.THREE.Scene();
-    this.modelGroup = new this.THREE.Group(); this.modelGroup.name = 'ZadaModelGroup';
-    this.scene.add(this.modelGroup);
+    this.aura = this.options.aura || this.aura; this.motion = this.options.motion || this.motion;
+    this.stateManager = this.options.stateManager || this.stateManager; this.audioSync = this.options.audioSync || this.audioSync;
+    this.container = containerEl; this.scene = new this.THREE.Scene();
+    this.modelGroup = new this.THREE.Group(); this.modelGroup.name = 'ZadaModelGroup'; this.scene.add(this.modelGroup);
     const w = containerEl.clientWidth || 300, h = containerEl.clientHeight || 300;
     this.camera = new this.THREE.PerspectiveCamera(ZadaRendererConfig.CAMERA_FOV, w / (h || 1), ZadaRendererConfig.CAMERA_NEAR, ZadaRendererConfig.CAMERA_FAR);
     this.camera.position.z = ZadaRendererConfig.CAMERA_Z;
@@ -50,20 +50,18 @@ class ZadaRenderer {
     this.canvas = this.renderer.domElement;
     if (this.canvas?.style) Object.assign(this.canvas.style, { display: 'block', width: '100%', height: '100%', background: 'transparent' });
     if (typeof containerEl.appendChild === 'function') containerEl.appendChild(this.canvas);
-    this._setupLights(); this._setupEvents();
-    return (this.isInitialized = true);
+    this._setupLights(); this._setupEvents(); return (this.isInitialized = true);
   }
 
   /** @private */
   _setupLights() {
     const k = new this.THREE.DirectionalLight(0x00f7ff, 1.2), a = new this.THREE.DirectionalLight(0xff00f0, 0.8);
-    k.position.set(2, 3, 4); a.position.set(-3, -1, -2);
-    this.scene.add(new this.THREE.AmbientLight(0xffffff, 0.8), k, a);
+    k.position.set(2, 3, 4); a.position.set(-3, -1, -2); this.scene.add(new this.THREE.AmbientLight(0xffffff, 0.8), k, a);
   }
 
   /** @private */
   _setupEvents() {
-    if (typeof document !== 'undefined') document.addEventListener('visibilitychange', () => this.handleVisibilityChange(document.hidden));
+    if (typeof document !== 'undefined') document.addEventListener('visibilitychange', this._boundVisibility);
     this.canvas?.addEventListener?.('webglcontextlost', (e) => this.handleContextLost(e));
     this.canvas?.addEventListener?.('webglcontextrestored', () => this.handleContextRestored());
     if (typeof IntersectionObserver !== 'undefined' && this.container) {
@@ -86,9 +84,11 @@ class ZadaRenderer {
   normalizeModel(object) {
     if (!object || !this.THREE) return 1.0;
     const box = new this.THREE.Box3().setFromObject(object);
-    object.position.sub(box.getCenter(new this.THREE.Vector3()));
-    const radius = Math.max(1e-4, box.getBoundingSphere(new this.THREE.Sphere())?.radius || 1.0);
-    object.scale.setScalar(1.0 / radius);
+    const radius = Math.max(1e-4, box.getBoundingSphere(new this.THREE.Sphere())?.radius || 1.0), scale = 1.0 / radius;
+    object.scale.setScalar(scale);
+    const center = box.getCenter(new this.THREE.Vector3());
+    if (object.position?.copy) object.position.copy(center).multiplyScalar(-scale);
+    else object.position?.set?.(-center.x * scale, -center.y * scale, -center.z * scale);
     return radius;
   }
 
@@ -98,6 +98,9 @@ class ZadaRenderer {
       const Loader = this.options.GLTFLoader || (typeof window !== 'undefined' ? window.GLTFLoader : null);
       if (!Loader) return reject(new Error('GLTFLoader not available'));
       new Loader().load(url, (gltf) => {
+        if (this.model && this.modelGroup) {
+          this.modelGroup.remove(this.model); this.model.traverse?.((o) => { o.geometry?.dispose?.(); (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m?.dispose?.()); });
+        }
         this.model = gltf.scene || gltf; this.normalizeModel(this.model);
         if (this.modelGroup) this.modelGroup.add(this.model);
         this._rebuildAura(); resolve({ model: this.model, gltf });
@@ -133,12 +136,11 @@ class ZadaRenderer {
   _syncLoop() {
     if (this.isPlaying && this.canRender()) {
       if (this.animationFrameId === null) {
-        this.lastFrameTime = (typeof performance !== 'undefined' ? performance.now() : Date.now()) / 1000;
+        this.lastFrameTime = _now();
         this.animationFrameId = _raf(this._boundLoop);
       }
     } else if (this.animationFrameId !== null) {
-      _caf(this.animationFrameId);
-      this.animationFrameId = null;
+      _caf(this.animationFrameId); this.animationFrameId = null;
     }
   }
 
@@ -146,18 +148,16 @@ class ZadaRenderer {
   _renderLoop(timestamp) {
     this.animationFrameId = null;
     if (!this.isPlaying || !this.canRender()) return;
-    const now = (typeof timestamp === 'number' ? timestamp : Date.now()) / 1000;
+    const now = typeof timestamp === 'number' && timestamp > 0 ? timestamp / 1000 : _now();
     const dt = this.lastFrameTime > 0 ? Math.min(0.1, Math.max(0, now - this.lastFrameTime)) : 0.016;
-    this.lastFrameTime = now;
-    this._updateKinematics(dt);
+    this.lastFrameTime = now; this._updateKinematics(dt);
     if (this.renderer && this.scene && this.camera) this.renderer.render(this.scene, this.camera);
     if (this.isPlaying && this.canRender()) this.animationFrameId = _raf(this._boundLoop);
   }
 
   /** @private */
   _updateKinematics(dt) {
-    const target = ZadaRendererConfig.DOCK_TRANSFORMS[this.dockMode] || ZadaRendererConfig.DOCK_TRANSFORMS.hero;
-    const lerp = Math.min(1.0, dt * 5.0);
+    const target = ZadaRendererConfig.DOCK_TRANSFORMS[this.dockMode] || ZadaRendererConfig.DOCK_TRANSFORMS.hero, lerp = Math.min(1.0, dt * 5.0);
     for (const k of ['x', 'y', 'z', 'scale']) this.currentDockOffset[k] += (target[k] - this.currentDockOffset[k]) * lerp;
     const audio = this.audioSync ? this.audioSync.getAmplitude() : 0, state = this.stateManager ? this.stateManager.getState() : 'IDLE';
     if (this.motion) {
@@ -175,20 +175,20 @@ class ZadaRenderer {
   resize(w, h) {
     if (!this.isInitialized || !this.renderer || !this.camera) return;
     const width = w || (this.container ? this.container.clientWidth : 300), height = h || (this.container ? this.container.clientHeight : 300);
-    this.camera.aspect = width / (height || 1);
-    this.camera.updateProjectionMatrix?.();
-    this.renderer.setSize(width, height);
-    this.renderer.setPixelRatio(this.calculateDPR(this.detectMobile()));
+    this.camera.aspect = width / (height || 1); this.camera.updateProjectionMatrix?.();
+    this.renderer.setSize(width, height); this.renderer.setPixelRatio(this.calculateDPR(this.detectMobile()));
   }
 
   /** Cleans up geometries, materials, listeners, and DOM bindings. */
   dispose() {
     this.pause(); this._clearAuraChildren(); this.aura?.dispose?.();
+    if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', this._boundVisibility);
     this.scene?.traverse((o) => { o.geometry?.dispose?.(); (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m?.dispose?.()); });
     this.renderer?.dispose?.();
-    try { if (this.canvas && this.container?.removeChild) this.container.removeChild(this.canvas); } catch {}
-    this.intersectionObserver?.disconnect();
-    this.intersectionObserver = null; this.isInitialized = false;
+    if (this.canvas?.parentNode) this.canvas.parentNode.removeChild(this.canvas);
+    this.intersectionObserver?.disconnect(); this.intersectionObserver = null;
+    this.scene = this.renderer = this.model = this.modelGroup = this.camera = this.canvas = this.container = null;
+    this.isInitialized = false;
   }
 }
 

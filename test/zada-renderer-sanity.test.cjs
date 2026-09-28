@@ -29,6 +29,18 @@ function createMockThree() {
     clone() {
       return new MockVector3(this.x, this.y, this.z);
     }
+    copy(v) {
+      this.x = v.x;
+      this.y = v.y;
+      this.z = v.z;
+      return this;
+    }
+    multiplyScalar(s) {
+      this.x *= s;
+      this.y *= s;
+      this.z *= s;
+      return this;
+    }
   }
 
   class MockBox3 {
@@ -183,16 +195,23 @@ function createMockThree() {
  */
 function createMockContainer() {
   const children = [];
-  return {
+  const container = {
     clientWidth: 800,
     clientHeight: 600,
     children,
-    appendChild: (child) => children.push(child),
+    appendChild: (child) => {
+      if (child) child.parentNode = container;
+      children.push(child);
+    },
     removeChild: (child) => {
       const idx = children.indexOf(child);
-      if (idx !== -1) children.splice(idx, 1);
+      if (idx !== -1) {
+        children.splice(idx, 1);
+        if (child) child.parentNode = null;
+      }
     }
   };
+  return container;
 }
 
 test('ZadaRenderer exports and configuration', async (t) => {
@@ -259,6 +278,29 @@ test('ZadaRenderer WebGL initialization and transparent canvas', async (t) => {
     assert.equal(renderer.camera.matrixUpdated, true);
     assert.equal(renderer.renderer.width, 1024);
     assert.equal(renderer.renderer.height, 768);
+  });
+
+  await t.test('init accepts subsystem options and assigns them to instance', () => {
+    const mockThree = createMockThree();
+    const container = createMockContainer();
+    const mockAura = { id: 'aura' };
+    const mockMotion = { id: 'motion' };
+    const mockState = { id: 'state' };
+    const mockAudio = { id: 'audio' };
+
+    const renderer = new ZadaRenderer({ THREE: mockThree });
+    renderer.init(container, {
+      aura: mockAura,
+      motion: mockMotion,
+      stateManager: mockState,
+      audioSync: mockAudio
+    });
+
+    assert.equal(renderer.aura, mockAura);
+    assert.equal(renderer.motion, mockMotion);
+    assert.equal(renderer.stateManager, mockState);
+    assert.equal(renderer.audioSync, mockAudio);
+    renderer.dispose();
   });
 });
 
@@ -372,12 +414,99 @@ test('ZadaRenderer render loop, sleep, and context recovery', async (t) => {
     const radius = renderer.normalizeModel(mockModel);
     assert.equal(radius, 5.0);
     assert.equal(mockModel.scale.x, 1.0 / 5.0);
+    assert.equal(mockModel.position.x, -0.2);
+    assert.equal(mockModel.position.y, -0.2);
+    assert.equal(mockModel.position.z, -0.2);
+    renderer.dispose();
   });
 
-  await t.test('clean disposal tears down all resources and DOM bindings', () => {
+  await t.test('loadModel resolves model, normalizes it, adds to group, and disposes old model', async () => {
+    const mockThree = createMockThree();
+    const container = createMockContainer();
+    let oldDisposed = false;
+    class MockGLTFLoader {
+      load(url, onLoad) {
+        const scene = new mockThree.Group();
+        scene.name = 'GLTFScene_' + url;
+        onLoad({ scene });
+      }
+    }
+
+    const renderer = new ZadaRenderer({ THREE: mockThree, GLTFLoader: MockGLTFLoader });
+    renderer.init(container);
+
+    const res1 = await renderer.loadModel('model1.glb');
+    assert.ok(res1.model);
+    assert.equal(renderer.modelGroup.children.length, 1);
+    assert.equal(renderer.model, res1.model);
+
+    res1.model.traverse = (cb) => {
+      oldDisposed = true;
+      cb(res1.model);
+    };
+
+    const res2 = await renderer.loadModel('model2.glb');
+    assert.ok(oldDisposed);
+    assert.equal(renderer.model, res2.model);
+    assert.equal(renderer.modelGroup.children.length, 1);
+    renderer.dispose();
+  });
+
+  await t.test('loadModel rejects when GLTFLoader is missing or loader fails', async () => {
+    const mockThree = createMockThree();
+    const container = createMockContainer();
+    const renderer = new ZadaRenderer({ THREE: mockThree });
+    renderer.init(container);
+
+    await assert.rejects(async () => {
+      await renderer.loadModel('fail.glb');
+    }, /GLTFLoader not available/);
+
+    class FailingLoader {
+      load(url, onLoad, onProgress, onError) {
+        onError(new Error('Network error'));
+      }
+    }
+    const renderer2 = new ZadaRenderer({ THREE: mockThree, GLTFLoader: FailingLoader });
+    renderer2.init(container);
+    await assert.rejects(async () => {
+      await renderer2.loadModel('fail2.glb');
+    }, /Network error/);
+    renderer.dispose();
+    renderer2.dispose();
+  });
+
+  await t.test('render loop executes render step and interpolates kinematics', () => {
+    const mockThree = createMockThree();
+    const container = createMockContainer();
+    let motionUpdated = false;
+    const mockMotion = {
+      update: () => { motionUpdated = true; },
+      getTransform: () => ({ position: { x: 0, y: 0, z: 0 }, rotation: { x: 0, y: 0, z: 0 }, scale: 1.0 })
+    };
+
+    const renderer = new ZadaRenderer({ THREE: mockThree, motion: mockMotion });
+    renderer.init(container);
+    renderer.setDockMode('dock');
+    renderer.start();
+
+    assert.equal(renderer.currentDockOffset.x, 0);
+
+    renderer._renderLoop(100);
+
+    assert.equal(motionUpdated, true);
+    assert.equal(renderer.renderer.renderCalls, 1);
+    assert.ok(renderer.currentDockOffset.x > 0);
+    assert.ok(renderer.currentDockOffset.scale < 1.0);
+    renderer.dispose();
+  });
+
+  await t.test('clean disposal tears down all resources, document listeners, and DOM bindings', () => {
     const mockThree = createMockThree();
     const container = createMockContainer();
     let auraDisposed = false;
+    let removedEvent = null;
+    let removedListener = null;
     const mockAura = {
       group: { children: [{ id: 1 }] },
       build: () => new mockThree.Group(),
@@ -386,15 +515,34 @@ test('ZadaRenderer render loop, sleep, and context recovery', async (t) => {
       }
     };
 
-    const renderer = new ZadaRenderer({ THREE: mockThree, aura: mockAura });
-    renderer.init(container);
-    renderer.start();
+    const originalRemove = globalThis.document ? globalThis.document.removeEventListener : null;
+    globalThis.document = {
+      addEventListener: () => {},
+      removeEventListener: (evt, fn) => {
+        removedEvent = evt;
+        removedListener = fn;
+      },
+      hidden: false
+    };
 
-    renderer.dispose();
-    assert.equal(renderer.isInitialized, false);
-    assert.equal(renderer.isPlaying, false);
-    assert.equal(renderer.renderer.disposed, true);
-    assert.equal(auraDisposed, true);
-    assert.equal(container.children.length, 0);
+    try {
+      const renderer = new ZadaRenderer({ THREE: mockThree, aura: mockAura });
+      renderer.init(container);
+      renderer.start();
+
+      renderer.dispose();
+      assert.equal(renderer.isInitialized, false);
+      assert.equal(renderer.isPlaying, false);
+      assert.equal(renderer.renderer, null);
+      assert.equal(renderer.scene, null);
+      assert.equal(renderer.model, null);
+      assert.equal(auraDisposed, true);
+      assert.equal(container.children.length, 0);
+      assert.equal(removedEvent, 'visibilitychange');
+      assert.equal(removedListener, renderer._boundVisibility);
+    } finally {
+      if (originalRemove) globalThis.document.removeEventListener = originalRemove;
+      else delete globalThis.document;
+    }
   });
 });
