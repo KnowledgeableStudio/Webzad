@@ -65,18 +65,37 @@ export async function onRequestPost(context) {
       'Approximate Location': location,
       'Referral Source': referrer,
       'Landing Page': landingPath,
-      _template: 'table'
+      _template: 'table',
+      _captcha: 'false'
     };
 
-    const notify = fetch(FORMSUBMIT_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-      body: JSON.stringify(emailPayload)
-    }).catch(e => console.warn('[API/notify-visitor] FormSubmit dispatch failed:', e.message));
+    const notify = (async () => {
+      try {
+        const res = await fetch(FORMSUBMIT_ENDPOINT, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+          body: JSON.stringify(emailPayload)
+        });
+        const ct = res.headers.get('content-type') || '';
+        let delivered = res.ok;
+        if (res.ok && ct.includes('json')) {
+          const data = await res.json().catch(() => ({}));
+          if (String(data.success).toLowerCase() === 'false') delivered = false;
+        } else if (!ct.includes('json')) {
+          // HTML response = bot challenge or error page, not a real delivery
+          delivered = false;
+        }
+        if (!delivered) console.warn('[API/notify-visitor] FormSubmit delivery failed:', res.status, ct);
+        return delivered;
+      } catch (e) {
+        console.warn('[API/notify-visitor] FormSubmit dispatch failed:', e.message);
+        return false;
+      }
+    })();
 
-    if (context.waitUntil) context.waitUntil(notify); else await notify;
+    const delivered = await notify;
 
-    return json({ success: true, notified: true });
+    return json({ success: true, notified: true, delivered });
   } catch (err) {
     console.error('[API/notify-visitor] Internal catch error:', err.message);
     return json({ error: 'Failed to process visitor notification' }, 500);

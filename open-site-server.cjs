@@ -147,7 +147,13 @@ async function handleChatRequest(req, res, options = {}) {
       geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}${mode}key=${encodeURIComponent(apiKey)}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents, tools: TOOL_DEFINITIONS,
-          generationConfig: { thinkingConfig: { thinkingBudget: 0 }, maxOutputTokens: 900 } }),
+          safetySettings: [
+            { category: 'HARM_CATEGORY_HARASSMENT', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_HATE_SPEECH', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT', threshold: 'BLOCK_ONLY_HIGH' },
+            { category: 'HARM_CATEGORY_DANGEROUS_CONTENT', threshold: 'BLOCK_ONLY_HIGH' }
+          ],
+          generationConfig: { thinkingConfig: { thinkingBudget: 0 }, maxOutputTokens: 900, temperature: 0.7 } }),
         signal: AbortSignal.timeout(20000)
       });
       if (geminiRes.status !== 503) break;

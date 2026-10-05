@@ -267,7 +267,19 @@ class ZadaCompanion {
       let reply = '', primaryTool = null;
       if (ct.includes('text/event-stream') && res.body?.getReader) {
         const stream = this.holoUI?.startStreamMessage?.() || null;
-        const result = await this._consumeChatStream(res.body, (chunk) => stream?.append?.(chunk));
+        let result = await this._consumeChatStream(res.body, (chunk) => stream?.append?.(chunk));
+        if (!result.text && result.toolCalls.length === 0) {
+          // Empty/interrupted stream — retry once through the plain JSON path
+          const retry = await fetchFn(ZADA_API_BASE + '/api/chat', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', ...(devKey ? { 'x-gemini-api-key': devKey } : {}) },
+            body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, apiKey: devKey, context: this._buildSiteContext() })
+          });
+          const data = await retry.json().catch(() => ({}));
+          if (!retry.ok) throw new Error(data?.error || `HTTP ${retry.status}`);
+          if (data.text) { result.text = data.text; stream?.append?.(data.text); }
+          result.toolCalls = data.toolCalls || [];
+        }
         reply = result.text || 'Done.';
         primaryTool = await this._dispatchToolCalls(result.toolCalls);
         stream?.finalize?.(primaryTool);
