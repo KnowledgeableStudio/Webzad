@@ -6,6 +6,9 @@
 
 const SESSION_STORAGE_KEY = 'webzad_visited_session';
 
+/** Resolves cross-origin API base: webzad.dev on static hosting proxies API calls to the Pages Functions origin. */
+const ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
+
 class ZadaVisitorTracker {
   /**
    * @param {Object} [options] - Configuration and environment options.
@@ -13,7 +16,7 @@ class ZadaVisitorTracker {
   constructor(options = {}) {
     this.options = options;
     this.env = options.env || this._resolveEnvironment();
-    this.endpoint = options.endpoint || '/api/notify-visitor';
+    this.endpoint = options.endpoint || (ZADA_API_BASE + '/api/notify-visitor');
     this.fetchFn = options.fetchFn || (typeof globalThis !== 'undefined' ? globalThis.fetch : null);
   }
 

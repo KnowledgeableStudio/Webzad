@@ -9,3 +9,5 @@ codex-*.log
 codex-temp-server*.cjs
 run-webzad-lan-server.cmd
 .env
+.dev.vars
+.wrangler/

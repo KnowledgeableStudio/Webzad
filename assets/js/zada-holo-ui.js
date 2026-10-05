@@ -13,6 +13,9 @@ const DEV_WARNING_TEXT = '⚠ LOCAL DEVELOPMENT ONLY — NOT SECURE FOR PRODUCTI
 const DEV_INPUT_LABEL = '[ ENTER GEMINI API KEY HERE ]';
 const STORAGE_KEY = 'webzad_dev_gemini_key';
 
+/** Resolves cross-origin API base: webzad.dev on static hosting proxies API calls to the Pages Functions origin. */
+const ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
+
 function escapeHtml(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
@@ -113,7 +116,7 @@ class ZadaHoloUI {
       } catch (err) { this._setDevStatus(`Verification error: ${err.message}`, 'error'); return false; }
     }
     try {
-      const res = await fetch('/api/verify-key', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-gemini-api-key': k }, body: JSON.stringify({ key: k }) });
+      const res = await fetch(ZADA_API_BASE + '/api/verify-key', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-gemini-api-key': k }, body: JSON.stringify({ key: k }) });
       const data = await res.json(), ok = Boolean(data && data.valid);
       this._setDevStatus(ok ? 'Key verified with Gemini proxy.' : 'Invalid Gemini API key.', ok ? 'success' : 'error'); return ok;
     } catch { this._setDevStatus('Failed to connect to verification server.', 'error'); return false; }

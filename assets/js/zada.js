@@ -19,6 +19,9 @@ const ZadaAudioSync = _AudioMod.ZadaAudioSync || globalThis.ZadaAudioSync;
 const ZadaRenderer = _RendererMod.ZadaRenderer || globalThis.ZadaRenderer;
 const ZadaHoloUI = _HoloMod.ZadaHoloUI || globalThis.ZadaHoloUI;
 
+/** Resolves cross-origin API base: webzad.dev on static hosting proxies API calls to the Pages Functions origin. */
+const ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
+
 /** Contextual quick-action prompt chips per website section */
 const SECTION_PROMPTS = Object.freeze({
   hero: Object.freeze(['What is Webzad?', 'Show Selected Work', 'Start Project Brief']),
@@ -155,7 +158,7 @@ class ZadaCompanion {
       const messages = [...allMsgs];
       while (messages.length > 0 && messages[0].role === 'zada') messages.shift();
       const fetchFn = this.options.fetchFn || globalThis.fetch;
-      const res = await fetchFn('/api/chat', {
+      const res = await fetchFn(ZADA_API_BASE + '/api/chat', {
         method: 'POST',
         headers,
         body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, apiKey: devKey })
