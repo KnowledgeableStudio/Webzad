@@ -49,7 +49,9 @@ class ZadaHoloUI {
   constructor(options = {}) {
     this.options = options;
     this.stateManager = options.stateManager || null; this.actionDispatcher = options.actionDispatcher || null; this.audioSync = options.audioSync || null;
-    this.storage = options.storage !== undefined ? options.storage : (typeof localStorage !== 'undefined' ? localStorage : null);
+    // sessionStorage over localStorage: the dev key dies with the tab, shrinking the
+    // window in which an XSS payload could exfiltrate it.
+    this.storage = options.storage !== undefined ? options.storage : (typeof sessionStorage !== 'undefined' ? sessionStorage : null);
     this.onSendMessage = typeof options.onSendMessage === 'function' ? options.onSendMessage : null;
     this.onPromptSelect = typeof options.onPromptSelect === 'function' ? options.onPromptSelect : null;
     this.onVerifyKey = typeof options.onVerifyKey === 'function' ? options.onVerifyKey : null;
@@ -132,7 +134,7 @@ class ZadaHoloUI {
   openDevSettings() {
     this.isDevModalOpen = true; this.devModalEl?.classList?.add('open');
     if (this.devKeyInputEl) { this.devKeyInputEl.value = this.getDevKey(); this.devKeyInputEl.focus?.(); }
-    if (this.getDevKey()) this._setDevStatus('API key active from localStorage.', 'info');
+    if (this.getDevKey()) this._setDevStatus('API key active from sessionStorage.', 'info');
   }
   closeDevSettings() {
     const v = this.devKeyInputEl?.value?.trim();
@@ -144,7 +146,7 @@ class ZadaHoloUI {
   setDevKey(key) { try { if (this.storage) this.storage.setItem(STORAGE_KEY, String(key || '').trim()); } catch {} }
   clearDevKey() {
     try { if (this.storage) this.storage.removeItem(STORAGE_KEY); } catch {}
-    if (this.devKeyInputEl) this.devKeyInputEl.value = ''; this._setDevStatus('Developer key cleared from localStorage.', 'info');
+    if (this.devKeyInputEl) this.devKeyInputEl.value = ''; this._setDevStatus('Developer key cleared from sessionStorage.', 'info');
   }
   async testDevKey(key) {
     const k = String(key || this.devKeyInputEl?.value || this.getDevKey()).trim();
@@ -223,7 +225,7 @@ class ZadaHoloUI {
     this.devKeyInputEl?.addEventListener('change', onKeyInput);
     this.devKeyInputEl?.addEventListener('paste', () => setTimeout(onKeyInput, 50));
     this.devModalEl?.querySelector('.zada-btn-dev-save')?.addEventListener('click', () => {
-      const v = this.devKeyInputEl?.value?.trim() || ''; this.setDevKey(v); this._setDevStatus(v ? 'Key saved to localStorage.' : 'Empty key saved.', 'success');
+      const v = this.devKeyInputEl?.value?.trim() || ''; this.setDevKey(v); this._setDevStatus(v ? 'Key saved to sessionStorage.' : 'Empty key saved.', 'success');
     });
     this.devModalEl?.querySelector('.zada-btn-dev-test')?.addEventListener('click', () => this.testDevKey(this.devKeyInputEl?.value)); this.devModalEl?.querySelector('.zada-btn-dev-clear')?.addEventListener('click', () => this.clearDevKey());
   }
