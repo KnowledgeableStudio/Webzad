@@ -7,7 +7,7 @@
 const SESSION_STORAGE_KEY = 'webzad_visited_session';
 
 /** Resolves cross-origin API base: webzad.dev on static hosting proxies API calls to the Pages Functions origin. */
-const ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
+var ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
 
 class ZadaVisitorTracker {
   /**

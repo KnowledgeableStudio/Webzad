@@ -14,7 +14,7 @@ const DEV_INPUT_LABEL = '[ ENTER GEMINI API KEY HERE ]';
 const STORAGE_KEY = 'webzad_dev_gemini_key';
 
 /** Resolves cross-origin API base: webzad.dev on static hosting proxies API calls to the Pages Functions origin. */
-const ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
+var ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
 
 /** Human-friendly labels for whitelisted tool actions shown in the UI. */
 const TOOL_LABELS = Object.freeze({
