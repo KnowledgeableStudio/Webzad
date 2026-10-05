@@ -25,8 +25,7 @@ export const TOOL_DEFINITIONS = [{ functionDeclarations: [
     timeline: { type: 'string', description: 'Desired timeline if provided' }
   }),
   decl('dismissOverlay', 'Close any open overlay, image preview, menu, or popup'),
-  decl('toggleAudioOutput', 'Toggle audio voice output', { enabled: { type: 'boolean', description: 'Mute or enable voice' } }, ['enabled']),
-  decl('openDevSettings', 'Open developer settings modal')
+  decl('toggleAudioOutput', 'Toggle audio voice output', { enabled: { type: 'boolean', description: 'Mute or enable voice' } }, ['enabled'])
 ] }];
 
 /** Authoritative system instruction persona and website knowledge for Zada companion. */

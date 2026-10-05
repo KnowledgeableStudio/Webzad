@@ -463,7 +463,6 @@ test('server-side chat API and rate limiting', async (t) => {
     assert.ok(names.includes('openProjectPreview'));
     assert.ok(names.includes('prefillContactBrief'));
     assert.ok(names.includes('toggleAudioOutput'));
-    assert.ok(names.includes('openDevSettings'));
   });
 
   await t.test('handleRequest router rejects GET /api/chat with 405 Method Not Allowed', (t, done) => {

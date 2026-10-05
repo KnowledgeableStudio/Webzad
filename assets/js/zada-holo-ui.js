@@ -9,12 +9,6 @@ const ZadaHoloTelemetryMap = Object.freeze({
   NAVIGATING: '● NAVIGATING', SUCCESS: '● SUCCESS', WARNING: '● WARNING', ERROR: '● ERROR', GOODBYE: '● GOODBYE'
 });
 const DEFAULT_PROMPT_CHIPS = Object.freeze(['Explain Autonomous Systems', 'Show Webzad Portfolio', 'Start Project Brief']);
-const DEV_WARNING_TEXT = '⚠ LOCAL DEVELOPMENT ONLY — NOT SECURE FOR PRODUCTION. Production credentials must remain server-side.';
-const DEV_INPUT_LABEL = '[ ENTER GEMINI API KEY HERE ]';
-const STORAGE_KEY = 'webzad_dev_gemini_key';
-
-/** Resolves cross-origin API base: webzad.dev on static hosting proxies API calls to the Pages Functions origin. */
-var ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
 
 /** Human-friendly labels for whitelisted tool actions shown in the UI. */
 const TOOL_LABELS = Object.freeze({
@@ -22,7 +16,6 @@ const TOOL_LABELS = Object.freeze({
   openProjectPreview: 'Opened project preview',
   prefillContactBrief: 'Filled project brief',
   toggleAudioOutput: 'Toggled voice output',
-  openDevSettings: 'Opened developer settings',
   dismissOverlay: 'Dismissed overlay'
 });
 
@@ -49,15 +42,11 @@ class ZadaHoloUI {
   constructor(options = {}) {
     this.options = options;
     this.stateManager = options.stateManager || null; this.actionDispatcher = options.actionDispatcher || null; this.audioSync = options.audioSync || null;
-    // sessionStorage over localStorage: the dev key dies with the tab, shrinking the
-    // window in which an XSS payload could exfiltrate it.
-    this.storage = options.storage !== undefined ? options.storage : (typeof sessionStorage !== 'undefined' ? sessionStorage : null);
     this.onSendMessage = typeof options.onSendMessage === 'function' ? options.onSendMessage : null;
     this.onPromptSelect = typeof options.onPromptSelect === 'function' ? options.onPromptSelect : null;
-    this.onVerifyKey = typeof options.onVerifyKey === 'function' ? options.onVerifyKey : null;
-    this.isOpen = this.isDevModalOpen = this.isListening = false; this.messages = []; this.status = 'READY';
+    this.isOpen = this.isListening = false; this.messages = []; this.status = 'READY';
     this.promptChips = Array.isArray(options.promptChips) ? [...options.promptChips] : [...DEFAULT_PROMPT_CHIPS];
-    this.container = this.hudEl = this.dialogueEl = this.inputEl = this.statusEl = this.statusDotEl = this.chipsContainerEl = this.micBtnEl = this.muteBtnEl = this.devModalEl = this.devKeyInputEl = this.devStatusEl = this.recognition = this._createElement = this.typingEl = null;
+    this.container = this.hudEl = this.dialogueEl = this.inputEl = this.statusEl = this.statusDotEl = this.chipsContainerEl = this.micBtnEl = this.muteBtnEl = this.recognition = this._createElement = this.typingEl = null;
     this._boundKeyDown = (e) => this._handleKeyDown(e);
     this._stateUnsubscribe = this.stateManager?.subscribe?.((st) => this.updateStatus(st)) || null;
   }
@@ -65,8 +54,8 @@ class ZadaHoloUI {
     if (!containerEl) return false;
     this.container = containerEl;
     this._createElement = config.createElement || ((t) => (typeof document !== 'undefined' ? document.createElement(t) : null));
-    this._buildHudMarkup(this._createElement); this._buildDevModalMarkup(this._createElement); this._bindEventListeners();
-    if (typeof containerEl.appendChild === 'function') { containerEl.appendChild(this.hudEl); containerEl.appendChild(this.devModalEl); }
+    this._buildHudMarkup(this._createElement); this._bindEventListeners();
+    if (typeof containerEl.appendChild === 'function') containerEl.appendChild(this.hudEl);
     if (typeof window !== 'undefined') window.addEventListener('keydown', this._boundKeyDown);
     this.updateStatus(this.stateManager?.getState ? this.stateManager.getState() : 'IDLE');
     this._renderPromptChips(); return true;
@@ -75,8 +64,8 @@ class ZadaHoloUI {
     this.recognition?.abort?.();
     if (typeof window !== 'undefined') window.removeEventListener('keydown', this._boundKeyDown);
     this._stateUnsubscribe?.();
-    [this.hudEl, this.devModalEl].forEach((el) => { if (el?.parentNode === this.container) this.container.removeChild(el); });
-    this.hudEl = this.devModalEl = this.container = null;
+    if (this.hudEl?.parentNode === this.container) this.container.removeChild(this.hudEl);
+    this.hudEl = this.container = null;
   }
   open() { this.isOpen = true; this.hudEl?.classList?.add('open'); if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight; this.options.onOpen?.(); }
   close() { this.isOpen = false; this.hudEl?.classList?.remove('open'); if (this.isListening) this.toggleSpeechRecognition(); this.options.onClose?.(); }
@@ -131,40 +120,6 @@ class ZadaHoloUI {
     this.promptChips = Array.isArray(prompts) ? [...prompts] : [...DEFAULT_PROMPT_CHIPS];
     if (this.chipsContainerEl) this._renderPromptChips();
   }
-  openDevSettings() {
-    this.isDevModalOpen = true; this.devModalEl?.classList?.add('open');
-    if (this.devKeyInputEl) { this.devKeyInputEl.value = this.getDevKey(); this.devKeyInputEl.focus?.(); }
-    if (this.getDevKey()) this._setDevStatus('API key active from sessionStorage.', 'info');
-  }
-  closeDevSettings() {
-    const v = this.devKeyInputEl?.value?.trim();
-    if (v) this.setDevKey(v);
-    this.isDevModalOpen = false; this.devModalEl?.classList?.remove('open');
-  }
-  toggleDevSettings() { this.isDevModalOpen ? this.closeDevSettings() : this.openDevSettings(); }
-  getDevKey() { try { return (this.storage && this.storage.getItem(STORAGE_KEY)) || ''; } catch { return ''; } }
-  setDevKey(key) { try { if (this.storage) this.storage.setItem(STORAGE_KEY, String(key || '').trim()); } catch {} }
-  clearDevKey() {
-    try { if (this.storage) this.storage.removeItem(STORAGE_KEY); } catch {}
-    if (this.devKeyInputEl) this.devKeyInputEl.value = ''; this._setDevStatus('Developer key cleared from sessionStorage.', 'info');
-  }
-  async testDevKey(key) {
-    const k = String(key || this.devKeyInputEl?.value || this.getDevKey()).trim();
-    if (!k) { this._setDevStatus('Please enter an API key first.', 'error'); return false; }
-    this.setDevKey(k);
-    this._setDevStatus('Verifying API key...', 'info');
-    if (typeof this.onVerifyKey === 'function') {
-      try {
-        const ok = await this.onVerifyKey(k);
-        this._setDevStatus(ok ? 'Key verified successfully.' : 'Key verification failed.', ok ? 'success' : 'error'); return ok;
-      } catch (err) { this._setDevStatus(`Verification error: ${err.message}`, 'error'); return false; }
-    }
-    try {
-      const res = await fetch(ZADA_API_BASE + '/api/verify-key', { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-gemini-api-key': k }, body: JSON.stringify({ key: k }) });
-      const data = await res.json(), ok = Boolean(data && data.valid);
-      this._setDevStatus(ok ? 'Key verified with Gemini proxy.' : 'Invalid Gemini API key.', ok ? 'success' : 'error'); return ok;
-    } catch { this._setDevStatus('Failed to connect to verification server.', 'error'); return false; }
-  }
   toggleVoiceMute() {
     if (!this.audioSync) return;
     const nextMuted = !this.audioSync.isMuted(); this.audioSync.setMuted(nextMuted);
@@ -190,7 +145,6 @@ class ZadaHoloUI {
     this.statusDotEl = _createNode(c, 'span', 'zada-status-dot', null, pill);
     const nameplate = _createNode(c, 'span', 'zada-status-name', null, pill); nameplate.innerHTML = 'ZADA<span class="zada-status-sub">AI</span>';
     this.statusEl = _createNode(c, 'span', 'zada-status-text', '● READY', pill);
-    _createNode(c, 'button', 'zada-btn-icon zada-btn-dev-trigger', '⚙', act, { 'aria-label': 'Developer Settings' });
     this.muteBtnEl = _createNode(c, 'button', 'zada-btn-icon zada-btn-mute', '🔊', act, { 'aria-label': 'Toggle Voice' });
     _createNode(c, 'button', 'zada-btn-icon zada-btn-close', '✕', act, { 'aria-label': 'Close HUD' });
     this.dialogueEl = _createNode(c, 'div', 'zada-dialogue', null, this.hudEl); this.chipsContainerEl = _createNode(c, 'div', 'zada-chips', null, this.hudEl);
@@ -198,36 +152,13 @@ class ZadaHoloUI {
     this.inputEl = _createNode(c, 'input', 'zada-input-field', null, wrap, { type: 'text', placeholder: 'Ask Zada anything...', 'aria-label': 'Chat input' });
     this.micBtnEl = _createNode(c, 'button', 'zada-mic-btn', '🎤', wrap, { type: 'button', 'aria-label': 'Voice Input' }); _createNode(c, 'button', 'zada-send-btn', '➤', wrap, { type: 'submit', 'aria-label': 'Send message' });
   }
-  _buildDevModalMarkup(c) {
-    this.devModalEl = _createNode(c, 'div', 'zada-dev-modal');
-    const card = _createNode(c, 'div', 'zada-dev-card', null, this.devModalEl), hdr = _createNode(c, 'div', 'zada-dev-header', null, card);
-    _createNode(c, 'h3', 'zada-dev-title', 'Developer Settings', hdr); _createNode(c, 'button', 'zada-btn-icon zada-dev-modal-close', '✕', hdr);
-    _createNode(c, 'div', 'zada-dev-warning', DEV_WARNING_TEXT, card); _createNode(c, 'label', 'zada-dev-label', DEV_INPUT_LABEL, card);
-    this.devKeyInputEl = _createNode(c, 'input', 'zada-dev-input', null, card, { type: 'password', placeholder: 'AIzaSy...' });
-    const act = _createNode(c, 'div', 'zada-dev-actions', null, card);
-    [['Save Key', 'save'], ['Test Key', 'test'], ['Clear Key', 'clear']].forEach(([l, a]) => _createNode(c, 'button', `zada-btn-dev zada-btn-dev-${a}`, l, act));
-    this.devStatusEl = _createNode(c, 'div', 'zada-dev-status', null, card);
-  }
   _bindEventListeners() {
     this.hudEl?.querySelector('.zada-btn-close')?.addEventListener('click', () => this.close());
-    this.hudEl?.querySelector('.zada-btn-dev-trigger')?.addEventListener('click', () => this.openDevSettings());
     this.muteBtnEl?.addEventListener('click', () => this.toggleVoiceMute()); this.micBtnEl?.addEventListener('click', () => this.toggleSpeechRecognition());
     this.hudEl?.querySelector('form')?.addEventListener('submit', (e) => {
       e?.preventDefault?.(); const txt = this.inputEl?.value?.trim();
       if (txt) { this.addMessage('user', txt); if (this.inputEl) this.inputEl.value = ''; this.onSendMessage?.(txt); }
     });
-    this.devModalEl?.querySelector('.zada-dev-modal-close')?.addEventListener('click', () => this.closeDevSettings());
-    const onKeyInput = () => {
-      const val = this.devKeyInputEl?.value?.trim() || '';
-      if (val) this.setDevKey(val);
-    };
-    this.devKeyInputEl?.addEventListener('input', onKeyInput);
-    this.devKeyInputEl?.addEventListener('change', onKeyInput);
-    this.devKeyInputEl?.addEventListener('paste', () => setTimeout(onKeyInput, 50));
-    this.devModalEl?.querySelector('.zada-btn-dev-save')?.addEventListener('click', () => {
-      const v = this.devKeyInputEl?.value?.trim() || ''; this.setDevKey(v); this._setDevStatus(v ? 'Key saved to sessionStorage.' : 'Empty key saved.', 'success');
-    });
-    this.devModalEl?.querySelector('.zada-btn-dev-test')?.addEventListener('click', () => this.testDevKey(this.devKeyInputEl?.value)); this.devModalEl?.querySelector('.zada-btn-dev-clear')?.addEventListener('click', () => this.clearDevKey());
   }
   _renderPromptChips() {
     if (!this.chipsContainerEl) return;
@@ -257,14 +188,9 @@ class ZadaHoloUI {
     bubble.innerHTML = html;
     if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight;
   }
-  _setDevStatus(msg, type = 'info') {
-    if (!this.devStatusEl) return;
-    this.devStatusEl.textContent = msg;
-    if (this.devStatusEl.className !== undefined) this.devStatusEl.className = `zada-dev-status ${type}`;
-  }
-  _handleKeyDown(e) { if (e?.key === 'Escape') { if (this.isDevModalOpen) this.closeDevSettings(); else if (this.isOpen) this.close(); } }
+  _handleKeyDown(e) { if (e?.key === 'Escape' && this.isOpen) this.close(); }
 }
-const _exports = { ZadaHoloUI, ZadaHoloTelemetryMap, DEFAULT_PROMPT_CHIPS, DEV_WARNING_TEXT, DEV_INPUT_LABEL, STORAGE_KEY, sanitizeMarkdown, escapeHtml };
+const _exports = { ZadaHoloUI, ZadaHoloTelemetryMap, DEFAULT_PROMPT_CHIPS, sanitizeMarkdown, escapeHtml };
 if (typeof module !== 'undefined' && module.exports) module.exports = _exports;
 if (typeof window !== 'undefined') Object.assign(window, _exports);
 if (typeof globalThis !== 'undefined') Object.assign(globalThis, _exports);

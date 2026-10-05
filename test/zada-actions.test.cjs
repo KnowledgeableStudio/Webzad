@@ -115,13 +115,12 @@ test('ZadaActionDispatcher security whitelist & parameter checking', async (t) =
     assert.equal(res2.sanitized.enabled, false);
   });
 
-  await t.test('openDevSettings validates cleanly with empty params', () => {
+  await t.test('rejects removed openDevSettings action', () => {
     const res = dispatcher.validateAction({
       name: 'openDevSettings',
-      params: { someExtraKey: 'ignored' }
+      params: {}
     });
-    assert.equal(res.valid, true);
-    assert.deepEqual(res.sanitized, {});
+    assert.equal(res.valid, false);
   });
 
   await t.test('dispatch executes registered handler', async () => {

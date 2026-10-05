@@ -3,24 +3,8 @@ const assert = require('node:assert/strict');
 const {
   ZadaHoloUI,
   ZadaHoloTelemetryMap,
-  DEV_WARNING_TEXT,
-  DEV_INPUT_LABEL,
   sanitizeMarkdown
 } = require('../assets/js/zada-holo-ui.js');
-
-/**
- * Creates an in-memory mock storage object conforming to Storage API.
- */
-function createMockStorage(initial = {}) {
-  const store = new Map(Object.entries(initial));
-  return {
-    getItem: (key) => (store.has(key) ? store.get(key) : null),
-    setItem: (key, val) => store.set(key, String(val)),
-    removeItem: (key) => store.delete(key),
-    clear: () => store.clear(),
-    get length() { return store.size; }
-  };
-}
 
 /**
  * Creates a lightweight mock DOM element for testing headless mounting.
@@ -144,7 +128,6 @@ test('ZadaHoloUI interface and message management', async (t) => {
   await t.test('ZadaHoloUI instantiates with default state', () => {
     const ui = new ZadaHoloUI();
     assert.equal(ui.isOpen, false);
-    assert.equal(ui.isDevModalOpen, false);
     assert.equal(Array.isArray(ui.messages), true);
     assert.equal(ui.messages.length, 0);
     assert.equal(ui.status, 'READY');
@@ -194,68 +177,6 @@ test('ZadaHoloUI interface and message management', async (t) => {
     assert.equal(ui.isOpen, true);
     ui.toggle();
     assert.equal(ui.isOpen, false);
-  });
-
-  await t.test('developer modal toggle works and reflects insecure warning', () => {
-    const ui = new ZadaHoloUI();
-    ui.openDevSettings();
-    assert.equal(ui.isDevModalOpen, true);
-    ui.closeDevSettings();
-    assert.equal(ui.isDevModalOpen, false);
-  });
-
-  await t.test('toggleDevSettings switches dev modal state', () => {
-    const ui = new ZadaHoloUI();
-    ui.toggleDevSettings();
-    assert.equal(ui.isDevModalOpen, true);
-    ui.toggleDevSettings();
-    assert.equal(ui.isDevModalOpen, false);
-  });
-});
-
-test('ZadaHoloUI developer settings and key storage', async (t) => {
-  await t.test('stores and clears key in localStorage under webzad_dev_gemini_key', () => {
-    const storage = createMockStorage();
-    const ui = new ZadaHoloUI({ storage });
-
-    assert.equal(ui.getDevKey(), '');
-    ui.setDevKey('AIzaSyTestDeveloperKey123');
-    assert.equal(ui.getDevKey(), 'AIzaSyTestDeveloperKey123');
-    assert.equal(storage.getItem('webzad_dev_gemini_key'), 'AIzaSyTestDeveloperKey123');
-
-    ui.clearDevKey();
-    assert.equal(ui.getDevKey(), '');
-    assert.equal(storage.getItem('webzad_dev_gemini_key'), null);
-  });
-
-  await t.test('handles storage exceptions gracefully when storage is disabled/inaccessible', () => {
-    const brokenStorage = {
-      getItem: () => { throw new Error('SecurityError: LocalStorage disabled'); },
-      setItem: () => { throw new Error('SecurityError: LocalStorage disabled'); },
-      removeItem: () => { throw new Error('SecurityError: LocalStorage disabled'); }
-    };
-    const ui = new ZadaHoloUI({ storage: brokenStorage });
-    assert.doesNotThrow(() => ui.getDevKey());
-    assert.doesNotThrow(() => ui.setDevKey('key'));
-    assert.doesNotThrow(() => ui.clearDevKey());
-    assert.equal(ui.getDevKey(), '');
-  });
-
-  await t.test('testDevKey executes verify handler and returns result', async () => {
-    let verifiedKey = null;
-    const ui = new ZadaHoloUI({
-      onVerifyKey: async (key) => {
-        verifiedKey = key;
-        return key.startsWith('AIzaSyValid');
-      }
-    });
-
-    const validRes = await ui.testDevKey('AIzaSyValidKey');
-    assert.equal(validRes, true);
-    assert.equal(verifiedKey, 'AIzaSyValidKey');
-
-    const invalidRes = await ui.testDevKey('bad-key');
-    assert.equal(invalidRes, false);
   });
 });
 
@@ -321,34 +242,19 @@ test('ZadaHoloUI prompt chips and markdown rendering', async (t) => {
 
 test('ZadaHoloUI DOM mounting and interactions', async (t) => {
   const container = createMockElement('div');
-  const storage = createMockStorage();
   let sentMessage = null;
   let selectedPrompt = null;
 
   const ui = new ZadaHoloUI({
-    storage,
     onSendMessage: (msg) => { sentMessage = msg; },
     onPromptSelect: (p) => { selectedPrompt = p; }
   });
 
-  await t.test('mount renders HUD and dev modal structure', () => {
+  await t.test('mount renders HUD structure', () => {
     const mounted = ui.mount(container, { createElement: createMockElement });
     assert.equal(mounted, true);
     assert.ok(ui.hudEl);
-    assert.ok(ui.devModalEl);
-    assert.equal(container.children.length, 2);
-  });
-
-  await t.test('HUD contains developer modal with exact warning and input label', () => {
-    const warningText = '⚠ LOCAL DEVELOPMENT ONLY — NOT SECURE FOR PRODUCTION. Production credentials must remain server-side.';
-    const inputLabelText = '[ ENTER GEMINI API KEY HERE ]';
-    const warningEl = ui.devModalEl.querySelector('.zada-dev-warning');
-    const labelEl = ui.devModalEl.querySelector('.zada-dev-label');
-
-    assert.equal(warningEl?.textContent, warningText);
-    assert.equal(labelEl?.textContent, inputLabelText);
-    assert.ok(ui.devModalEl.innerHTML.includes(warningText), 'Must include exact warning banner');
-    assert.ok(ui.devModalEl.innerHTML.includes(inputLabelText), 'Must include exact input label');
+    assert.equal(container.children.length, 1);
   });
 
   await t.test('open and close updates HUD DOM classList', () => {
@@ -356,13 +262,6 @@ test('ZadaHoloUI DOM mounting and interactions', async (t) => {
     assert.equal(ui.hudEl.classList.contains('open'), true);
     ui.close();
     assert.equal(ui.hudEl.classList.contains('open'), false);
-  });
-
-  await t.test('openDevSettings and closeDevSettings updates modal DOM classList', () => {
-    ui.openDevSettings();
-    assert.equal(ui.devModalEl.classList.contains('open'), true);
-    ui.closeDevSettings();
-    assert.equal(ui.devModalEl.classList.contains('open'), false);
   });
 
   await t.test('addMessage appends message bubble to dialogue element', () => {

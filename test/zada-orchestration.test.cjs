@@ -266,20 +266,6 @@ test('ZadaCompanion Master Orchestrator', async (t) => {
     assert.equal(companion.holoUI.muteBtnEl.textContent, '🔊');
   });
 
-  await t.test('wires openDevSettings action to open developer configuration modal', async () => {
-    const companion = new ZadaCompanion();
-    companion.init(createMockElement('div'), { skipModelLoad: true, createElement: createMockElement });
-
-    assert.equal(companion.holoUI.isDevModalOpen, false);
-    const res = await companion.actionDispatcher.dispatch({
-      name: 'openDevSettings',
-      params: {}
-    });
-
-    assert.equal(res.success, true);
-    assert.equal(companion.holoUI.isDevModalOpen, true);
-  });
-
   await t.test('executes handleUserMessage with API communication, tool dispatch, and speech', async () => {
     let speechText = '';
     const mockAudio = {
