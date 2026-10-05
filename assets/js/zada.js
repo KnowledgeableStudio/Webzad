@@ -416,12 +416,14 @@ class ZadaCompanion {
         </span>
         <button type="button" class="zada-greeting-close" aria-label="Dismiss greeting">×</button>
       </div>
-      <p class="zada-greeting-text">${text}</p>
+      <p class="zada-greeting-text"></p>
       <div class="zada-greeting-actions">
         <button type="button" class="zada-greeting-btn zada-greeting-chat">Chat with Zada</button>
         <button type="button" class="zada-greeting-btn zada-greeting-prompt">Explore Services</button>
       </div>
     `;
+    const textEl = bubble.querySelector?.('.zada-greeting-text');
+    if (textEl) textEl.textContent = String(text || '');
 
     const closeBtn = bubble.querySelector?.('.zada-greeting-close');
     closeBtn?.addEventListener?.('click', (e) => {

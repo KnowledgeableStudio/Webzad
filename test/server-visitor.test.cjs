@@ -43,9 +43,16 @@ test('Visitor Detection & Email Notification Endpoint (/api/notify-visitor)', as
     assert.equal(extractLocationFromHeaders(headersEmpty), 'Undisclosed / Direct');
   });
 
-  await t.test('new visitor triggers notification and dispatches to FormSubmit', async () => {
+  await t.test('new visitor triggers notification and dispatches to email service', async () => {
     let dispatchedUrl = '';
     let dispatchedBody = null;
+
+    const prevKey = process.env.WEB3FORMS_ACCESS_KEY;
+    process.env.WEB3FORMS_ACCESS_KEY = 'test-web3-key';
+    t.after(() => {
+      if (prevKey === undefined) delete process.env.WEB3FORMS_ACCESS_KEY;
+      else process.env.WEB3FORMS_ACCESS_KEY = prevKey;
+    });
 
     const mockFetch = async (url, opts) => {
       dispatchedUrl = url;
@@ -53,6 +60,7 @@ test('Visitor Detection & Email Notification Endpoint (/api/notify-visitor)', as
       return {
         ok: true,
         status: 200,
+        headers: { get: () => 'application/json' },
         json: async () => ({ success: true })
       };
     };
@@ -99,9 +107,10 @@ test('Visitor Detection & Email Notification Endpoint (/api/notify-visitor)', as
     assert.equal(responseBody.success, true);
     assert.equal(responseBody.notified, true);
 
-    // Verify FormSubmit payload
-    assert.ok(dispatchedUrl.includes('formsubmit.co/ajax/f11c4df9cac5fcb3a134c796bf5ee19c'));
-    assert.ok(dispatchedBody._subject.includes('New Webzad Visitor'));
+    // Verify Web3Forms payload
+    assert.ok(dispatchedUrl.includes('api.web3forms.com/submit'));
+    assert.equal(dispatchedBody.access_key, 'test-web3-key');
+    assert.ok(dispatchedBody.subject.includes('New Webzad Visitor'));
     assert.equal(dispatchedBody['Device & Platform'], 'Desktop (Chrome on Windows 10)');
     assert.equal(dispatchedBody['Approximate Location'], 'San Francisco, US');
     assert.equal(dispatchedBody['Referral Source'], 'https://news.ycombinator.com');
@@ -113,7 +122,7 @@ test('Visitor Detection & Email Notification Endpoint (/api/notify-visitor)', as
     let callCount = 0;
     const mockFetch = async () => {
       callCount++;
-      return { ok: true, json: async () => ({}) };
+      return { ok: true, headers: { get: () => 'application/json' }, json: async () => ({ success: true }) };
     };
 
     const makeReq = () => ({

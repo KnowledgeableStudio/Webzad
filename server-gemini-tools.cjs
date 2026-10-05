@@ -78,33 +78,39 @@ const SECTION_LABELS = {
 function buildSystemInstruction(context) {
   if (!context || typeof context !== 'object') return SYSTEM_INSTRUCTION;
   const lines = ['', '## LIVE VISITOR CONTEXT (real-time — treat as ground truth about what the visitor sees)'];
-  if (context.section) lines.push(`- Currently viewing: ${SECTION_LABELS[context.section] || context.section}`);
-  if (typeof context.scrollPercent === 'number') lines.push(`- Scroll depth: ${context.scrollPercent}%`);
-  if (context.device) lines.push(`- Device: ${context.device}`);
-  if (context.dockMode) lines.push(`- Your avatar display mode: ${context.dockMode}`);
-  if (context.lastAction?.name) lines.push(`- Last action you performed: ${context.lastAction.name} ${JSON.stringify(context.lastAction.params || {})}`);
+  // Only whitelisted, shape-validated fields are injected — this data is client-supplied.
+  if (typeof context.section === 'string' && SECTION_LABELS[context.section]) {
+    lines.push(`- Currently viewing: ${SECTION_LABELS[context.section]}`);
+  }
+  const scroll = Number(context.scrollPercent);
+  if (Number.isFinite(scroll)) lines.push(`- Scroll depth: ${Math.max(0, Math.min(100, Math.round(scroll)))}%`);
+  if (context.device === 'mobile' || context.device === 'desktop') lines.push(`- Device: ${context.device}`);
+  if (context.dockMode === 'hero' || context.dockMode === 'dock') lines.push(`- Your avatar display mode: ${context.dockMode}`);
+  const la = context.lastAction;
+  if (la && /^[a-zA-Z]{1,40}$/.test(String(la.name || ''))) {
+    lines.push(`- Last action you performed: ${la.name} ${JSON.stringify(la.params || {}).slice(0, 200)}`);
+  }
   lines.push('- Interpret vague follow-ups ("open it", "that one", "continue", "go back") against this context.');
   return SYSTEM_INSTRUCTION + lines.join('\n');
 }
 
 /** Formats chat history into Gemini contents schema clamped to maxTurns. */
-function formatGeminiContents(rawMessages, maxTurns = 14) {
+function formatGeminiContents(rawMessages, maxTurns = 14, maxChars = 4000) {
   const list = Array.isArray(rawMessages) ? rawMessages : [{ role: 'user', content: String(rawMessages || '') }];
   return list.slice(-maxTurns).map(m => ({
     role: (m.role === 'model' || m.role === 'zada' || m.sender === 'zada' || m.role === 'assistant') ? 'model' : 'user',
-    parts: [{ text: String(m.parts?.[0]?.text || m.content || m.text || '') }]
-  }));
+    parts: [{ text: String(m.parts?.[0]?.text || m.content || m.text || '').slice(0, maxChars) }]
+  })).filter(m => m.parts[0].text.length > 0);
 }
 
-/** Extracts text and toolCalls from Gemini candidate parts. */
+/** Extracts text and toolCalls from Gemini candidate parts. Raw candidate internals are not returned to clients. */
 function extractGeminiResponse(data) {
   const parts = data.candidates?.[0]?.content?.parts || [];
   return {
     text: parts.filter(p => p.text).map(p => p.text).join('\n'),
     toolCalls: parts.filter(p => p.functionCall).map(p => ({
       name: p.functionCall.name, params: p.functionCall.args || {}, args: p.functionCall.args || {}
-    })),
-    candidates: data.candidates
+    }))
   };
 }
 

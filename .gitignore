@@ -11,3 +11,4 @@ run-webzad-lan-server.cmd
 .env
 .dev.vars
 .wrangler/
+.deploy/

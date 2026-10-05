@@ -242,9 +242,9 @@ test('server-side chat API and rate limiting', async (t) => {
       setHeader(k, v) { this.headers[k] = v; },
       end(payload) {
         assert.equal(this.statusCode, 200);
-        assert.ok(forwardedContents.length <= 20, 'Should clamp to <= 20 turns');
-        assert.equal(forwardedContents[0].parts[0].text, 'Turn 6');
-        assert.equal(forwardedContents[19].parts[0].text, 'Turn 25');
+        assert.ok(forwardedContents.length <= 14, 'Should clamp to <= 14 turns');
+        assert.equal(forwardedContents[0].parts[0].text, 'Turn 12');
+        assert.equal(forwardedContents[13].parts[0].text, 'Turn 25');
         done();
       }
     };

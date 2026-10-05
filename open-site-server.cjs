@@ -334,6 +334,85 @@ async function handleVisitorNotification(req, res, options = {}) {
   }
 }
 
+const CONTACT_EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const CONTACT_SERVICES = new Set([
+  'Signature Website', 'AI & Workflow Automation', 'Website Redesign',
+  'Landing Page', 'E-Commerce', 'Custom Web App', 'Branding & Graphics', ''
+]);
+const contactLine = (v, max = 150) => String(v || '').replace(/[\r\n]+/g, ' ').trim().slice(0, max);
+const contactBlock = (v, max = 4000) => String(v || '').replace(/\r/g, '').trim().slice(0, max);
+
+/** Handles POST /api/contact — validates the project brief and relays via Web3Forms. */
+async function handleContactRequest(req, res, options = {}) {
+  const ip = getClientIp(req);
+  if (isRateLimited(ip)) return sendJson(res, 429, { error: 'Too Many Requests' });
+  try {
+    const body = await readJsonBody(req, res);
+    if (!body) return;
+    const d = body || {};
+
+    // Honeypot — bots filling the hidden "website" field get a fake success.
+    if (d.website) return sendJson(res, 200, { success: true });
+
+    const name = contactLine(d.name, 100);
+    const email = contactLine(d.email, 150);
+    const company = contactLine(d.company, 100);
+    const service = contactLine(d.service, 60);
+    const timeline = contactLine(d.timeline, 100);
+    const goals = contactBlock(d.goals, 4000);
+
+    if (!name || !email || !goals) return sendJson(res, 400, { error: 'Name, email, and project goals are required.' });
+    if (!CONTACT_EMAIL_RE.test(email)) return sendJson(res, 400, { error: 'Please provide a valid email address.' });
+    if (service && !CONTACT_SERVICES.has(service)) return sendJson(res, 400, { error: 'Invalid service selection.' });
+
+    const accessKey = process.env.WEB3FORMS_ACCESS_KEY || '';
+    if (!accessKey) {
+      console.error('[API/contact] WEB3FORMS_ACCESS_KEY not configured');
+      return sendJson(res, 503, { error: 'Contact service is not configured. Please email us directly.' });
+    }
+
+    const payload = {
+      access_key: accessKey,
+      subject: `📋 New Project Brief — ${name}${company ? ` (${company})` : ''}`,
+      from_name: 'Webzad Contact Form',
+      replyto: email,
+      name, email,
+      company: company || '—',
+      service: service || '—',
+      timeline: timeline || '—',
+      message: goals
+    };
+
+    const fetchFn = options.fetchFn || globalThis.fetch;
+    let delivered = false;
+    try {
+      const notifyRes = await fetchFn(WEB3FORMS_ENDPOINT, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+      const ct = notifyRes.headers.get('content-type') || '';
+      if (ct.includes('json')) {
+        const data = await notifyRes.json().catch(() => ({}));
+        delivered = notifyRes.ok && (data.success === true || String(data.success).toLowerCase() === 'true');
+        if (!delivered) console.error('[API/contact] Web3Forms rejected:', data.message || notifyRes.status);
+      } else {
+        console.error('[API/contact] Web3Forms non-JSON response:', notifyRes.status);
+      }
+    } catch (e) {
+      console.error('[API/contact] dispatch failed:', e.message);
+    }
+
+    if (!delivered) {
+      return sendJson(res, 502, { error: 'Could not send your message right now. Please email knowledgablellc@gmail.com directly.' });
+    }
+    return sendJson(res, 200, { success: true });
+  } catch (err) {
+    console.error('[API/contact] Internal catch error:', err.message);
+    return sendJson(res, 500, { error: 'Could not send your message right now. Please email knowledgablellc@gmail.com directly.' });
+  }
+}
+
 /** Serves static file buffer or 404 with single read and SPA fallback. */
 function handleStaticRequest(res, relativePath) {
   const resolvedRoot = path.resolve(root);
@@ -356,13 +435,14 @@ function handleRequest(req, res) {
   } catch {
     return send(res, 400, 'text/plain; charset=utf-8', 'Bad Request');
   }
-  if (cleanUrl === '/api/chat' || cleanUrl === '/api/verify-key' || cleanUrl === '/api/notify-visitor') {
+  if (cleanUrl === '/api/chat' || cleanUrl === '/api/verify-key' || cleanUrl === '/api/notify-visitor' || cleanUrl === '/api/contact') {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
       return send(res, 405, 'text/plain; charset=utf-8', 'Method Not Allowed');
     }
     if (cleanUrl === '/api/chat') return handleChatRequest(req, res);
     if (cleanUrl === '/api/verify-key') return handleVerifyKeyRequest(req, res);
+    if (cleanUrl === '/api/contact') return handleContactRequest(req, res);
     return handleVisitorNotification(req, res);
   }
   handleStaticRequest(res, cleanUrl === '/' ? '/index.html' : cleanUrl);
@@ -374,7 +454,7 @@ if (require.main === module) {
 }
 
 module.exports = {
-  handleChatRequest, handleVerifyKeyRequest, handleVisitorNotification, handleRequest,
+  handleChatRequest, handleVerifyKeyRequest, handleVisitorNotification, handleContactRequest, handleRequest,
   isRateLimited, clearRateLimits, clearVisitorDedup, hashVisitorIp, extractLocationFromHeaders,
   maskSensitiveError, rateLimitStore, visitorDedupStore,
   TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, MAX_BODY_BYTES, MAX_TURNS, server
