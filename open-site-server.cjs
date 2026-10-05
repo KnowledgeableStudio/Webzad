@@ -212,6 +212,7 @@ async function handleVerifyKeyRequest(req, res, options = {}) {
 }
 
 const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/f11c4df9cac5fcb3a134c796bf5ee19c';
+const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
 const VISITOR_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour cooldown per visitor
 
 const visitorDedupStore = new Map();
@@ -268,32 +269,65 @@ async function handleVisitorNotification(req, res, options = {}) {
       visitDate = new Date().toUTCString();
     }
 
-    const emailPayload = {
-      _subject: `🚀 New Webzad Visitor [${device} | ${location}]`,
-      'Visitor Time': visitDate,
-      'Device & Platform': `${device} (${browser})`,
-      'Screen Resolution': screen,
-      'Approximate Location': location,
-      'Referral Source': referrer,
-      'Landing Page': landingPath,
-      _template: 'table'
-    };
+    const web3Key = process.env.WEB3FORMS_ACCESS_KEY || '';
+    const subject = `🚀 New Webzad Visitor [${device} | ${location}]`;
+
+    // Web3Forms API accepts server-side calls (needs WEB3FORMS_ACCESS_KEY);
+    // FormSubmit is kept as fallback but is bot-challenged server-side.
+    const { endpoint, payload } = web3Key
+      ? {
+          endpoint: WEB3FORMS_ENDPOINT,
+          payload: {
+            access_key: web3Key,
+            subject,
+            from_name: 'Webzad Site',
+            'Visitor Time': visitDate,
+            'Device & Platform': `${device} (${browser})`,
+            'Screen Resolution': screen,
+            'Approximate Location': location,
+            'Referral Source': referrer,
+            'Landing Page': landingPath
+          }
+        }
+      : {
+          endpoint: FORMSUBMIT_ENDPOINT,
+          payload: {
+            _subject: subject,
+            'Visitor Time': visitDate,
+            'Device & Platform': `${device} (${browser})`,
+            'Screen Resolution': screen,
+            'Approximate Location': location,
+            'Referral Source': referrer,
+            'Landing Page': landingPath,
+            _template: 'table',
+            _captcha: 'false'
+          }
+        };
 
     const fetchFn = options.fetchFn || globalThis.fetch;
+    let delivered = false;
     try {
-      await fetchFn(FORMSUBMIT_ENDPOINT, {
+      const notifyRes = await fetchFn(endpoint, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(emailPayload)
+        body: JSON.stringify(payload)
       });
+      const ct = notifyRes.headers.get('content-type') || '';
+      if (ct.includes('json')) {
+        const data = await notifyRes.json().catch(() => ({}));
+        delivered = notifyRes.ok && (data.success === true || String(data.success).toLowerCase() === 'true');
+        if (!delivered) console.warn('[API/notify-visitor] email delivery failed:', data.message || notifyRes.status);
+      } else {
+        console.warn('[API/notify-visitor] email delivery failed: bot challenge', notifyRes.status);
+      }
     } catch (e) {
-      console.warn('[API/notify-visitor] FormSubmit notification dispatch failed:', e.message);
+      console.warn('[API/notify-visitor] email dispatch failed:', e.message);
     }
 
-    return sendJson(res, 200, { success: true, notified: true });
+    return sendJson(res, 200, { success: true, notified: true, delivered });
   } catch (err) {
     console.error('[API/notify-visitor] Internal catch error:', err.message);
     return sendJson(res, 500, { error: 'Failed to process visitor notification' });

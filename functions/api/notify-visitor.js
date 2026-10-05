@@ -5,6 +5,7 @@
 import { json, getClientIp, isRateLimited, readJsonBody, methodNotAllowed } from '../_shared/http.js';
 
 const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/f11c4df9cac5fcb3a134c796bf5ee19c';
+const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
 const VISITOR_COOLDOWN_MS = 60 * 60 * 1000; // 1 hour cooldown per visitor
 
 /** Per-isolate dedup store (best-effort; resets when the isolate is evicted). */
@@ -57,45 +58,71 @@ export async function onRequestPost(context) {
       visitDate = new Date().toUTCString();
     }
 
-    const emailPayload = {
-      _subject: `🚀 New Webzad Visitor [${device} | ${location}]`,
-      'Visitor Time': visitDate,
-      'Device & Platform': `${device} (${browser})`,
-      'Screen Resolution': screen,
-      'Approximate Location': location,
-      'Referral Source': referrer,
-      'Landing Page': landingPath,
-      _template: 'table',
-      _captcha: 'false'
-    };
+    const web3Key = context.env?.WEB3FORMS_ACCESS_KEY || '';
+    const subject = `🚀 New Webzad Visitor [${device} | ${location}]`;
 
-    const notify = (async () => {
+    // Web3Forms API accepts server-side calls (needs WEB3FORMS_ACCESS_KEY secret);
+    // FormSubmit is kept as fallback but is bot-challenged from Workers.
+    const { endpoint, payload } = web3Key
+      ? {
+          endpoint: WEB3FORMS_ENDPOINT,
+          payload: {
+            access_key: web3Key,
+            subject,
+            from_name: 'Webzad Site',
+            'Visitor Time': visitDate,
+            'Device & Platform': `${device} (${browser})`,
+            'Screen Resolution': screen,
+            'Approximate Location': location,
+            'Referral Source': referrer,
+            'Landing Page': landingPath
+          }
+        }
+      : {
+          endpoint: FORMSUBMIT_ENDPOINT,
+          payload: {
+            _subject: subject,
+            'Visitor Time': visitDate,
+            'Device & Platform': `${device} (${browser})`,
+            'Screen Resolution': screen,
+            'Approximate Location': location,
+            'Referral Source': referrer,
+            'Landing Page': landingPath,
+            _template: 'table',
+            _captcha: 'false'
+          }
+        };
+
+    const result = await (async () => {
       try {
-        const res = await fetch(FORMSUBMIT_ENDPOINT, {
+        const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(emailPayload)
+          body: JSON.stringify(payload)
         });
         const ct = res.headers.get('content-type') || '';
-        let delivered = res.ok;
-        if (res.ok && ct.includes('json')) {
+        let delivered = res.ok, reason = '';
+        if (ct.includes('json')) {
           const data = await res.json().catch(() => ({}));
-          if (String(data.success).toLowerCase() === 'false') delivered = false;
-        } else if (!ct.includes('json')) {
-          // HTML response = bot challenge or error page, not a real delivery
+          if (res.ok && (data.success === true || String(data.success).toLowerCase() === 'true')) {
+            delivered = true;
+          } else {
+            delivered = false;
+            reason = data.message || `upstream ${res.status}`;
+          }
+        } else {
           delivered = false;
+          reason = `bot challenge (${res.status})`;
         }
-        if (!delivered) console.warn('[API/notify-visitor] FormSubmit delivery failed:', res.status, ct);
-        return delivered;
+        if (!delivered) console.warn('[API/notify-visitor] email delivery failed:', reason);
+        return { delivered, reason };
       } catch (e) {
-        console.warn('[API/notify-visitor] FormSubmit dispatch failed:', e.message);
-        return false;
+        console.warn('[API/notify-visitor] email dispatch failed:', e.message);
+        return { delivered: false, reason: e.message };
       }
     })();
 
-    const delivered = await notify;
-
-    return json({ success: true, notified: true, delivered });
+    return json({ success: true, notified: true, delivered: result.delivered, ...(result.reason ? { reason: result.reason } : {}) });
   } catch (err) {
     console.error('[API/notify-visitor] Internal catch error:', err.message);
     return json({ error: 'Failed to process visitor notification' }, 500);
