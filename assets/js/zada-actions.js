@@ -107,14 +107,6 @@ function validateToggleAudioOutput(params) {
 }
 
 /**
- * Validates openDevSettings parameters.
- * @returns {{ valid: boolean, name: string, sanitized: Object }}
- */
-function validateOpenDevSettings() {
-  return { valid: true, name: 'openDevSettings', sanitized: {} };
-}
-
-/**
  * Security Dispatcher for semantic AI actions.
  */
 class ZadaActionDispatcher {
@@ -147,8 +139,6 @@ class ZadaActionDispatcher {
         return validatePrefillContactBrief(params);
       case 'toggleAudioOutput':
         return validateToggleAudioOutput(params);
-      case 'openDevSettings':
-        return validateOpenDevSettings();
       case 'dismissOverlay':
         return validateDismissOverlay();
       default:

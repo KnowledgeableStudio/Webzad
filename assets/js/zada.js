@@ -245,9 +245,7 @@ class ZadaCompanion {
     this.stateManager?.setState?.('THINKING');
     this.holoUI?.showTyping?.();
     try {
-      const devKey = this.holoUI?.getDevKey?.() || '';
       const headers = { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' };
-      if (devKey) headers['x-gemini-api-key'] = devKey;
       const allMsgs = (this.holoUI?.messages || []).filter(m => m.role !== 'system' && m.text).map(m => ({ role: m.role, content: m.text }));
       const messages = [...allMsgs];
       while (messages.length > 0 && messages[0].role === 'zada') messages.shift();
@@ -255,7 +253,7 @@ class ZadaCompanion {
       const res = await fetchFn(ZADA_API_BASE + '/api/chat', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, apiKey: devKey, context: this._buildSiteContext() })
+        body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, context: this._buildSiteContext() })
       });
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
@@ -272,8 +270,8 @@ class ZadaCompanion {
           // Empty/interrupted stream — retry once through the plain JSON path
           const retry = await fetchFn(ZADA_API_BASE + '/api/chat', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json', ...(devKey ? { 'x-gemini-api-key': devKey } : {}) },
-            body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, apiKey: devKey, context: this._buildSiteContext() })
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, context: this._buildSiteContext() })
           });
           const data = await retry.json().catch(() => ({}));
           if (!retry.ok) throw new Error(data?.error || `HTTP ${retry.status}`);
@@ -372,7 +370,6 @@ class ZadaCompanion {
         if (typeof document === 'undefined') return { success: true };
         document.querySelector('.lightbox.open .lightbox-close')?.click?.();
         document.getElementById('mobileMenu')?.classList?.remove('open');
-        this.holoUI?.closeDevSettings?.();
         this.hideGreetingBubble();
         return { success: true };
       },
@@ -384,10 +381,6 @@ class ZadaCompanion {
           this.holoUI.muteBtnEl.classList.toggle('muted', !enabled);
         }
         return { success: true, enabled };
-      },
-      openDevSettings: async () => {
-        this.holoUI?.openDevSettings?.();
-        return { success: true };
       }
     };
   }
