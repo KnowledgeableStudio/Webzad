@@ -42,7 +42,7 @@ const MIME_TYPES = {
   '.woff': 'font/woff', '.woff2': 'font/woff2'
 };
 
-const { TOOL_DEFINITIONS, SYSTEM_INSTRUCTION,
+const { TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, buildSystemInstruction,
   formatGeminiContents, extractGeminiResponse } = require('./server-gemini-tools.cjs');
 
 const rateLimitStore = new Map();
@@ -137,18 +137,29 @@ async function handleChatRequest(req, res, options = {}) {
       return sendJson(res, 401, { error: 'Gemini API key is not configured' });
     }
     const contents = formatGeminiContents(body.messages || body.message || 'Hello');
+    const instruction = buildSystemInstruction(body.context) || SYSTEM_INSTRUCTION;
+    const wantsStream = (req.headers.accept || '').includes('text/event-stream');
     const fetchFn = options.fetch || globalThis.fetch;
     let model = process.env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
     let geminiRes = null;
     for (let attempt = 0; attempt < 2; attempt++) {
-      geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
+      const mode = wantsStream ? ':streamGenerateContent?alt=sse&' : ':generateContent?';
+      geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}${mode}key=${encodeURIComponent(apiKey)}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }, contents, tools: TOOL_DEFINITIONS }),
-        signal: AbortSignal.timeout(15000)
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents, tools: TOOL_DEFINITIONS }),
+        signal: AbortSignal.timeout(20000)
       });
       if (geminiRes.status !== 503) break;
       model = 'gemini-3.1-flash-lite';
       await new Promise(r => setTimeout(r, 600));
+    }
+    if (geminiRes.ok && wantsStream && geminiRes.body) {
+      res.statusCode = 200;
+      res.setHeader('Content-Type', 'text/event-stream; charset=utf-8');
+      res.setHeader('Cache-Control', 'no-cache, no-transform');
+      for await (const chunk of geminiRes.body) res.write(chunk);
+      res.end();
+      return;
     }
     const data = await geminiRes.json();
     if (!geminiRes.ok) {

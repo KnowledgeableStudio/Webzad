@@ -702,6 +702,68 @@
   box-shadow: 0 0 16px rgba(0, 247, 255, 0.15);
 }
 
+/* --- HUD Nameplate --- */
+.zada-status-name {
+  font-family: 'Space Grotesk', sans-serif;
+  font-weight: 700;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  color: var(--zada-text);
+}
+.zada-status-sub {
+  color: var(--zada-cyan);
+  margin-left: 3px;
+}
+.zada-status-text {
+  font-family: 'Space Grotesk', monospace, sans-serif;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--zada-cyan);
+  margin-left: 8px;
+  padding-left: 8px;
+  border-left: 1px solid var(--zada-border-subtle);
+}
+
+/* --- Typing Indicator --- */
+.zada-typing {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 14px 16px;
+  align-self: flex-start;
+}
+.zada-typing-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--zada-cyan);
+  opacity: 0.35;
+  animation: zada-typing-bounce 1.2s infinite ease-in-out;
+}
+.zada-typing-dot:nth-child(2) { animation-delay: 0.15s; }
+.zada-typing-dot:nth-child(3) { animation-delay: 0.3s; }
+@keyframes zada-typing-bounce {
+  0%, 60%, 100% { opacity: 0.35; transform: translateY(0); }
+  30% { opacity: 1; transform: translateY(-3px); }
+}
+
+/* --- Streaming Message --- */
+.zada-msg.zada-streaming {
+  border-color: rgba(0, 247, 255, 0.35);
+}
+.zada-msg.zada-streaming::after {
+  content: '\258D';
+  color: var(--zada-cyan);
+  font-size: 0.85em;
+  margin-left: 2px;
+  animation: zada-cursor-blink 1s steps(2, start) infinite;
+}
+@keyframes zada-cursor-blink {
+  to { visibility: hidden; }
+}
+
 /* --- Prefers Reduced Motion --- */
 @media (prefers-reduced-motion: reduce) {
   .zada-hud, .zada-dev-modal, .zada-dev-card, .zada-mic-btn, .zada-send-btn, .zada-status-dot, .zada-pod-trigger, .zada-footer-trigger {
@@ -709,4 +771,3 @@
     animation: none !important;
   }
 }
-\n

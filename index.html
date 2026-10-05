@@ -13,7 +13,7 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://formsubmit.co https://webzad.pages.dev; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self' https://formsubmit.co;" />
 <meta name="referrer" content="strict-origin-when-cross-origin" />
 <meta http-equiv="X-Content-Type-Options" content="nosniff" />
-<meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(), payment=(), usb=(), xr-spatial-tracking=()" />
+<meta http-equiv="Permissions-Policy" content="accelerometer=(), camera=(), geolocation=(), gyroscope=(), magnetometer=(), microphone=(self), payment=(), usb=(), xr-spatial-tracking=()" />
 <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
@@ -59,6 +59,8 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 .nav-links{display:flex;align-items:center;gap:36px}
 .nav-link{font-size:.88rem;font-weight:500;color:var(--muted);transition:color .3s;position:relative}
 .nav-link:hover{color:var(--text)}.nav-link::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1px;background:var(--cyan);transition:width .3s var(--ease)}.nav-link:hover::after{width:100%}
+.nav-link.active{color:var(--text)}.nav-link.active::after{width:100%}
+.progress{position:fixed;top:0;left:0;height:2px;width:0;z-index:101;background:linear-gradient(90deg,var(--cyan),var(--purple),var(--magenta));box-shadow:0 0 12px rgba(0,247,255,.45);pointer-events:none}
 .nav-cta{padding:10px 22px;background:linear-gradient(135deg,var(--cyan),var(--purple));color:#050710;font-weight:700;font-size:.82rem;border-radius:var(--rp);transition:transform .25s var(--ease),box-shadow .35s}
 .nav-cta:hover{transform:translateY(-1px);box-shadow:0 0 30px rgba(0,247,255,.25)}
 .nav-toggle{display:none;width:40px;height:40px;align-items:center;justify-content:center;color:var(--text)}.nav-toggle svg{width:24px;height:24px}
@@ -193,6 +195,7 @@ h1,h2,h3{font-family:'Space Grotesk',sans-serif;font-weight:700;letter-spacing:-
 </head>
 <body>
 <a href="#services" class="skip-link">Skip to content</a>
+<div class="progress" id="scrollProgress" aria-hidden="true"></div>
 <nav class="nav" id="nav">
 <div class="nav-i">
 <a href="#top" class="nav-logo" translate="no" aria-label="Webzad home"><img src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" width="192" height="192" /></a>
@@ -480,8 +483,18 @@ var mobileMenu=document.getElementById('mobileMenu');
 var heroVideo=document.getElementById('heroVideo');
 
 /* Nav scroll state */
+var progress=document.getElementById('scrollProgress');
+var navLinks=document.querySelectorAll('.nav-link');
+var sectionIds=['services','automation','work','process','contact'];
 function onScroll(){
 if(window.pageYOffset>40){nav.classList.add('sc');}else{nav.classList.remove('sc');}
+/* Scroll progress */
+var max=document.documentElement.scrollHeight-window.innerHeight;
+if(progress)progress.style.width=(max>0?Math.min(100,window.pageYOffset/max*100):0)+'%';
+/* Active nav link */
+var mid=window.innerHeight*0.4,current='';
+for(var i=0;i<sectionIds.length;i++){var el=document.getElementById(sectionIds[i]);if(el){var r=el.getBoundingClientRect();if(r.top<=mid&&r.bottom>=mid){current='#'+sectionIds[i];break;}}}
+navLinks.forEach(function(a){a.classList.toggle('active',a.getAttribute('href')===current);});
 /* Hero parallax */
 if(heroVideo&&window.pageYOffset<window.innerHeight){
 heroVideo.style.transform='translateY('+(window.pageYOffset*0.35)+'px) scale('+(1+window.pageYOffset*0.00025)+')';

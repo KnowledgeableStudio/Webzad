@@ -132,6 +132,99 @@ class ZadaCompanion {
       this.dockMode = nextMode;
       this.renderer?.setDockMode?.(nextMode);
     }
+    const section = this._detectSection();
+    if (section !== this.activeSection) {
+      this.activeSection = section;
+      if (this.holoUI && SECTION_PROMPTS[section]) this.holoUI.setContextPrompts(SECTION_PROMPTS[section]);
+    }
+  }
+
+  /** Detects which site section currently occupies the viewport midpoint. */
+  _detectSection() {
+    if (typeof document === 'undefined' || typeof window === 'undefined') return this.activeSection || 'hero';
+    const map = [['top', 'hero'], ['services', 'services'], ['automation', 'automation'], ['work', 'work'], ['process', 'process'], ['contact', 'contact']];
+    const mid = window.innerHeight * 0.4;
+    for (const [id, key] of map) {
+      const el = document.getElementById(id);
+      if (!el) continue;
+      const r = el.getBoundingClientRect();
+      if (r.top <= mid && r.bottom >= mid) return key;
+    }
+    return window.pageYOffset < 200 ? 'hero' : (this.activeSection || 'hero');
+  }
+
+  /** Builds a live snapshot of the visitor's on-page context for the chat backend. */
+  _buildSiteContext() {
+    try {
+      const doc = document.documentElement;
+      const max = Math.max(1, doc.scrollHeight - window.innerHeight);
+      return {
+        section: this._detectSection(),
+        scrollPercent: Math.max(0, Math.min(100, Math.round((window.pageYOffset / max) * 100))),
+        dockMode: this.dockMode,
+        device: (window.innerWidth < 768 || /Android|iPhone|iPad|Mobile/i.test(navigator.userAgent)) ? 'mobile' : 'desktop',
+        hudOpen: Boolean(this.holoUI?.isOpen),
+        lastAction: this._lastAction || null
+      };
+    } catch { return null; }
+  }
+
+  /** Dispatches whitelisted tool calls, tracking the last action for conversational context. */
+  async _dispatchToolCalls(toolCalls) {
+    let primaryTool = null;
+    if (!Array.isArray(toolCalls) || toolCalls.length === 0) return null;
+    primaryTool = toolCalls[0];
+    for (const call of toolCalls) {
+      try {
+        await this.actionDispatcher?.dispatch?.(call);
+        this._lastAction = { name: call.name, params: call.params || call.args || {}, at: Date.now() };
+      } catch (e) { console.warn('[Zada] Action rejected:', e.message); }
+    }
+    return primaryTool;
+  }
+
+  /** Consumes a Gemini SSE stream, emitting text chunks and collecting tool calls. */
+  async _consumeChatStream(body, onText) {
+    const reader = body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = '', text = '', firstChunk = true;
+    const toolCalls = [];
+    const handleData = (jsonStr) => {
+      let data;
+      try { data = JSON.parse(jsonStr); } catch { return; }
+      const parts = data?.candidates?.[0]?.content?.parts || [];
+      for (const p of parts) {
+        if (p.text) {
+          text += p.text;
+          if (firstChunk) {
+            firstChunk = false;
+            if (!this.stateManager?.setState?.('RESPONDING')) this.stateManager?.interrupt?.('RESPONDING');
+          }
+          onText?.(p.text);
+        }
+        if (p.functionCall) toolCalls.push({ name: p.functionCall.name, params: p.functionCall.args || {}, args: p.functionCall.args || {} });
+      }
+    };
+    const flushLines = (chunk) => {
+      for (const line of chunk.split('\n')) {
+        const t = line.trim();
+        if (t.startsWith('data:')) handleData(t.slice(5).trim());
+      }
+    };
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buffer += decoder.decode(value, { stream: true });
+      let idx;
+      while ((idx = buffer.indexOf('\n\n')) >= 0) {
+        const raw = buffer.slice(0, idx);
+        buffer = buffer.slice(idx + 2);
+        flushLines(raw);
+      }
+    }
+    buffer += decoder.decode();
+    flushLines(buffer);
+    return { text, toolCalls };
   }
 
   handleMouseMove(cx, cy, iw, ih) {
@@ -150,39 +243,48 @@ class ZadaCompanion {
       this.holoUI?.addMessage?.('user', text);
     }
     this.stateManager?.setState?.('THINKING');
+    this.holoUI?.showTyping?.();
     try {
       const devKey = this.holoUI?.getDevKey?.() || '';
-      const headers = { 'Content-Type': 'application/json' };
+      const headers = { 'Content-Type': 'application/json', 'Accept': 'text/event-stream' };
       if (devKey) headers['x-gemini-api-key'] = devKey;
-      const allMsgs = (this.holoUI?.messages || []).map(m => ({ role: m.role, content: m.text }));
+      const allMsgs = (this.holoUI?.messages || []).filter(m => m.role !== 'system' && m.text).map(m => ({ role: m.role, content: m.text }));
       const messages = [...allMsgs];
       while (messages.length > 0 && messages[0].role === 'zada') messages.shift();
       const fetchFn = this.options.fetchFn || globalThis.fetch;
       const res = await fetchFn(ZADA_API_BASE + '/api/chat', {
         method: 'POST',
         headers,
-        body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, apiKey: devKey })
+        body: JSON.stringify({ messages: messages.length > 0 ? messages : allMsgs, apiKey: devKey, context: this._buildSiteContext() })
       });
-      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
         const errorMsg = data?.error || `HTTP ${res.status}`;
         console.error('[Zada] Chat API error:', res.status, errorMsg);
         throw new Error(errorMsg);
       }
-      const reply = data.text || 'Understood.';
-      let primaryTool = null;
-      if (Array.isArray(data.toolCalls) && data.toolCalls.length > 0) {
-        primaryTool = data.toolCalls[0];
-        for (const call of data.toolCalls) {
-          try { await this.actionDispatcher?.dispatch?.(call); } catch (e) { console.warn('[Zada] Action rejected:', e.message); }
-        }
+      const ct = res.headers?.get?.('content-type') || '';
+      let reply = '', primaryTool = null;
+      if (ct.includes('text/event-stream') && res.body?.getReader) {
+        const stream = this.holoUI?.startStreamMessage?.() || null;
+        const result = await this._consumeChatStream(res.body, (chunk) => stream?.append?.(chunk));
+        reply = result.text || 'Done.';
+        primaryTool = await this._dispatchToolCalls(result.toolCalls);
+        stream?.finalize?.(primaryTool);
+        if (!stream) this.holoUI?.addMessage?.('zada', reply, primaryTool);
+      } else {
+        const data = await res.json().catch(() => ({}));
+        reply = data.text || 'Understood.';
+        primaryTool = await this._dispatchToolCalls(data.toolCalls);
+        this.holoUI?.hideTyping?.();
+        this.holoUI?.addMessage?.('zada', reply, primaryTool);
       }
       if (!this.stateManager?.setState?.('RESPONDING')) this.stateManager?.interrupt?.('RESPONDING');
-      this.holoUI?.addMessage?.('zada', reply, primaryTool);
       this.audioSync?.speak?.(reply, () => {
         if (!this.stateManager?.setState?.('IDLE')) this.stateManager?.interrupt?.('IDLE');
       });
     } catch (err) {
+      this.holoUI?.hideTyping?.();
       console.error('[Zada] handleUserMessage error:', err);
       if (!this.stateManager?.setState?.('ERROR')) this.stateManager?.interrupt?.('ERROR');
       let notice = "I'm having trouble connecting right now. Please verify your API key in Developer Settings (⚙).";
@@ -231,6 +333,7 @@ class ZadaCompanion {
       prefillContactBrief: async (p) => {
         const form = (this.options.getContactForm ? this.options.getContactForm() : null) || (typeof document !== 'undefined' ? document.getElementById('contactForm') : null);
         if (form) {
+          const set = (sel, v) => { const el = form.querySelector?.(sel); if (el && v) el.value = v; };
           const select = form.querySelector ? form.querySelector('select[name="service"]') : null;
           if (select) {
             const map = {
@@ -243,12 +346,23 @@ class ZadaCompanion {
             };
             select.value = map[p.serviceType] || 'Signature Website';
           }
-          const textarea = form.querySelector ? form.querySelector('textarea[name="goals"]') : null;
-          if (textarea && p.details) textarea.value = p.details;
+          set('input[name="name"]', p.name);
+          set('input[name="email"]', p.email);
+          set('input[name="company"]', p.company);
+          set('input[name="timeline"]', p.timeline);
+          set('textarea[name="goals"]', p.details);
           const contactSec = (this.options.getElement ? this.options.getElement('contact') : null) || (typeof document !== 'undefined' ? document.getElementById('contact') : null);
           (contactSec || form).scrollIntoView?.({ behavior: 'smooth' });
         }
         return { success: true, serviceType: p.serviceType };
+      },
+      dismissOverlay: async () => {
+        if (typeof document === 'undefined') return { success: true };
+        document.querySelector('.lightbox.open .lightbox-close')?.click?.();
+        document.getElementById('mobileMenu')?.classList?.remove('open');
+        this.holoUI?.closeDevSettings?.();
+        this.hideGreetingBubble();
+        return { success: true };
       },
       toggleAudioOutput: async (p) => {
         const enabled = Boolean(p?.enabled);
@@ -314,7 +428,7 @@ class ZadaCompanion {
     promptBtn?.addEventListener?.('click', (e) => {
       e?.stopPropagation?.();
       this.hideGreetingBubble();
-      this.actionDispatcher?.dispatch?.('scrollToSection', { target: 'services' });
+      this.actionDispatcher?.dispatch?.({ name: 'scrollToSection', params: { sectionId: 'services' } })?.catch?.(() => {});
     });
 
     bubble.addEventListener?.('click', () => {

@@ -1,11 +1,25 @@
 /**
- * functions/api/chat.js - POST /api/chat Gemini proxy for Cloudflare Pages Functions.
+ * functions/api/chat.js - POST /api/chat Gemini proxy with SSE streaming for Cloudflare Pages Functions.
  */
 
-import { TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, formatGeminiContents, extractGeminiResponse } from '../_shared/gemini.js';
+import { TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, buildSystemInstruction, formatGeminiContents, extractGeminiResponse } from '../_shared/gemini.js';
 import { json, getClientIp, isRateLimited, maskSensitiveError, readJsonBody, methodNotAllowed } from '../_shared/http.js';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
+const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
+
+function geminiBody(contents, instruction) {
+  return JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents, tools: TOOL_DEFINITIONS });
+}
+
+async function callGemini(model, apiKey, contents, instruction, stream) {
+  const mode = stream ? ':streamGenerateContent?alt=sse&' : ':generateContent?';
+  return fetch(`${GEMINI_API_URL}/${model}${mode}key=${encodeURIComponent(apiKey)}`, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: geminiBody(contents, instruction),
+    signal: AbortSignal.timeout(20000)
+  });
+}
 
 export async function onRequestPost(context) {
   const { request, env } = context;
@@ -26,17 +40,26 @@ export async function onRequestPost(context) {
     }
 
     const contents = formatGeminiContents(body.data.messages || body.data.message || 'Hello');
-    let model = env.GEMINI_MODEL || 'gemini-3.1-flash-lite';
+    const instruction = buildSystemInstruction(body.data.context) || SYSTEM_INSTRUCTION;
+    const wantsStream = (request.headers.get('accept') || '').includes('text/event-stream');
+    let model = env.GEMINI_MODEL || DEFAULT_MODEL;
     let geminiRes = null;
     for (let attempt = 0; attempt < 2; attempt++) {
-      geminiRes = await fetch(`${GEMINI_API_URL}/${model}:generateContent?key=${encodeURIComponent(apiKey)}`, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: SYSTEM_INSTRUCTION }] }, contents, tools: TOOL_DEFINITIONS }),
-        signal: AbortSignal.timeout(15000)
-      });
+      geminiRes = await callGemini(model, apiKey, contents, instruction, wantsStream);
       if (geminiRes.status !== 503) break;
-      model = 'gemini-3.1-flash-lite';
+      model = DEFAULT_MODEL;
       await new Promise(r => setTimeout(r, 600));
+    }
+
+    if (geminiRes.ok && wantsStream) {
+      return new Response(geminiRes.body, {
+        status: 200,
+        headers: {
+          'Content-Type': 'text/event-stream; charset=utf-8',
+          'Cache-Control': 'no-cache, no-transform',
+          'X-Accel-Buffering': 'no'
+        }
+      });
     }
 
     const data = await geminiRes.json();

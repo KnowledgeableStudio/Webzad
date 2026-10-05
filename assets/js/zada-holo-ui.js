@@ -16,6 +16,16 @@ const STORAGE_KEY = 'webzad_dev_gemini_key';
 /** Resolves cross-origin API base: webzad.dev on static hosting proxies API calls to the Pages Functions origin. */
 const ZADA_API_BASE = (typeof location !== 'undefined' && /^(www\.)?webzad\.dev$/.test(location.hostname)) ? 'https://webzad.pages.dev' : '';
 
+/** Human-friendly labels for whitelisted tool actions shown in the UI. */
+const TOOL_LABELS = Object.freeze({
+  scrollToSection: 'Navigated to section',
+  openProjectPreview: 'Opened project preview',
+  prefillContactBrief: 'Filled project brief',
+  toggleAudioOutput: 'Toggled voice output',
+  openDevSettings: 'Opened developer settings',
+  dismissOverlay: 'Dismissed overlay'
+});
+
 function escapeHtml(str) {
   return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;').replace(/'/g, '&#39;');
 }
@@ -45,7 +55,7 @@ class ZadaHoloUI {
     this.onVerifyKey = typeof options.onVerifyKey === 'function' ? options.onVerifyKey : null;
     this.isOpen = this.isDevModalOpen = this.isListening = false; this.messages = []; this.status = 'READY';
     this.promptChips = Array.isArray(options.promptChips) ? [...options.promptChips] : [...DEFAULT_PROMPT_CHIPS];
-    this.container = this.hudEl = this.dialogueEl = this.inputEl = this.statusEl = this.statusDotEl = this.chipsContainerEl = this.micBtnEl = this.muteBtnEl = this.devModalEl = this.devKeyInputEl = this.devStatusEl = this.recognition = this._createElement = null;
+    this.container = this.hudEl = this.dialogueEl = this.inputEl = this.statusEl = this.statusDotEl = this.chipsContainerEl = this.micBtnEl = this.muteBtnEl = this.devModalEl = this.devKeyInputEl = this.devStatusEl = this.recognition = this._createElement = this.typingEl = null;
     this._boundKeyDown = (e) => this._handleKeyDown(e);
     this._stateUnsubscribe = this.stateManager?.subscribe?.((st) => this.updateStatus(st)) || null;
   }
@@ -73,6 +83,38 @@ class ZadaHoloUI {
     const validRole = role === 'user' || role === 'zada' ? role : 'system';
     const message = { role: validRole, text: String(text || ''), toolCall: toolCall || null, timestamp: Date.now() };
     this.messages.push(message); if (this.dialogueEl) this._renderMessageBubble(message);
+    return message;
+  }
+  showTyping() {
+    this.hideTyping();
+    const c = this._createElement || ((t) => (typeof document !== 'undefined' ? document.createElement(t) : null));
+    const el = _createNode(c, 'div', 'zada-msg zada-msg-zada zada-typing', null, this.dialogueEl);
+    if (el) { el.innerHTML = '<span class="zada-typing-dot"></span><span class="zada-typing-dot"></span><span class="zada-typing-dot"></span>'; this.typingEl = el; }
+    if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight;
+  }
+  hideTyping() {
+    if (this.typingEl?.parentNode) this.typingEl.parentNode.removeChild(this.typingEl);
+    this.typingEl = null;
+  }
+  /**
+   * Opens a live-streaming zada message bubble; returns a controller to append text chunks.
+   * @returns {{append: Function, finalize: Function, message: Object}}
+   */
+  startStreamMessage() {
+    this.hideTyping();
+    const message = this.addMessage('zada', '');
+    const bubble = this.dialogueEl?.lastElementChild || null;
+    if (bubble) bubble.classList.add('zada-streaming');
+    return {
+      message,
+      append: (chunk) => {
+        message.text += String(chunk || '');
+        if (bubble) { bubble.innerHTML = sanitizeMarkdown(message.text); this.dialogueEl && (this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight); }
+      },
+      finalize: (toolCall = null) => {
+        if (bubble) { bubble.classList.remove('zada-streaming'); this._renderMessageBubbleContent(bubble, message, toolCall); }
+      }
+    };
   }
   updateStatus(state) {
     const label = ZadaHoloTelemetryMap[state] || ZadaHoloTelemetryMap.IDLE;
@@ -143,7 +185,10 @@ class ZadaHoloUI {
   _buildHudMarkup(c) {
     this.hudEl = _createNode(c, 'div', 'zada-hud');
     const hdr = _createNode(c, 'div', 'zada-hud-header', null, this.hudEl), pill = _createNode(c, 'div', 'zada-status-pill', null, hdr), act = _createNode(c, 'div', 'zada-hud-actions', null, hdr);
-    this.statusDotEl = _createNode(c, 'span', 'zada-status-dot', null, pill); this.statusEl = _createNode(c, 'span', null, '● READY', pill);
+    this.statusDotEl = _createNode(c, 'span', 'zada-status-dot', null, pill);
+    const nameplate = _createNode(c, 'span', 'zada-status-name', null, pill); nameplate.innerHTML = 'ZADA<span class="zada-status-sub">AI</span>';
+    this.statusEl = _createNode(c, 'span', 'zada-status-text', '● READY', pill);
+    _createNode(c, 'button', 'zada-btn-icon zada-btn-dev-trigger', '⚙', act, { 'aria-label': 'Developer Settings' });
     this.muteBtnEl = _createNode(c, 'button', 'zada-btn-icon zada-btn-mute', '🔊', act, { 'aria-label': 'Toggle Voice' });
     _createNode(c, 'button', 'zada-btn-icon zada-btn-close', '✕', act, { 'aria-label': 'Close HUD' });
     this.dialogueEl = _createNode(c, 'div', 'zada-dialogue', null, this.hudEl); this.chipsContainerEl = _createNode(c, 'div', 'zada-chips', null, this.hudEl);
@@ -195,10 +240,17 @@ class ZadaHoloUI {
     const c = this._createElement || ((t) => (typeof document !== 'undefined' ? document.createElement(t) : null));
     const bubble = _createNode(c, 'div', `zada-msg zada-msg-${msg.role}`, null, this.dialogueEl);
     if (!bubble) return;
+    this._renderMessageBubbleContent(bubble, msg, msg.toolCall);
+    if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight;
+  }
+  _renderMessageBubbleContent(bubble, msg, toolCall = null) {
+    if (!bubble) return;
     let html = sanitizeMarkdown(msg.text);
-    if (msg.toolCall?.name) {
-      const p = msg.toolCall.params ? Object.values(msg.toolCall.params)[0] || '' : '';
-      html += `<div class="zada-tool-badge">⚡ Action: ${escapeHtml(msg.toolCall.name)}(${escapeHtml(p)})</div>`;
+    const call = toolCall || msg.toolCall;
+    if (call?.name) {
+      msg.toolCall = call;
+      const label = TOOL_LABELS[call.name] || call.name;
+      html += `<div class="zada-tool-badge">⚡ ${escapeHtml(label)}</div>`;
     }
     bubble.innerHTML = html;
     if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight;

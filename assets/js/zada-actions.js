@@ -66,17 +66,31 @@ function validatePrefillContactBrief(params) {
   }
 
   // Strip potential script or HTML tags and limit length to prevent prompt injection or UI overflow
+  const clean = (v, max) => String(v || '').replace(/<[^>]*>?/gm, '').trim().slice(0, max);
   const rawDetails = String(params?.details || '');
   const sanitizedDetails = rawDetails.replace(/<[^>]*>?/gm, '').slice(0, 500);
+  const email = clean(params?.email, 120);
 
   return {
     valid: true,
     name: 'prefillContactBrief',
     sanitized: {
       serviceType: serviceType || 'signature-website',
-      details: sanitizedDetails
+      details: sanitizedDetails,
+      name: clean(params?.name, 100),
+      email: /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) ? email : '',
+      company: clean(params?.company, 120),
+      timeline: clean(params?.timeline, 100)
     }
   };
+}
+
+/**
+ * Validates dismissOverlay parameters.
+ * @returns {{ valid: boolean, name: string, sanitized: Object }}
+ */
+function validateDismissOverlay() {
+  return { valid: true, name: 'dismissOverlay', sanitized: {} };
 }
 
 /**
@@ -135,6 +149,8 @@ class ZadaActionDispatcher {
         return validateToggleAudioOutput(params);
       case 'openDevSettings':
         return validateOpenDevSettings();
+      case 'dismissOverlay':
+        return validateDismissOverlay();
       default:
         return { valid: false, reason: `Forbidden or unknown action: ${name}` };
     }
