@@ -146,7 +146,8 @@ async function handleChatRequest(req, res, options = {}) {
       const mode = wantsStream ? ':streamGenerateContent?alt=sse&' : ':generateContent?';
       geminiRes = await fetchFn(`${GEMINI_API_URL}/${model}${mode}key=${encodeURIComponent(apiKey)}`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents, tools: TOOL_DEFINITIONS }),
+        body: JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents, tools: TOOL_DEFINITIONS,
+          generationConfig: { thinkingConfig: { thinkingBudget: 0 }, maxOutputTokens: 900 } }),
         signal: AbortSignal.timeout(20000)
       });
       if (geminiRes.status !== 503) break;

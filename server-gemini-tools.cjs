@@ -88,7 +88,7 @@ function buildSystemInstruction(context) {
 }
 
 /** Formats chat history into Gemini contents schema clamped to maxTurns. */
-function formatGeminiContents(rawMessages, maxTurns = 20) {
+function formatGeminiContents(rawMessages, maxTurns = 14) {
   const list = Array.isArray(rawMessages) ? rawMessages : [{ role: 'user', content: String(rawMessages || '') }];
   return list.slice(-maxTurns).map(m => ({
     role: (m.role === 'model' || m.role === 'zada' || m.sender === 'zada' || m.role === 'assistant') ? 'model' : 'user',

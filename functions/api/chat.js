@@ -9,7 +9,12 @@ const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models'
 const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
 
 function geminiBody(contents, instruction) {
-  return JSON.stringify({ systemInstruction: { parts: [{ text: instruction }] }, contents, tools: TOOL_DEFINITIONS });
+  return JSON.stringify({
+    systemInstruction: { parts: [{ text: instruction }] },
+    contents,
+    tools: TOOL_DEFINITIONS,
+    generationConfig: { thinkingConfig: { thinkingBudget: 0 }, maxOutputTokens: 900 }
+  });
 }
 
 async function callGemini(model, apiKey, contents, instruction, stream) {
