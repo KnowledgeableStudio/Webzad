@@ -3,10 +3,29 @@
  */
 
 import { TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, buildSystemInstruction, formatGeminiContents, extractGeminiResponse } from '../_shared/gemini.js';
-import { json, getClientIp, isRateLimited, maskSensitiveError, readJsonBody, methodNotAllowed } from '../_shared/http.js';
+import { json, getClientIp, checkRateLimit, maskSensitiveError, readJsonBody, methodNotAllowed } from '../_shared/http.js';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 const DEFAULT_MODEL = 'gemini-3.1-flash-lite';
+const TURNSTILE_VERIFY_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
+
+/** Optional Turnstile bot check — active only when TURNSTILE_SECRET_KEY is configured. */
+async function verifyTurnstile(token, secret, ip) {
+  if (!secret) return true; // not configured — skip
+  if (!token || typeof token !== 'string' || token.length > 2048) return false;
+  try {
+    const res = await fetch(TURNSTILE_VERIFY_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ secret, response: token, remoteip: ip }).toString(),
+      signal: AbortSignal.timeout(5000)
+    });
+    const data = await res.json().catch(() => ({}));
+    return res.ok && data.success === true;
+  } catch {
+    return false;
+  }
+}
 
 function geminiBody(contents, instruction) {
   return JSON.stringify({
@@ -35,12 +54,18 @@ async function callGemini(model, apiKey, contents, instruction, stream) {
 export async function onRequestPost(context) {
   const { request, env } = context;
   const ip = getClientIp(request);
-  if (isRateLimited(ip)) return json({ error: 'Too Many Requests: Rate limit exceeded (max 15/min)' }, 429);
+  if (await checkRateLimit(request, env)) return json({ error: 'Too Many Requests: Rate limit exceeded (max 15/min)' }, 429);
 
   let apiKey = '';
   try {
     const body = await readJsonBody(request);
     if (body.response) return body.response;
+
+    const tsSecret = env.TURNSTILE_SECRET_KEY || '';
+    if (tsSecret && !(await verifyTurnstile(body.data['cf-turnstile-response'] || body.data.turnstileToken, tsSecret, ip))) {
+      console.warn('[API/chat] 403: Turnstile verification failed');
+      return json({ error: 'Bot verification failed. Please refresh and try again.' }, 403);
+    }
 
     const headerKey = request.headers.get('x-gemini-api-key') || '';
     const serverKey = (env.GEMINI_API_KEY && env.GEMINI_API_KEY !== 'undefined') ? env.GEMINI_API_KEY : '';

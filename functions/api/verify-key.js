@@ -2,14 +2,14 @@
  * functions/api/verify-key.js - POST /api/verify-key to test developer or server API key.
  */
 
-import { json, getClientIp, isRateLimited, readJsonBody, methodNotAllowed } from '../_shared/http.js';
+import { json, getClientIp, checkRateLimit, readJsonBody, methodNotAllowed } from '../_shared/http.js';
 
 const GEMINI_API_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 export async function onRequestPost(context) {
   const { request, env } = context;
   const ip = getClientIp(request);
-  if (isRateLimited(ip)) return json({ error: 'Too Many Requests: Rate limit exceeded (max 15/min)' }, 429);
+  if (await checkRateLimit(request, env)) return json({ error: 'Too Many Requests: Rate limit exceeded (max 15/min)' }, 429);
 
   try {
     const body = await readJsonBody(request);

@@ -1,3 +1,12 @@
 name = "webzad"
 pages_build_output_dir = ".deploy"
 compatibility_date = "2026-10-01"
+
+# Edge-enforced rate limit binding (globally consistent, unlike the per-isolate
+# in-memory fallback in _shared/http.js). If the platform doesn't attach it,
+# env.RATE_LIMITER is undefined and the in-memory limiter still applies.
+[[unsafe.bindings]]
+name = "RATE_LIMITER"
+type = "ratelimit"
+namespace_id = "webzad-api"
+simple = { limit = 30, period = 60 }

@@ -73,3 +73,20 @@ export async function readJsonBody(request) {
 export function methodNotAllowed() {
   return new Response('Method Not Allowed', { status: 405, headers: { 'Allow': 'POST' } });
 }
+
+/**
+ * Edge rate-limit check: uses the globally-consistent RATE_LIMITER binding when
+ * the platform attaches it, otherwise falls back to the per-isolate limiter.
+ */
+export async function checkRateLimit(request, env) {
+  const ip = getClientIp(request);
+  if (env?.RATE_LIMITER?.limit) {
+    try {
+      const { success } = await env.RATE_LIMITER.limit({ key: ip });
+      return !success;
+    } catch {
+      // binding failure shouldn't take the API down — fall back to in-memory
+    }
+  }
+  return isRateLimited(ip);
+}

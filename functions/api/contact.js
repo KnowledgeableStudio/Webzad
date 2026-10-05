@@ -4,7 +4,7 @@
  * (access key stays secret; FormSubmit is not used — it bot-challenges Workers).
  */
 
-import { json, getClientIp, isRateLimited, readJsonBody, methodNotAllowed } from '../_shared/http.js';
+import { json, getClientIp, checkRateLimit, readJsonBody, methodNotAllowed } from '../_shared/http.js';
 
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,7 +20,7 @@ const block = (v, max = 4000) => String(v || '').replace(/\r/g, '').trim().slice
 export async function onRequestPost(context) {
   const { request, env } = context;
   const ip = getClientIp(request);
-  if (isRateLimited(ip)) return json({ error: 'Too Many Requests: Rate limit exceeded (max 15/min)' }, 429);
+  if (await checkRateLimit(request, env)) return json({ error: 'Too Many Requests: Rate limit exceeded (max 15/min)' }, 429);
 
   try {
     const body = await readJsonBody(request);

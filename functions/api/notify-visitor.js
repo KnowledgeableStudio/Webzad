@@ -2,7 +2,7 @@
  * functions/api/notify-visitor.js - POST /api/notify-visitor FormSubmit email dispatch.
  */
 
-import { json, getClientIp, isRateLimited, readJsonBody, methodNotAllowed } from '../_shared/http.js';
+import { json, getClientIp, checkRateLimit, readJsonBody, methodNotAllowed } from '../_shared/http.js';
 
 const FORMSUBMIT_ENDPOINT = 'https://formsubmit.co/ajax/f11c4df9cac5fcb3a134c796bf5ee19c';
 const WEB3FORMS_ENDPOINT = 'https://api.web3forms.com/submit';
@@ -30,7 +30,7 @@ function extractLocation(request) {
 export async function onRequestPost(context) {
   const { request } = context;
   const ip = getClientIp(request);
-  if (isRateLimited(ip)) return json({ error: 'Too Many Requests' }, 429);
+  if (await checkRateLimit(request, context.env)) return json({ error: 'Too Many Requests' }, 429);
 
   try {
     const body = await readJsonBody(request);
