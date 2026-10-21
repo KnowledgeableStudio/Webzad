@@ -35,6 +35,11 @@ export function isRateLimited(ip, windowMs = RATE_LIMIT_WINDOW_MS, maxRequests =
     return true;
   }
   timestamps.push(now);
+  // Bound the map under distributed-IP floods: evict expired keys first, then oldest.
+  if (rateLimitStore.size >= 20000) {
+    for (const [key, values] of rateLimitStore) if (!values.some(t => now - t < windowMs)) rateLimitStore.delete(key);
+    while (rateLimitStore.size >= 20000) rateLimitStore.delete(rateLimitStore.keys().next().value);
+  }
   rateLimitStore.set(ip, timestamps);
   return false;
 }

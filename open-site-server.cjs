@@ -62,6 +62,11 @@ function isRateLimited(ip, windowMs = RATE_LIMIT_WINDOW_MS, maxRequests = RATE_L
     return true;
   }
   timestamps.push(now);
+  // Bound the map under distributed-IP floods: evict expired keys first, then oldest.
+  if (rateLimitStore.size >= 20000) {
+    for (const [key, values] of rateLimitStore) if (!values.some(t => now - t < windowMs)) rateLimitStore.delete(key);
+    while (rateLimitStore.size >= 20000) rateLimitStore.delete(rateLimitStore.keys().next().value);
+  }
   rateLimitStore.set(ip, timestamps);
   return false;
 }
@@ -255,6 +260,11 @@ async function handleVisitorNotification(req, res, options = {}) {
       return sendJson(res, 200, { success: true, notified: false, reason: 'cooldown' });
     }
 
+    // Bound dedup memory: entries past cooldown are useless, then cap oldest-first.
+    if (visitorDedupStore.size >= 20000) {
+      for (const [key, ts] of visitorDedupStore) if (now - ts >= VISITOR_COOLDOWN_MS) visitorDedupStore.delete(key);
+      while (visitorDedupStore.size >= 20000) visitorDedupStore.delete(visitorDedupStore.keys().next().value);
+    }
     visitorDedupStore.set(hashKey, now);
 
     const location = extractLocationFromHeaders(req.headers);
@@ -315,7 +325,8 @@ async function handleVisitorNotification(req, res, options = {}) {
           'Content-Type': 'application/json',
           'Accept': 'application/json'
         },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(10000)
       });
       const ct = notifyRes.headers.get('content-type') || '';
       if (ct.includes('json')) {

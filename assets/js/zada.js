@@ -392,15 +392,15 @@ class ZadaCompanion {
       this.holoUI?.hideTyping?.();
       console.error('[Zada] handleUserMessage error:', err);
       if (!this.stateManager?.setState?.('ERROR')) this.stateManager?.interrupt?.('ERROR');
-      let notice = "I'm having trouble connecting right now. Please verify your API key in Developer Settings (⚙).";
+      let notice = "I'm having trouble connecting right now. Please try again in a moment, or reach us directly at knowledgablellc@gmail.com.";
       if (err.message && (err.message.toLowerCase().includes('prepayment') || err.message.toLowerCase().includes('credits') || err.message.includes('402'))) {
         notice = "Google AI Studio notice: Your prepayment credits are depleted. Please visit https://ai.studio/projects to manage your project billing.";
       } else if (err.message && (err.message.toLowerCase().includes('high demand') || err.message.includes('503'))) {
         notice = "Google Gemini is currently experiencing a brief demand spike. Please ask again in a moment.";
       } else if (err.message && (err.message.toLowerCase().includes('key') || err.message.includes('401'))) {
-        notice = "Gemini API key is missing or invalid. Please open Developer Settings (⚙) to enter your Gemini API key.";
+        notice = "My AI connection isn't configured on this site right now. You can still reach the team at knowledgablellc@gmail.com.";
       } else if (err.message && !err.message.startsWith('HTTP')) {
-        notice = `I'm having trouble connecting right now: ${err.message}. Please check Developer Settings (⚙).`;
+        notice = `I'm having trouble connecting right now: ${err.message}. You can also reach us at knowledgablellc@gmail.com.`;
       }
       this.holoUI?.addMessage?.('zada', notice);
       const errTimer = setTimeout(() => {
