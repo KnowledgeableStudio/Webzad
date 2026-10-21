@@ -1,0 +1,58 @@
+TAP version 13
+# Subtest: one hero h1 and exact approved positioning
+ok 1 - one hero h1 and exact approved positioning
+  ---
+  duration_ms: 1.42454
+  type: 'test'
+  ...
+# Subtest: existing section IDs and contact field contracts survive
+ok 2 - existing section IDs and contact field contracts survive
+  ---
+  duration_ms: 0.492781
+  type: 'test'
+  ...
+# Subtest: original logo and real direct contact remain
+ok 3 - original logo and real direct contact remain
+  ---
+  duration_ms: 0.098078
+  type: 'test'
+  ...
+# Subtest: hero contains all three working anchor actions
+ok 4 - hero contains all three working anchor actions
+  ---
+  duration_ms: 1.011479
+  type: 'test'
+  ...
+# Subtest: no duplicate IDs or pretend anchor buttons
+ok 5 - no duplicate IDs or pretend anchor buttons
+  ---
+  duration_ms: 0.404077
+  type: 'test'
+  ...
+# Subtest: each service action has a real preserved select value
+ok 6 - each service action has a real preserved select value
+  ---
+  duration_ms: 0.451919
+  type: 'test'
+  ...
+# Subtest: motion is visible and the hero does not force video download/autoplay
+ok 7 - motion is visible and the hero does not force video download/autoplay
+  ---
+  duration_ms: 0.311408
+  type: 'test'
+  ...
+# Subtest: site uses actual semantic main, adequate metadata, and no unverified sample metrics
+ok 8 - site uses actual semantic main, adequate metadata, and no unverified sample metrics
+  ---
+  duration_ms: 0.204126
+  type: 'test'
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 8
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 58.870632

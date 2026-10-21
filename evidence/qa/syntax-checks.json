@@ -1,0 +1,277 @@
+[
+  {
+    "file": "assets/js/contact-form.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/main.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/not-found.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/portfolio.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/site-motion.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-actions.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-audio.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-aura.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-holo-ui.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-motion.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-renderer.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-state.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada-visitor.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "assets/js/zada.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "functions/_middleware.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "functions/_shared/gemini.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "functions/_shared/http.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "functions/api/chat.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "functions/api/contact.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "functions/api/notify-visitor.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "functions/api/verify-key.js",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "deploy-prod.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "open-site-server.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "server-gemini-tools.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "server-public-paths.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/assets-verify.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/capture-node.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/cloudflare-contact.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/contact-form.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/deploy-staging.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/page-contract.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/portfolio-assets.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/portfolio-schema-parity.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/portfolio.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/release-contract.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/server-chat.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/server-contact.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/server-knowledge.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/server-static.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/server-visitor.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/site-motion.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/visitor-storage-denied.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-actions.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-audio.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-aura.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-holo-ui.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-motion.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-orchestration.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-renderer-sanity.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-startup.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-state.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "test/zada-visitor.test.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "tools/capture-portfolio.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "tools/check-portfolio.cjs",
+    "passed": true,
+    "error": ""
+  },
+  {
+    "file": "tools/test.cjs",
+    "passed": true,
+    "error": ""
+  }
+]

@@ -1,3 +1,12 @@
 @echo off
+setlocal
 cd /d "%~dp0"
-node "%~dp0open-site-server.cjs" > "%~dp0open-site-server.out.log" 2> "%~dp0open-site-server.err.log"
+where node >nul 2>nul
+if errorlevel 1 (
+  echo Node.js 22.16 or later is required. Install it from nodejs.org, then run this file again.
+  pause
+  exit /b 1
+)
+node open-site-server.cjs --open
+if errorlevel 1 pause
+endlocal

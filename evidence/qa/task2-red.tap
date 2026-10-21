@@ -1,0 +1,181 @@
+TAP version 13
+# Subtest: four distinct verified capture sets satisfy integrity checks
+not ok 1 - four distinct verified capture sets satisfy integrity checks
+  ---
+  duration_ms: 122.1418
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:19:1'
+  failureType: 'testCodeFailure'
+  error: 'portfolio validator is not implemented'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validator (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:6:29)
+    /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:19:117
+    withFixture (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:18:71)
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:19:73)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: missing image fails release
+not ok 2 - missing image fails release
+  ---
+  duration_ms: 120.618281
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:20:1'
+  failureType: 'testCodeFailure'
+  error: 'portfolio validator is not implemented'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validator (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:6:29)
+    /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:20:151
+    withFixture (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:18:71)
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:20:40)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: text renamed PNG is rejected even with matching hash
+not ok 3 - text renamed PNG is rejected even with matching hash
+  ---
+  duration_ms: 116.987795
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:21:1'
+  failureType: 'testCodeFailure'
+  error: 'portfolio validator is not implemented'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validator (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:6:29)
+    /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:21:305
+    withFixture (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:18:71)
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:21:65)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: duplicate screenshot reuse is rejected
+not ok 4 - duplicate screenshot reuse is rejected
+  ---
+  duration_ms: 96.548855
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:22:1'
+  failureType: 'testCodeFailure'
+  error: 'portfolio validator is not implemented'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validator (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:6:29)
+    /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:22:241
+    withFixture (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:18:71)
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:22:51)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: blocked page and incomplete provenance never pass
+not ok 5 - blocked page and incomplete provenance never pass
+  ---
+  duration_ms: 95.398275
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:23:1'
+  failureType: 'testCodeFailure'
+  error: 'portfolio validator is not implemented'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validator (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:6:29)
+    /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:23:208
+    withFixture (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:18:71)
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:23:62)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: wrong destination, missing secondary and escaping path are rejected
+not ok 6 - wrong destination, missing secondary and escaping path are rejected
+  ---
+  duration_ms: 89.321404
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:24:1'
+  failureType: 'testCodeFailure'
+  error: 'portfolio validator is not implemented'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validator (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:6:29)
+    /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:24:325
+    withFixture (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:18:71)
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:24:80)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: pending screenshots cannot return ok true
+not ok 7 - pending screenshots cannot return ok true
+  ---
+  duration_ms: 0.237277
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:25:1'
+  failureType: 'testCodeFailure'
+  error: 'portfolio validator is not implemented'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    validator (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:6:29)
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:25:75)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 0
+# fail 7
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 709.045736

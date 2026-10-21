@@ -57,11 +57,31 @@ export async function readJsonBody(request) {
   if (Number(request.headers.get('content-length') || 0) > MAX_BODY_BYTES) {
     return { response: json({ error: 'Payload Too Large: Maximum allowed size is 64KB' }, 413) };
   }
-  const raw = (await request.text()).trim();
-  if (!raw) return { data: {} };
-  if (raw.length > MAX_BODY_BYTES) {
-    return { response: json({ error: 'Payload Too Large: Maximum allowed size is 64KB' }, 413) };
+  // Bound streamed bytes before decoding; a character count undercounts UTF-8 input.
+  let raw = '';
+  if (request.body?.getReader) {
+    const reader = request.body.getReader();
+    const chunks = []; let received = 0;
+    try {
+      while (true) {
+        const {done,value} = await reader.read();
+        if (done) break;
+        received += value.byteLength;
+        if (received > MAX_BODY_BYTES) {
+          await reader.cancel();
+          return {response:json({error:'Payload Too Large: Maximum allowed size is 64KB'},413)};
+        }
+        chunks.push(value);
+      }
+    } finally { reader.releaseLock(); }
+    const bytes = new Uint8Array(received); let offset = 0;
+    for (const chunk of chunks) {bytes.set(chunk,offset);offset+=chunk.byteLength;}
+    raw = new TextDecoder().decode(bytes).trim();
+  } else {
+    raw = (await request.text()).trim();
+    if (new TextEncoder().encode(raw).byteLength > MAX_BODY_BYTES) return {response:json({error:'Payload Too Large: Maximum allowed size is 64KB'},413)};
   }
+  if (!raw) return {data:{}};
   try {
     return { data: JSON.parse(raw) };
   } catch {

@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: four distinct verified capture sets satisfy integrity checks
+ok 1 - four distinct verified capture sets satisfy integrity checks
+  ---
+  duration_ms: 140.716204
+  type: 'test'
+  ...
+# Subtest: missing image fails release
+ok 2 - missing image fails release
+  ---
+  duration_ms: 122.992845
+  type: 'test'
+  ...
+# Subtest: text renamed PNG is rejected even with matching hash
+ok 3 - text renamed PNG is rejected even with matching hash
+  ---
+  duration_ms: 124.599875
+  type: 'test'
+  ...
+# Subtest: duplicate screenshot reuse is rejected
+ok 4 - duplicate screenshot reuse is rejected
+  ---
+  duration_ms: 115.644502
+  type: 'test'
+  ...
+# Subtest: blocked page and incomplete provenance never pass
+ok 5 - blocked page and incomplete provenance never pass
+  ---
+  duration_ms: 112.087904
+  type: 'test'
+  ...
+# Subtest: wrong destination, missing secondary and escaping path are rejected
+ok 6 - wrong destination, missing secondary and escaping path are rejected
+  ---
+  duration_ms: 110.696552
+  type: 'test'
+  ...
+# Subtest: pending screenshots cannot return ok true
+ok 7 - pending screenshots cannot return ok true
+  ---
+  duration_ms: 0.350136
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 780.314025

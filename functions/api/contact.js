@@ -76,7 +76,7 @@ export async function onRequestPost(context) {
     return json({ success: true });
   } catch (err) {
     console.error('[API/contact] Internal error:', err.message);
-    return json({ error: 'Could not send your message right now. Please email knowledgablellc@gmail.com directly.' }, 500);
+    return json({ error: 'Could not send your message right now. Please email knowledgablellc@gmail.com directly.' }, 502);
   }
 }
 

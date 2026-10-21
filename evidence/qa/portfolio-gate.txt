@@ -1,0 +1,17 @@
+Portfolio release BLOCKED:
+- zaddy: live screenshots are not captured
+- zaddy/desktop: capture missing
+- zaddy/secondary: capture missing
+- zaddy/mobile: capture missing
+- la-socieda: live screenshots are not captured
+- la-socieda/desktop: capture missing
+- la-socieda/secondary: capture missing
+- la-socieda/mobile: capture missing
+- one-of-six: live screenshots are not captured
+- one-of-six/desktop: capture missing
+- one-of-six/secondary: capture missing
+- one-of-six/mobile: capture missing
+- brg: live screenshots are not captured
+- brg/desktop: capture missing
+- brg/secondary: capture missing
+- brg/mobile: capture missing

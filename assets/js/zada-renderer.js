@@ -34,6 +34,7 @@ class ZadaRenderer {
   /** Initializes Three.js scene, transparent canvas, lighting, and event hooks. */
   init(containerEl, options = {}) {
     if (!containerEl) return false;
+    this._disposed = false;
     this.options = { ...this.options, ...options };
     this.THREE = this.options.THREE || this.THREE || (typeof window !== 'undefined' ? window.THREE : null);
     if (!this.THREE) return false;
@@ -46,7 +47,8 @@ class ZadaRenderer {
     this.camera.position.z = ZadaRendererConfig.CAMERA_Z;
     this.renderer = new this.THREE.WebGLRenderer({ alpha: true, antialias: true, premultipliedAlpha: true });
     this.renderer.setClearColor(ZadaRendererConfig.CLEAR_COLOR, ZadaRendererConfig.CLEAR_ALPHA);
-    this.renderer.setPixelRatio(this.calculateDPR(this.detectMobile())); this.renderer.setSize(w, h);
+    const size = ZadaRenderer.calculateRenderSize(w, h, this.detectMobile());
+    this.renderer.setPixelRatio(size.pixelRatio); this.renderer.setSize(size.width, size.height);
     this.canvas = this.renderer.domElement;
     if (this.canvas?.style) Object.assign(this.canvas.style, { display: 'block', width: '100%', height: '100%', background: 'transparent' });
     if (typeof containerEl.appendChild === 'function') containerEl.appendChild(this.canvas);
@@ -73,6 +75,21 @@ class ZadaRenderer {
     if (typeof IntersectionObserver !== 'undefined' && this.container) {
       this.intersectionObserver = new IntersectionObserver((e) => { if (e?.[0]) this.handleIntersectionChange(e[0].isIntersecting); });
       this.intersectionObserver.observe(this.container);
+    }
+  }
+
+  /** Bounds total GPU drawing-buffer area, including very large/high-DPR displays. */
+  static calculateRenderSize(width, height, isMobile = false, dpr = null) {
+    const w = Math.max(1, Number.isFinite(width) ? Math.round(width) : 300);
+    const h = Math.max(1, Number.isFinite(height) ? Math.round(height) : 300);
+    const raw = Number.isFinite(dpr) ? dpr : (typeof window !== 'undefined' ? window.devicePixelRatio : 1) || 1;
+    return {width:w, height:h, pixelRatio:Math.min(Math.max(1,raw), isMobile ? 1.25 : 1.75, Math.sqrt(1500000 / (w * h)))};
+  }
+
+  renderStatic() {
+    if (this.renderer && this.scene && this.camera && !this.isContextLost) {
+      this._updateKinematics(1);
+      this.renderer.render(this.scene, this.camera);
     }
   }
 
@@ -130,6 +147,14 @@ class ZadaRenderer {
       const Loader = this.options.GLTFLoader || (typeof window !== 'undefined' ? window.GLTFLoader : null);
       if (!Loader) return reject(new Error('GLTFLoader not available'));
       new Loader().load(url, (gltf) => {
+        if (this._disposed) {
+          (gltf.scene || gltf).traverse?.(object => {
+            object.geometry?.dispose?.();
+            (Array.isArray(object.material) ? object.material : [object.material]).forEach(material => material?.dispose?.());
+          });
+          reject(new Error('Renderer disposed during model loading'));
+          return;
+        }
         if (this.model && this.modelGroup) {
           this.modelGroup.remove(this.model);
           this.model.traverse?.((o) => {
@@ -212,7 +237,7 @@ class ZadaRenderer {
     const isMob = this.detectMobile() || (typeof window !== 'undefined' && window.innerWidth < 768);
     const baseTransforms = (this.options && this.options.dockTransforms) || ZadaRendererConfig.DOCK_TRANSFORMS;
     const base = baseTransforms[this.dockMode] || baseTransforms.hero;
-    if (isMob) {
+    if (isMob && !this.options.embeddedStage) {
       if (this.dockMode === 'dock') return { x: 0.52, y: -0.72, z: 0, scale: 0.13 };
       return { x: 0.48, y: -0.58, z: 0, scale: 0.14 };
     }
@@ -240,11 +265,13 @@ class ZadaRenderer {
     if (!this.isInitialized || !this.renderer || !this.camera) return;
     const width = w || (this.container ? this.container.clientWidth : 300), height = h || (this.container ? this.container.clientHeight : 300);
     this.camera.aspect = width / (height || 1); this.camera.updateProjectionMatrix?.();
-    this.renderer.setSize(width, height); this.renderer.setPixelRatio(this.calculateDPR(this.detectMobile()));
+    const size = ZadaRenderer.calculateRenderSize(width,height,this.detectMobile());
+    this.renderer.setPixelRatio(size.pixelRatio); this.renderer.setSize(size.width,size.height);
   }
 
   /** Cleans up geometries, materials, listeners, and DOM bindings. */
   dispose() {
+    this._disposed = true;
     this.pause(); this._clearAuraChildren(); this.aura?.dispose?.();
     if (typeof document !== 'undefined') document.removeEventListener('visibilitychange', this._boundVisibility);
     this.scene?.traverse((o) => { o.geometry?.dispose?.(); (Array.isArray(o.material) ? o.material : [o.material]).forEach((m) => m?.dispose?.()); });

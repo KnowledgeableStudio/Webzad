@@ -1,0 +1,10 @@
+20c3255 test: keep development browser checks portable across platforms
+d1e2cba feat: deliver redesigned Webzad review build with explicit release gates
+93c6309 fix: preserve contact delivery contract and reliable submission feedback
+3932457 feat: connect Zada safely to the real four-project portfolio
+2b87ff2 fix: make Zada chat immediate and original 3D recoverable
+b2e0921 feat: implement editorial project details with honest capture states
+ab66c7e feat: redesign complete homepage in cinematic editorial style
+a75a8df feat: optimize original cinematic media and unify motion preferences
+ce42a7c feat: add live-project capture pipeline with explicit blocked-image gate
+a07290f fix: secure Webzad development server and run commands

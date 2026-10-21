@@ -1,0 +1,56 @@
+{
+  "inner": 1440,
+  "scroll": 1679,
+  "body": {
+    "x": 0,
+    "y": 0,
+    "width": 1440,
+    "height": 19548.515625,
+    "top": 0,
+    "right": 1440,
+    "bottom": 19548.515625,
+    "left": 0
+  },
+  "bad": [
+    {
+      "tag": "DIV",
+      "cls": "nav-actions",
+      "right": 1679.328125,
+      "width": 390.859375,
+      "position": "static",
+      "overflow": "visible"
+    },
+    {
+      "tag": "A",
+      "cls": "btn btn-primary nav-cta",
+      "right": 1679.328125,
+      "width": 220.578125,
+      "position": "static",
+      "overflow": "visible"
+    },
+    {
+      "tag": "svg",
+      "cls": "svg",
+      "right": 1639.328125,
+      "width": 36,
+      "position": "static",
+      "overflow": "hidden"
+    },
+    {
+      "tag": "use",
+      "cls": "svg",
+      "right": 1630.328125,
+      "width": 18,
+      "position": "static",
+      "overflow": "visible"
+    },
+    {
+      "tag": "DIV",
+      "cls": "zada-container",
+      "right": 2880,
+      "width": 2880,
+      "position": "fixed",
+      "overflow": "visible"
+    }
+  ]
+}

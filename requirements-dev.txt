@@ -1,0 +1,4 @@
+# Development capture and visual QA only. Not website runtime dependencies.
+playwright==1.57.0
+Pillow==12.3.0
+beautifulsoup4==4.14.3

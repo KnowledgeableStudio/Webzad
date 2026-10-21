@@ -1,0 +1,66 @@
+TAP version 13
+# Subtest: real project registry is frozen and maps exactly the approved destinations
+ok 1 - real project registry is frozen and maps exactly the approved destinations
+  ---
+  duration_ms: 2.553493
+  type: 'test'
+  ...
+# Subtest: capture resolver rejects pending, wrong-source, unsafe and incomplete capture data
+ok 2 - capture resolver rejects pending, wrong-source, unsafe and incomplete capture data
+  ---
+  duration_ms: 1.128634
+  type: 'test'
+  ...
+# Subtest: unknown project IDs never produce a default project or dialog
+ok 3 - unknown project IDs never produce a default project or dialog
+  ---
+  duration_ms: 0.787182
+  type: 'test'
+  ...
+# Subtest: legacy study IDs remain separate and mapped to original local assets
+ok 4 - legacy study IDs remain separate and mapped to original local assets
+  ---
+  duration_ms: 0.362674
+  type: 'test'
+  ...
+# Subtest: all static live project links explicitly isolate their new browsing context
+ok 5 - all static live project links explicitly isolate their new browsing context
+  ---
+  duration_ms: 1.526161
+  type: 'test'
+  ...
+# Subtest: capture resolution permits the same brand www redirect
+not ok 6 - capture resolution permits the same brand www redirect
+  ---
+  duration_ms: 1.011538
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio.test.cjs:10:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    0 !== 1
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 1
+  actual: 0
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio.test.cjs:10:461)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 5
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 62.985118

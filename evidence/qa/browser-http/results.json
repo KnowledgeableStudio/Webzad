@@ -1,0 +1,28 @@
+{
+  "mode": "loopback-http",
+  "apiMode": "intercepted test fixtures; no live provider writes",
+  "fontMode": "normal page fonts",
+  "checks": [
+    {
+      "name": "Browser harness completed",
+      "passed": false,
+      "detail": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:36555/\nCall log:\n  - navigating to \"http://127.0.0.1:36555/\", waiting until \"domcontentloaded\"\n"
+    }
+  ],
+  "viewports": [],
+  "screenshots": [],
+  "pageErrors": [],
+  "consoleErrors": [],
+  "unverified": [
+    "real-device browsers",
+    "Firefox/WebKit",
+    "live Gemini responses",
+    "actual email delivery",
+    "real portfolio screenshots",
+    "WebGL model rendering/frame rates"
+  ],
+  "runError": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:36555/\nCall log:\n  - navigating to \"http://127.0.0.1:36555/\", waiting until \"domcontentloaded\"\n",
+  "passed": 0,
+  "failed": 1,
+  "productionReady": false
+}

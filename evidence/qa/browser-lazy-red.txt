@@ -1,0 +1,53 @@
+PASS No horizontal page overflow at 320px
+PASS Zada ready without initial model at 320px
+PASS Reduced motion respected at 320px
+FAIL Illustration images have loaded at 320px
+PASS No horizontal page overflow at 390px
+PASS Zada ready without initial model at 390px
+PASS Reduced motion respected at 390px
+FAIL Illustration images have loaded at 390px
+PASS Mobile menu disclosure opens
+PASS Mobile menu Escape restores focus
+PASS No horizontal page overflow at 768px
+PASS Zada ready without initial model at 768px
+PASS Reduced motion respected at 768px
+FAIL Illustration images have loaded at 768px
+PASS No horizontal page overflow at 834px
+PASS Zada ready without initial model at 834px
+PASS Reduced motion respected at 834px
+FAIL Illustration images have loaded at 834px
+PASS No horizontal page overflow at 1440px
+PASS Zada ready without initial model at 1440px
+PASS Reduced motion respected at 1440px
+FAIL Illustration images have loaded at 1440px
+PASS Zada uses a focused native dialog
+PASS Project stacks above Zada without deleting messages
+PASS Escape closes only the top project
+PASS Second Escape closes Zada
+PASS zaddy details and secure real link
+PASS zaddy restores trigger focus
+PASS la-socieda details and secure real link
+PASS la-socieda restores trigger focus
+PASS one-of-six details and secure real link
+PASS one-of-six restores trigger focus
+PASS brg details and secure real link
+PASS brg restores trigger focus
+PASS Legacy services study retained
+PASS Legacy hospitality study retained
+PASS Legacy growth study retained
+PASS Service selects Signature Website
+PASS Service selects Landing Page
+PASS Service selects E-Commerce
+PASS Service selects Custom Web App
+PASS Service selects Branding & Graphics
+PASS Service selects Website Redesign
+PASS Contact failure retains the brief and enables retry
+PASS Contact success makes no confirmation-email promise
+PASS Unavailable AI service is reported honestly
+PASS High-DPR scaled layout at 720 CSS px stays within the viewport
+PASS No horizontal page overflow at 1920px
+PASS Zada ready without initial model at 1920px
+PASS Reduced motion respected at 1920px
+FAIL Illustration images have loaded at 1920px
+PASS No unexpected page exceptions
+{"passed": 46, "failed": 6, "mode": "offline-owned-document"}

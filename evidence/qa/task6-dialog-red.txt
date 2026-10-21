@@ -1,0 +1,17 @@
+F
+======================================================================
+FAIL: test_native_dialog_focus_escape_and_preserved_messages (test_chat_dialog.ChatDialog.test_native_dialog_focus_escape_and_preserved_messages)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/test_chat_dialog.py", line 13, in test_native_dialog_focus_escape_and_preserved_messages
+    self.assertEqual(page.locator('.zada-hud').evaluate('(e)=>e.tagName'),'DIALOG')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'DIV' != 'DIALOG'
+- DIV
++ DIALOG
+
+
+----------------------------------------------------------------------
+Ran 1 test in 0.777s
+
+FAILED (failures=1)

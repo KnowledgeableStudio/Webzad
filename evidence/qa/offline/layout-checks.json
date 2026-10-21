@@ -1,0 +1,103 @@
+{
+  "mode": "offline owned-HTML rendering; no HTTP navigation, remote fonts, API or CSP validation",
+  "viewports": [
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "height": 7874,
+      "overflows": [
+        {
+          "tag": "LABEL",
+          "cl": "",
+          "r": -9032.6875,
+          "l": -9270.6875
+        },
+        {
+          "tag": "INPUT",
+          "cl": "",
+          "r": -9032.6875,
+          "l": -9270.6875
+        }
+      ],
+      "screenshot": "offline-1440.png"
+    },
+    {
+      "width": 834,
+      "scrollWidth": 834,
+      "height": 6916,
+      "overflows": [
+        {
+          "tag": "IMG",
+          "cl": "",
+          "r": 863,
+          "l": 299.46875
+        },
+        {
+          "tag": "LABEL",
+          "cl": "",
+          "r": -9340.796875,
+          "l": -9578.796875
+        },
+        {
+          "tag": "INPUT",
+          "cl": "",
+          "r": -9340.796875,
+          "l": -9578.796875
+        }
+      ],
+      "screenshot": "offline-834.png"
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "height": 10314,
+      "overflows": [
+        {
+          "tag": "IMG",
+          "cl": "",
+          "r": 400,
+          "l": -10
+        },
+        {
+          "tag": "LABEL",
+          "cl": "",
+          "r": -9740,
+          "l": -9978
+        },
+        {
+          "tag": "INPUT",
+          "cl": "",
+          "r": -9740,
+          "l": -9978
+        }
+      ],
+      "screenshot": "offline-390.png"
+    },
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "height": 12162,
+      "overflows": [
+        {
+          "tag": "IMG",
+          "cl": "",
+          "r": 330,
+          "l": -10
+        },
+        {
+          "tag": "LABEL",
+          "cl": "",
+          "r": -9740,
+          "l": -9978
+        },
+        {
+          "tag": "INPUT",
+          "cl": "",
+          "r": -9740,
+          "l": -9978
+        }
+      ],
+      "screenshot": "offline-320.png"
+    }
+  ]
+}

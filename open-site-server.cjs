@@ -5,6 +5,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+const { resolvePublicPath } = require('./server-public-paths.cjs');
 
 const root = __dirname;
 const MAX_BODY_BYTES = 64 * 1024;
@@ -39,7 +40,8 @@ const MIME_TYPES = {
   '.json': 'application/json; charset=utf-8', '.png': 'image/png', '.jpg': 'image/jpeg', '.jpeg': 'image/jpeg',
   '.svg': 'image/svg+xml', '.ico': 'image/x-icon', '.glb': 'model/gltf-binary',
   '.webmanifest': 'application/manifest+json', '.mp4': 'video/mp4', '.webm': 'video/webm',
-  '.woff': 'font/woff', '.woff2': 'font/woff2'
+  '.woff': 'font/woff', '.woff2': 'font/woff2', '.webp': 'image/webp', '.avif': 'image/avif',
+  '.xml': 'application/xml; charset=utf-8', '.txt': 'text/plain; charset=utf-8'
 };
 
 const { TOOL_DEFINITIONS, SYSTEM_INSTRUCTION, buildSystemInstruction,
@@ -389,7 +391,8 @@ async function handleContactRequest(req, res, options = {}) {
       const notifyRes = await fetchFn(WEB3FORMS_ENDPOINT, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
+        signal: AbortSignal.timeout(Math.max(1, Math.min(10000, Number(options.providerTimeoutMs) || 10000)))
       });
       const ct = notifyRes.headers.get('content-type') || '';
       if (ct.includes('json')) {
@@ -413,28 +416,59 @@ async function handleContactRequest(req, res, options = {}) {
   }
 }
 
-/** Serves static file buffer or 404 with single read and SPA fallback. */
-function handleStaticRequest(res, relativePath) {
-  const resolvedRoot = path.resolve(root);
-  const filePath = path.resolve(path.join(root, relativePath));
-  if (!filePath.startsWith(resolvedRoot)) return send(res, 403, 'text/plain; charset=utf-8', 'Forbidden');
-  fs.readFile(filePath, (err, data) => {
-    if (!err) return send(res, 200, MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream', data);
-    if (path.extname(relativePath)) return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
-    fs.readFile(path.join(root, 'index.html'), (spaErr, spaData) => {
-      send(res, spaErr ? 404 : 200, spaErr ? 'text/plain; charset=utf-8' : 'text/html; charset=utf-8', spaErr ? 'Not found' : spaData);
-    });
-  });
+/** Only allowlisted public files are readable, with bounded streaming for media. */
+async function handleStaticRequest(req, res, pathname) {
+  const filePath = await resolvePublicPath(root, pathname);
+  if (!filePath) return send(res, 404, 'text/plain; charset=utf-8', 'Not found');
+  try {
+    const stat = await fs.promises.stat(filePath);
+    const type = MIME_TYPES[path.extname(filePath).toLowerCase()] || 'application/octet-stream';
+    let start = 0, end = stat.size - 1, status = 200;
+    const range = req.headers.range;
+    if (range) {
+      const match = /^bytes=(\d*)-(\d*)$/.exec(range);
+      if (!match || (!match[1] && !match[2])) {
+        res.setHeader('Content-Range', `bytes */${stat.size}`);
+        return send(res, 416, 'text/plain; charset=utf-8', 'Invalid range');
+      }
+      if (!match[1]) start = Math.max(0, stat.size - Number(match[2]));
+      else { start = Number(match[1]); if (match[2]) end = Math.min(end, Number(match[2])); }
+      if (!Number.isSafeInteger(start) || !Number.isSafeInteger(end) || start > end || start >= stat.size) {
+        res.setHeader('Content-Range', `bytes */${stat.size}`);
+        return send(res, 416, 'text/plain; charset=utf-8', 'Invalid range');
+      }
+      status = 206;
+      res.setHeader('Content-Range', `bytes ${start}-${end}/${stat.size}`);
+    }
+    res.statusCode = status;
+    res.setHeader('Content-Type', type);
+    res.setHeader('Content-Length', Math.max(0, end - start + 1));
+    res.setHeader('Accept-Ranges', 'bytes');
+    res.setHeader('Cache-Control', 'no-cache');
+    if (req.method === 'HEAD' || stat.size === 0) return res.end();
+    const stream = fs.createReadStream(filePath, { start, end });
+    stream.on('error', () => { if (!res.headersSent) send(res, 500, 'text/plain; charset=utf-8', 'Unable to read file'); else res.destroy(); });
+    res.on('close', () => stream.destroy());
+    stream.pipe(res);
+  } catch { send(res, 404, 'text/plain; charset=utf-8', 'Not found'); }
 }
+
+const SECURITY_HEADERS = {
+  'Content-Security-Policy': "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://webzad.pages.dev; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'",
+  'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'strict-origin-when-cross-origin',
+  'X-Frame-Options': 'DENY', 'Permissions-Policy': 'camera=(), geolocation=(), microphone=(self), payment=(), usb=()'
+};
 
 /** Main request handler routing API and static file requests. */
 function handleRequest(req, res) {
+  for (const [key, value] of Object.entries(SECURITY_HEADERS)) res.setHeader(key, value);
   let cleanUrl;
   try {
     cleanUrl = decodeURIComponent((req.url || '/').split('?')[0]);
   } catch {
     return send(res, 400, 'text/plain; charset=utf-8', 'Bad Request');
   }
+  if (/[\\\0]/.test(cleanUrl)) return send(res, 400, 'text/plain; charset=utf-8', 'Bad Request');
   if (cleanUrl === '/api/chat' || cleanUrl === '/api/verify-key' || cleanUrl === '/api/notify-visitor' || cleanUrl === '/api/contact') {
     if (req.method !== 'POST') {
       res.setHeader('Allow', 'POST');
@@ -445,12 +479,27 @@ function handleRequest(req, res) {
     if (cleanUrl === '/api/contact') return handleContactRequest(req, res);
     return handleVisitorNotification(req, res);
   }
-  handleStaticRequest(res, cleanUrl === '/' ? '/index.html' : cleanUrl);
+  if (!['GET', 'HEAD'].includes(req.method)) { res.setHeader('Allow', 'GET, HEAD'); return send(res, 405, 'text/plain; charset=utf-8', 'Method Not Allowed'); }
+  return handleStaticRequest(req, res, (req.url || '/').split('?')[0]);
 }
 
 const server = http.createServer(handleRequest);
 if (require.main === module) {
-  server.listen(process.env.PORT || 4173, '127.0.0.1', () => console.log('Webzad server running at http://127.0.0.1:4173/'));
+  const port = Number(process.env.PORT || 4173);
+  if (!Number.isInteger(port) || port < 1 || port > 65535) { console.error('PORT must be an integer from 1 to 65535.'); process.exit(1); }
+  server.on('error', error => {
+    console.error(error.code === 'EADDRINUSE' ? `Port ${port} is already in use. Close the other Webzad server or set PORT to another free port.` : 'Could not start Webzad: ' + error.message);
+    process.exitCode = 1;
+  });
+  server.listen(port, '127.0.0.1', () => {
+    const url = `http://127.0.0.1:${server.address().port}/`;
+    console.log(`Webzad is ready: ${url}\nKeep this window open. Press Ctrl+C to stop.`);
+    if (process.argv.includes('--open')) {
+      const command = process.platform === 'win32' ? ['cmd.exe', ['/d','/c','start','',url]] : process.platform === 'darwin' ? ['open',[url]] : ['xdg-open',[url]];
+      const child = require('node:child_process').spawn(command[0], command[1], { detached: true, stdio: 'ignore' });
+      child.on('error', () => console.log(`Open your browser at ${url}`)); child.unref();
+    }
+  });
 }
 
 module.exports = {

@@ -1,0 +1,196 @@
+TAP version 13
+# Subtest: static server denies /.git/config
+not ok 1 - static server denies /.git/config
+  ---
+  duration_ms: 13.03063
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/.git/config returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...
+# Subtest: static server denies /server-gemini-tools.cjs
+not ok 2 - static server denies /server-gemini-tools.cjs
+  ---
+  duration_ms: 3.697777
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/server-gemini-tools.cjs returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: static server denies /.env
+not ok 3 - static server denies /.env
+  ---
+  duration_ms: 1.863701
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/.env returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: static server denies /functions/_shared/gemini.js
+not ok 4 - static server denies /functions/_shared/gemini.js
+  ---
+  duration_ms: 3.334651
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/functions/_shared/gemini.js returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: static server denies /docs/private.md
+ok 5 - static server denies /docs/private.md
+  ---
+  duration_ms: 1.480314
+  type: 'test'
+  ...
+# Subtest: static server denies /package.json
+ok 6 - static server denies /package.json
+  ---
+  duration_ms: 1.176799
+  type: 'test'
+  ...
+# Subtest: static server denies /%2e%2e/private.txt
+ok 7 - static server denies /%2e%2e/private.txt
+  ---
+  duration_ms: 0.844499
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/../open-site-server.cjs
+not ok 8 - static server denies /assets/../open-site-server.cjs
+  ---
+  duration_ms: 1.773615
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/assets/../open-site-server.cjs returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: static server denies /assets/private-link.js
+not ok 9 - static server denies /assets/private-link.js
+  ---
+  duration_ms: 5.719444
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/assets/private-link.js returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: static server denies /assets/outside-link.js
+not ok 10 - static server denies /assets/outside-link.js
+  ---
+  duration_ms: 2.155769
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/assets/outside-link.js returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: static server denies /assets/%2e%2e/open-site-server.cjs
+not ok 11 - static server denies /assets/%2e%2e/open-site-server.cjs
+  ---
+  duration_ms: 1.845212
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:28:3'
+  failureType: 'testCodeFailure'
+  error: '/assets/%2e%2e/open-site-server.cjs returned 200'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:30:12)
+    process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: static server denies /assets/%255c..%255c.env
+ok 12 - static server denies /assets/%255c..%255c.env
+  ---
+  duration_ms: 0.919922
+  type: 'test'
+  ...
+# Subtest: test/server-static.test.cjs
+not ok 1 - test/server-static.test.cjs
+  ---
+  duration_ms: 5007.060208
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/server-static.test.cjs:1:1'
+  failureType: 'testTimeoutFailure'
+  error: 'test timed out after 5000ms'
+  code: 'ERR_TEST_FAILURE'
+  ...
+1..13
+# tests 13
+# suites 0
+# pass 4
+# fail 8
+# cancelled 1
+# skipped 0
+# todo 0
+# duration_ms 5015.572489

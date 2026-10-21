@@ -1,0 +1,1177 @@
+
+> webzad-official@2.0.0 test
+> node tools/test.cjs
+
+TAP version 13
+# Subtest: assets pipeline verification
+    # Subtest: zada.glb exists and is non-empty
+    ok 1 - zada.glb exists and is non-empty
+      ---
+      duration_ms: 0.623317
+      type: 'test'
+      ...
+    # Subtest: vendor libraries exist
+    ok 2 - vendor libraries exist
+      ---
+      duration_ms: 0.324858
+      type: 'test'
+      ...
+# (node:925) [MODULE_TYPELESS_PACKAGE_JSON] Warning: Module type of file:///mnt/data/Webzad-baseline/Webzad/.worktrees/premium/assets/vendor/three.module.js is not specified and it doesn't parse as CommonJS.
+# Reparsing as ES module because module syntax was detected. This incurs a performance overhead.
+# To eliminate this warning, add "type": "module" to /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/package.json.
+# (Use `node --trace-warnings ...` to show where the warning was created)
+    # Subtest: vendor libraries are valid ES modules
+    ok 3 - vendor libraries are valid ES modules
+      ---
+      duration_ms: 61.980295
+      type: 'test'
+      ...
+    1..3
+ok 1 - assets pipeline verification
+  ---
+  duration_ms: 64.187592
+  type: 'test'
+  ...
+# Subtest: stage-only build includes public assets/functions but not nested private files or symlinks
+ok 2 - stage-only build includes public assets/functions but not nested private files or symlinks
+  ---
+  duration_ms: 44.74327
+  type: 'test'
+  ...
+# Subtest: npm build explicitly stages only and test command is shell-glob independent
+ok 3 - npm build explicitly stages only and test command is shell-glob independent
+  ---
+  duration_ms: 0.3663
+  type: 'test'
+  ...
+# [API/chat] 401: No Gemini API key provided in server env, headers, or body
+# [API/chat] Gemini API error: 400 API key [REDACTED] was invalid or expired at [REDACTED_PATH]
+# [API/chat] Internal catch error: Failure with [REDACTED] at [REDACTED_PATH]
+# [API/verify-key] Verification probe result: true status: 200
+# [API/verify-key] Verification probe result: false status: 400
+# [API/chat] Internal catch error: Simulated socket stream error: [REDACTED_PATH]
+# Subtest: server-side chat API and rate limiting
+    # Subtest: rate limiter throttles requests over 15/minute per IP
+    ok 1 - rate limiter throttles requests over 15/minute per IP
+      ---
+      duration_ms: 0.904348
+      type: 'test'
+      ...
+    # Subtest: rate limiter resets after sliding window passes
+    ok 2 - rate limiter resets after sliding window passes
+      ---
+      duration_ms: 0.25927
+      type: 'test'
+      ...
+    # Subtest: rejects payload exceeding 64KB body limit via content-length
+    ok 3 - rejects payload exceeding 64KB body limit via content-length
+      ---
+      duration_ms: 0.641194
+      type: 'test'
+      ...
+    # Subtest: rejects payload exceeding 64KB during streaming chunks
+    ok 4 - rejects payload exceeding 64KB during streaming chunks
+      ---
+      duration_ms: 0.364337
+      type: 'test'
+      ...
+    # Subtest: enforces rate limit returning HTTP 429 when client exceeds 15 req/min
+    ok 5 - enforces rate limit returning HTTP 429 when client exceeds 15 req/min
+      ---
+      duration_ms: 0.460131
+      type: 'test'
+      ...
+    # Subtest: returns 401 when neither server nor client API key is provided
+    ok 6 - returns 401 when neither server nor client API key is provided
+      ---
+      duration_ms: 1.560765
+      type: 'test'
+      ...
+    # Subtest: uses developer override key from x-gemini-api-key header when server key absent
+    ok 7 - uses developer override key from x-gemini-api-key header when server key absent
+      ---
+      duration_ms: 0.65205
+      type: 'test'
+      ...
+    # Subtest: clamps message history to max 20 turns before forwarding to Gemini
+    ok 8 - clamps message history to max 20 turns before forwarding to Gemini
+      ---
+      duration_ms: 0.539461
+      type: 'test'
+      ...
+    # Subtest: tool schemas and function calls are forwarded and extracted properly
+    ok 9 - tool schemas and function calls are forwarded and extracted properly
+      ---
+      duration_ms: 1.002096
+      type: 'test'
+      ...
+    # Subtest: safe error masking never exposes API key or internal stack traces
+    ok 10 - safe error masking never exposes API key or internal stack traces
+      ---
+      duration_ms: 0.788635
+      type: 'test'
+      ...
+    # Subtest: safe error masking sanitizes Windows paths, line numbers, and stack frames
+    ok 11 - safe error masking sanitizes Windows paths, line numbers, and stack frames
+      ---
+      duration_ms: 0.616306
+      type: 'test'
+      ...
+    # Subtest: verify-key endpoint validates key via probe request
+    ok 12 - verify-key endpoint validates key via probe request
+      ---
+      duration_ms: 0.435675
+      type: 'test'
+      ...
+    # Subtest: verify-key returns valid=false on failed verification probe
+    ok 13 - verify-key returns valid=false on failed verification probe
+      ---
+      duration_ms: 0.300061
+      type: 'test'
+      ...
+    # Subtest: TOOL_DEFINITIONS exports all five required tools with correct parameters
+    ok 14 - TOOL_DEFINITIONS exports all five required tools with correct parameters
+      ---
+      duration_ms: 0.157096
+      type: 'test'
+      ...
+    # Subtest: handleRequest router rejects GET /api/chat with 405 Method Not Allowed
+    ok 15 - handleRequest router rejects GET /api/chat with 405 Method Not Allowed
+      ---
+      duration_ms: 0.263156
+      type: 'test'
+      ...
+    # Subtest: handleRequest responds with 400 Bad Request on malformed URI
+    ok 16 - handleRequest responds with 400 Bad Request on malformed URI
+      ---
+      duration_ms: 0.261153
+      type: 'test'
+      ...
+    # Subtest: handleChatRequest catches stream error in readJsonBody without unhandled rejection
+    ok 17 - handleChatRequest catches stream error in readJsonBody without unhandled rejection
+      ---
+      duration_ms: 1.067695
+      type: 'test'
+      ...
+    # Subtest: rateLimitStore deletes expired IP key when sliding window expires
+    ok 18 - rateLimitStore deletes expired IP key when sliding window expires
+      ---
+      duration_ms: 0.181342
+      type: 'test'
+      ...
+    # Subtest: full HTTP server responds to static files and routes
+    ok 19 - full HTTP server responds to static files and routes
+      ---
+      duration_ms: 61.530204
+      type: 'test'
+      ...
+    1..19
+ok 4 - server-side chat API and rate limiting
+  ---
+  duration_ms: 74.648445
+  type: 'test'
+  ...
+# Subtest: Zada Humanized AI Persona & Website Knowledge Base
+    # Subtest: SYSTEM_INSTRUCTION contains audited Webzad philosophy and identity
+    ok 1 - SYSTEM_INSTRUCTION contains audited Webzad philosophy and identity
+      ---
+      duration_ms: 0.584958
+      type: 'test'
+      ...
+    # Subtest: SYSTEM_INSTRUCTION contains all core services including automation
+    ok 2 - SYSTEM_INSTRUCTION contains all core services including automation
+      ---
+      duration_ms: 0.243576
+      type: 'test'
+      ...
+    # Subtest: SYSTEM_INSTRUCTION details the 4-step process and client next steps
+    ok 3 - SYSTEM_INSTRUCTION details the 4-step process and client next steps
+      ---
+      duration_ms: 0.141913
+      type: 'test'
+      ...
+    # Subtest: SYSTEM_INSTRUCTION enforces human conversational style and AI identity rules
+    ok 4 - SYSTEM_INSTRUCTION enforces human conversational style and AI identity rules
+      ---
+      duration_ms: 0.113561
+      type: 'test'
+      ...
+    # Subtest: formatGeminiContents formats multi-turn dialogue maintaining conversation context
+    ok 5 - formatGeminiContents formats multi-turn dialogue maintaining conversation context
+      ---
+      duration_ms: 0.255995
+      type: 'test'
+      ...
+    1..5
+ok 5 - Zada Humanized AI Persona & Website Knowledge Base
+  ---
+  duration_ms: 7.162071
+  type: 'test'
+  ...
+# Subtest: static server denies /.git/config
+ok 6 - static server denies /.git/config
+  ---
+  duration_ms: 12.338389
+  type: 'test'
+  ...
+# Subtest: static server denies /server-gemini-tools.cjs
+ok 7 - static server denies /server-gemini-tools.cjs
+  ---
+  duration_ms: 2.132694
+  type: 'test'
+  ...
+# Subtest: static server denies /.env
+ok 8 - static server denies /.env
+  ---
+  duration_ms: 1.305692
+  type: 'test'
+  ...
+# Subtest: static server denies /functions/_shared/gemini.js
+ok 9 - static server denies /functions/_shared/gemini.js
+  ---
+  duration_ms: 1.538642
+  type: 'test'
+  ...
+# Subtest: static server denies /docs/private.md
+ok 10 - static server denies /docs/private.md
+  ---
+  duration_ms: 1.226303
+  type: 'test'
+  ...
+# Subtest: static server denies /package.json
+ok 11 - static server denies /package.json
+  ---
+  duration_ms: 1.527054
+  type: 'test'
+  ...
+# Subtest: static server denies /%2e%2e/private.txt
+ok 12 - static server denies /%2e%2e/private.txt
+  ---
+  duration_ms: 1.012331
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/../open-site-server.cjs
+ok 13 - static server denies /assets/../open-site-server.cjs
+  ---
+  duration_ms: 0.857648
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/private-link.js
+ok 14 - static server denies /assets/private-link.js
+  ---
+  duration_ms: 2.930985
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/outside-link.js
+ok 15 - static server denies /assets/outside-link.js
+  ---
+  duration_ms: 2.074347
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/%2e%2e/open-site-server.cjs
+ok 16 - static server denies /assets/%2e%2e/open-site-server.cjs
+  ---
+  duration_ms: 1.379223
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/%255c..%255c.env
+ok 17 - static server denies /assets/%255c..%255c.env
+  ---
+  duration_ms: 1.043728
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/a%00.js
+ok 18 - static server denies /assets/a%00.js
+  ---
+  duration_ms: 1.103628
+  type: 'test'
+  ...
+# Subtest: static server denies /assets/..%5copen-site-server.cjs
+ok 19 - static server denies /assets/..%5copen-site-server.cjs
+  ---
+  duration_ms: 1.127884
+  type: 'test'
+  ...
+# Subtest: missing asset is a real 404 rather than HTML
+ok 20 - missing asset is a real 404 rather than HTML
+  ---
+  duration_ms: 2.627958
+  type: 'test'
+  ...
+# Subtest: homepage and public assistant module are served
+ok 21 - homepage and public assistant module are served
+  ---
+  duration_ms: 5.467685
+  type: 'test'
+  ...
+# Subtest: static response has CSP and nosniff headers
+ok 22 - static response has CSP and nosniff headers
+  ---
+  duration_ms: 8.291468
+  type: 'test'
+  ...
+# Subtest: HEAD does not return a body
+ok 23 - HEAD does not return a body
+  ---
+  duration_ms: 1.83715
+  type: 'test'
+  ...
+# Subtest: POST cannot read static resources
+ok 24 - POST cannot read static resources
+  ---
+  duration_ms: 0.840112
+  type: 'test'
+  ...
+# Subtest: malformed URL cannot crash the server
+ok 25 - malformed URL cannot crash the server
+  ---
+  duration_ms: 2.412279
+  type: 'test'
+  ...
+# Subtest: Visitor Detection & Email Notification Endpoint (/api/notify-visitor)
+    # Subtest: hashVisitorIp generates one-way hash without raw IP leakage
+    ok 1 - hashVisitorIp generates one-way hash without raw IP leakage
+      ---
+      duration_ms: 2.210592
+      type: 'test'
+      ...
+    # Subtest: extractLocationFromHeaders extracts country and city if available
+    ok 2 - extractLocationFromHeaders extracts country and city if available
+      ---
+      duration_ms: 0.431058
+      type: 'test'
+      ...
+    # Subtest: new visitor triggers notification and dispatches to email service
+    ok 3 - new visitor triggers notification and dispatches to email service
+      ---
+      duration_ms: 24.680525
+      type: 'test'
+      ...
+    # Subtest: deduplication prevents repeat notifications for same visitor in cooldown window
+    ok 4 - deduplication prevents repeat notifications for same visitor in cooldown window
+      ---
+      duration_ms: 1.00475
+      type: 'test'
+      ...
+    1..4
+ok 26 - Visitor Detection & Email Notification Endpoint (/api/notify-visitor)
+  ---
+  duration_ms: 30.491196
+  type: 'test'
+  ...
+# Subtest: ZadaActionDispatcher security whitelist & parameter checking
+    # Subtest: whitelisted scrollToSection with valid section passes
+    ok 1 - whitelisted scrollToSection with valid section passes
+      ---
+      duration_ms: 1.091981
+      type: 'test'
+      ...
+    # Subtest: invalid sectionId in scrollToSection is rejected
+    ok 2 - invalid sectionId in scrollToSection is rejected
+      ---
+      duration_ms: 0.366902
+      type: 'test'
+      ...
+    # Subtest: arbitrary script or eval injection is strictly rejected
+    ok 3 - arbitrary script or eval injection is strictly rejected
+      ---
+      duration_ms: 0.37287
+      type: 'test'
+      ...
+    # Subtest: malformed action objects are rejected safely
+    ok 4 - malformed action objects are rejected safely
+      ---
+      duration_ms: 0.286551
+      type: 'test'
+      ...
+    # Subtest: prefillContactBrief validates serviceType enum and clamps length
+    ok 5 - prefillContactBrief validates serviceType enum and clamps length
+      ---
+      duration_ms: 0.695545
+      type: 'test'
+      ...
+    # Subtest: prefillContactBrief strips HTML tags and uses default serviceType
+    ok 6 - prefillContactBrief strips HTML tags and uses default serviceType
+      ---
+      duration_ms: 0.314944
+      type: 'test'
+      ...
+    # Subtest: prefillContactBrief rejects invalid serviceType
+    ok 7 - prefillContactBrief rejects invalid serviceType
+      ---
+      duration_ms: 2.64875
+      type: 'test'
+      ...
+    # Subtest: openProjectPreview accepts approved projects and rejects unapproved
+    ok 8 - openProjectPreview accepts approved projects and rejects unapproved
+      ---
+      duration_ms: 0.379951
+      type: 'test'
+      ...
+    # Subtest: toggleAudioOutput sanitizes boolean parameter
+    ok 9 - toggleAudioOutput sanitizes boolean parameter
+      ---
+      duration_ms: 0.378789
+      type: 'test'
+      ...
+    # Subtest: rejects removed openDevSettings action
+    ok 10 - rejects removed openDevSettings action
+      ---
+      duration_ms: 0.260322
+      type: 'test'
+      ...
+    # Subtest: dispatch executes registered handler
+    ok 11 - dispatch executes registered handler
+      ---
+      duration_ms: 0.93155
+      type: 'test'
+      ...
+    # Subtest: dispatch throws on invalid action
+    ok 12 - dispatch throws on invalid action
+      ---
+      duration_ms: 0.673342
+      type: 'test'
+      ...
+    # Subtest: dispatch returns default acknowledgment when no handler registered
+    ok 13 - dispatch returns default acknowledgment when no handler registered
+      ---
+      duration_ms: 0.169925
+      type: 'test'
+      ...
+    # Subtest: approved constants are exported and frozen
+    ok 14 - approved constants are exported and frozen
+      ---
+      duration_ms: 0.188463
+      type: 'test'
+      ...
+    # Subtest: automation section and ai-automation service are whitelisted
+    ok 15 - automation section and ai-automation service are whitelisted
+      ---
+      duration_ms: 0.194492
+      type: 'test'
+      ...
+    1..15
+ok 27 - ZadaActionDispatcher security whitelist & parameter checking
+  ---
+  duration_ms: 12.685601
+  type: 'test'
+  ...
+# Subtest: ZadaAudioSync state and interruption management
+    # Subtest: interrupt aborts playback and resets amplitude
+    ok 1 - interrupt aborts playback and resets amplitude
+      ---
+      duration_ms: 0.985361
+      type: 'test'
+      ...
+    # Subtest: mute flag prevents audio output and resets amplitude
+    ok 2 - mute flag prevents audio output and resets amplitude
+      ---
+      duration_ms: 0.197337
+      type: 'test'
+      ...
+    # Subtest: speak when muted returns immediately via onEnd
+    ok 3 - speak when muted returns immediately via onEnd
+      ---
+      duration_ms: 7.40069
+      type: 'test'
+      ...
+    # Subtest: playAudioBuffer handles null buffer safely
+    ok 4 - playAudioBuffer handles null buffer safely
+      ---
+      duration_ms: 1.609007
+      type: 'test'
+      ...
+    # Subtest: interrupt triggers abort on active AbortController and stops node
+    ok 5 - interrupt triggers abort on active AbortController and stops node
+      ---
+      duration_ms: 0.463076
+      type: 'test'
+      ...
+    # Subtest: setMuted(true) triggers interrupt
+    ok 6 - setMuted(true) triggers interrupt
+      ---
+      duration_ms: 0.212219
+      type: 'test'
+      ...
+    # Subtest: speak with mocked speechSynthesis updates envelope and completes
+    ok 7 - speak with mocked speechSynthesis updates envelope and completes
+      ---
+      duration_ms: 0.432931
+      type: 'test'
+      ...
+    # Subtest: playAudioBuffer with mocked AudioContext decodes and calculates amplitude
+    ok 8 - playAudioBuffer with mocked AudioContext decodes and calculates amplitude
+      ---
+      duration_ms: 0.521072
+      type: 'test'
+      ...
+    # Subtest: fault isolation handles audio context exceptions without throwing
+    ok 9 - fault isolation handles audio context exceptions without throwing
+      ---
+      duration_ms: 0.304708
+      type: 'test'
+      ...
+    # Subtest: universal export exposes ZadaAudioSync to globalThis and module.exports
+    ok 10 - universal export exposes ZadaAudioSync to globalThis and module.exports
+      ---
+      duration_ms: 0.267071
+      type: 'test'
+      ...
+    1..10
+ok 28 - ZadaAudioSync state and interruption management
+  ---
+  duration_ms: 14.666767
+  type: 'test'
+  ...
+# Subtest: ZadaAura configuration & bounds verification
+    # Subtest: maximum aura scale boundary is strictly clamped to 1.40x
+    ok 1 - maximum aura scale boundary is strictly clamped to 1.40x
+      ---
+      duration_ms: 0.868926
+      type: 'test'
+      ...
+    # Subtest: ZadaAuraConfig is an immutable frozen object
+    ok 2 - ZadaAuraConfig is an immutable frozen object
+      ---
+      duration_ms: 0.151337
+      type: 'test'
+      ...
+    # Subtest: build creates a group with core, ring, and particle objects
+    ok 3 - build creates a group with core, ring, and particle objects
+      ---
+      duration_ms: 1.279643
+      type: 'test'
+      ...
+    # Subtest: build configures core and ring geometry scales accurately
+    ok 4 - build configures core and ring geometry scales accurately
+      ---
+      duration_ms: 2.211784
+      type: 'test'
+      ...
+    # Subtest: tiered particle counts generate correct buffer sizes
+    ok 5 - tiered particle counts generate correct buffer sizes
+      ---
+      duration_ms: 1.23061
+      type: 'test'
+      ...
+    # Subtest: all particles strictly conform to [1.15, 1.35] radius invariant
+    ok 6 - all particles strictly conform to [1.15, 1.35] radius invariant
+      ---
+      duration_ms: 1.170599
+      type: 'test'
+      ...
+    # Subtest: update modulates ring and core opacity without errors
+    ok 7 - update modulates ring and core opacity without errors
+      ---
+      duration_ms: 0.850768
+      type: 'test'
+      ...
+    # Subtest: update drives faster ring speed in THINKING state
+    ok 8 - update drives faster ring speed in THINKING state
+      ---
+      duration_ms: 1.721706
+      type: 'test'
+      ...
+    # Subtest: audio reactivity clamps boost strictly to +25%
+    ok 9 - audio reactivity clamps boost strictly to +25%
+      ---
+      duration_ms: 1.741847
+      type: 'test'
+      ...
+    # Subtest: particle cloud drifts subtly on Y-axis during update
+    ok 10 - particle cloud drifts subtly on Y-axis during update
+      ---
+      duration_ms: 1.61719
+      type: 'test'
+      ...
+    # Subtest: dispose cleans up all geometries and materials cleanly
+    ok 11 - dispose cleans up all geometries and materials cleanly
+      ---
+      duration_ms: 0.583196
+      type: 'test'
+      ...
+    # Subtest: handles edge case inputs safely without throwing
+    ok 12 - handles edge case inputs safely without throwing
+      ---
+      duration_ms: 0.61878
+      type: 'test'
+      ...
+    1..12
+ok 29 - ZadaAura configuration & bounds verification
+  ---
+  duration_ms: 17.463149
+  type: 'test'
+  ...
+# Subtest: ZadaHoloUI interface and message management
+    # Subtest: ZadaHoloUI instantiates with default state
+    ok 1 - ZadaHoloUI instantiates with default state
+      ---
+      duration_ms: 0.615244
+      type: 'test'
+      ...
+    # Subtest: addMessage stores history and renders cleanly
+    ok 2 - addMessage stores history and renders cleanly
+      ---
+      duration_ms: 0.244668
+      type: 'test'
+      ...
+    # Subtest: addMessage supports toolCall payload attachment
+    ok 3 - addMessage supports toolCall payload attachment
+      ---
+      duration_ms: 0.341213
+      type: 'test'
+      ...
+    # Subtest: addMessage handles null, undefined, or missing text safely
+    ok 4 - addMessage handles null, undefined, or missing text safely
+      ---
+      duration_ms: 0.910789
+      type: 'test'
+      ...
+    # Subtest: open and close updates visibility state
+    ok 5 - open and close updates visibility state
+      ---
+      duration_ms: 0.19971
+      type: 'test'
+      ...
+    # Subtest: toggle switches visibility state back and forth
+    ok 6 - toggle switches visibility state back and forth
+      ---
+      duration_ms: 0.11355
+      type: 'test'
+      ...
+    1..6
+ok 30 - ZadaHoloUI interface and message management
+  ---
+  duration_ms: 3.787881
+  type: 'test'
+  ...
+# Subtest: ZadaHoloUI telemetry and state machine integration
+    # Subtest: ZadaHoloTelemetryMap maps companion states accurately
+    ok 1 - ZadaHoloTelemetryMap maps companion states accurately
+      ---
+      duration_ms: 0.208323
+      type: 'test'
+      ...
+    # Subtest: updateStatus updates instance status property and telemetry
+    ok 2 - updateStatus updates instance status property and telemetry
+      ---
+      duration_ms: 0.312009
+      type: 'test'
+      ...
+    # Subtest: subscribes to stateManager if passed in constructor
+    ok 3 - subscribes to stateManager if passed in constructor
+      ---
+      duration_ms: 0.238398
+      type: 'test'
+      ...
+    1..3
+ok 31 - ZadaHoloUI telemetry and state machine integration
+  ---
+  duration_ms: 1.277299
+  type: 'test'
+  ...
+# Subtest: ZadaHoloUI prompt chips and markdown rendering
+    # Subtest: default prompt chips contain core suggestions
+    ok 1 - default prompt chips contain core suggestions
+      ---
+      duration_ms: 0.201503
+      type: 'test'
+      ...
+    # Subtest: setContextPrompts updates chips dynamically
+    ok 2 - setContextPrompts updates chips dynamically
+      ---
+      duration_ms: 0.832
+      type: 'test'
+      ...
+    # Subtest: sanitizeMarkdown formats bold, italic, code, and escapes script injection
+    ok 3 - sanitizeMarkdown formats bold, italic, code, and escapes script injection
+      ---
+      duration_ms: 0.28618
+      type: 'test'
+      ...
+    1..3
+ok 32 - ZadaHoloUI prompt chips and markdown rendering
+  ---
+  duration_ms: 1.607415
+  type: 'test'
+  ...
+# Subtest: ZadaHoloUI DOM mounting and interactions
+    # Subtest: mount renders HUD structure
+    ok 1 - mount renders HUD structure
+      ---
+      duration_ms: 1.136368
+      type: 'test'
+      ...
+    # Subtest: open and close updates HUD DOM classList
+    ok 2 - open and close updates HUD DOM classList
+      ---
+      duration_ms: 0.137617
+      type: 'test'
+      ...
+    # Subtest: addMessage appends message bubble to dialogue element
+    ok 3 - addMessage appends message bubble to dialogue element
+      ---
+      duration_ms: 1.11832
+      type: 'test'
+      ...
+    # Subtest: audioSync mute button reflects and toggles state
+    ok 4 - audioSync mute button reflects and toggles state
+      ---
+      duration_ms: 0.157617
+      type: 'test'
+      ...
+    # Subtest: unmount removes elements from container
+    ok 5 - unmount removes elements from container
+      ---
+      duration_ms: 0.156435
+      type: 'test'
+      ...
+    1..5
+ok 33 - ZadaHoloUI DOM mounting and interactions
+  ---
+  duration_ms: 3.244766
+  type: 'test'
+  ...
+# Subtest: ZadaHoloUI universal export
+    # Subtest: exports to module.exports, window, and globalThis
+    ok 1 - exports to module.exports, window, and globalThis
+      ---
+      duration_ms: 0.069885
+      type: 'test'
+      ...
+    1..1
+ok 34 - ZadaHoloUI universal export
+  ---
+  duration_ms: 0.154742
+  type: 'test'
+  ...
+# Subtest: ZadaMotionController kinematics and delta-time invariance
+    # Subtest: delta time updates position smoothly
+    ok 1 - delta time updates position smoothly
+      ---
+      duration_ms: 0.988205
+      type: 'test'
+      ...
+    # Subtest: audio scale pulse never exceeds 4%
+    ok 2 - audio scale pulse never exceeds 4%
+      ---
+      duration_ms: 0.224087
+      type: 'test'
+      ...
+    # Subtest: reduced motion clamps oscillations and rotation
+    ok 3 - reduced motion clamps oscillations and rotation
+      ---
+      duration_ms: 0.293681
+      type: 'test'
+      ...
+    # Subtest: cursor tracking limits rotation angle to max 12 degrees (~0.21 rad)
+    ok 4 - cursor tracking limits rotation angle to max 12 degrees (~0.21 rad)
+      ---
+      duration_ms: 0.416716
+      type: 'test'
+      ...
+    # Subtest: cursor deadzone ignores micro-movements near origin
+    ok 5 - cursor deadzone ignores micro-movements near origin
+      ---
+      duration_ms: 0.980344
+      type: 'test'
+      ...
+    # Subtest: delta-time invariance across 30Hz, 60Hz, and 120Hz simulations
+    ok 6 - delta-time invariance across 30Hz, 60Hz, and 120Hz simulations
+      ---
+      duration_ms: 0.732721
+      type: 'test'
+      ...
+    # Subtest: audio envelope applies attack and release smoothing
+    ok 7 - audio envelope applies attack and release smoothing
+      ---
+      duration_ms: 0.178668
+      type: 'test'
+      ...
+    # Subtest: setReducedMotion dynamically updates behavior at runtime
+    ok 8 - setReducedMotion dynamically updates behavior at runtime
+      ---
+      duration_ms: 0.364788
+      type: 'test'
+      ...
+    # Subtest: getTransform returns decoupled clone preventing state mutation
+    ok 9 - getTransform returns decoupled clone preventing state mutation
+      ---
+      duration_ms: 0.330907
+      type: 'test'
+      ...
+    # Subtest: handles edge case inputs safely (null cursor, negative/zero dt)
+    ok 10 - handles edge case inputs safely (null cursor, negative/zero dt)
+      ---
+      duration_ms: 0.358398
+      type: 'test'
+      ...
+    1..10
+ok 35 - ZadaMotionController kinematics and delta-time invariance
+  ---
+  duration_ms: 7.259768
+  type: 'test'
+  ...
+# Subtest: ZadaCompanion Master Orchestrator
+    # Subtest: instantiates with modular defaults and authoritative state
+    ok 1 - instantiates with modular defaults and authoritative state
+      ---
+      duration_ms: 1.182217
+      type: 'test'
+      ...
+    # Subtest: initializes cleanly in container with mock subsystems
+    ok 2 - initializes cleanly in container with mock subsystems
+      ---
+      duration_ms: 1.923591
+      type: 'test'
+      ...
+    # Subtest: updates dock mode on scroll threshold
+    ok 3 - updates dock mode on scroll threshold
+      ---
+      duration_ms: 0.340712
+      type: 'test'
+      ...
+    # Subtest: calculates normalized cursor coordinates within bounds
+    ok 4 - calculates normalized cursor coordinates within bounds
+      ---
+      duration_ms: 0.362605
+      type: 'test'
+      ...
+    # Subtest: wires scrollToSection action to element scroll and chip update
+    ok 5 - wires scrollToSection action to element scroll and chip update
+      ---
+      duration_ms: 3.026147
+      type: 'test'
+      ...
+    # Subtest: wires scrollToSection for hero falling back to \#top element
+    ok 6 - wires scrollToSection for hero falling back to \#top element
+      ---
+      duration_ms: 0.462785
+      type: 'test'
+      ...
+    # Subtest: wires openProjectPreview action to matching project media click
+    ok 7 - wires openProjectPreview action to matching project media click
+      ---
+      duration_ms: 0.517447
+      type: 'test'
+      ...
+    # Subtest: wires prefillContactBrief action and NEVER submits form
+    ok 8 - wires prefillContactBrief action and NEVER submits form
+      ---
+      duration_ms: 0.920754
+      type: 'test'
+      ...
+    # Subtest: wires toggleAudioOutput action and synchronizes mute button
+    ok 9 - wires toggleAudioOutput action and synchronizes mute button
+      ---
+      duration_ms: 0.834594
+      type: 'test'
+      ...
+    # Subtest: executes handleUserMessage with API communication, tool dispatch, and speech
+    ok 10 - executes handleUserMessage with API communication, tool dispatch, and speech
+      ---
+      duration_ms: 3.350665
+      type: 'test'
+      ...
+# [Zada] handleUserMessage error: Error: Network failure
+#     at fetchFn (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/zada-orchestration.test.cjs:344:36)
+#     at ZadaCompanion.handleUserMessage (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/assets/js/zada.js:253:25)
+#     at TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/zada-orchestration.test.cjs:348:21)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Test.start (node:internal/test_runner/test:944:17)
+#     at TestContext.test (node:internal/test_runner/test:373:20)
+#     at TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/zada-orchestration.test.cjs:342:11)
+#     at async Test.run (node:internal/test_runner/test:1054:7)
+#     at async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+    # Subtest: prompt chip click records user message in HUD and forwards to API
+    ok 11 - prompt chip click records user message in HUD and forwards to API
+      ---
+      duration_ms: 10.597414
+      type: 'test'
+      ...
+    # Subtest: handles network failure gracefully without crashing
+    ok 12 - handles network failure gracefully without crashing
+      ---
+      duration_ms: 2.627708
+      type: 'test'
+      ...
+    # Subtest: destroy cleans up listeners and disposes subsystems
+    ok 13 - destroy cleans up listeners and disposes subsystems
+      ---
+      duration_ms: 1.008465
+      type: 'test'
+      ...
+    # Subtest: greetVisitor adds welcome message, mounts greeting bubble, and speaks aloud
+    ok 14 - greetVisitor adds welcome message, mounts greeting bubble, and speaks aloud
+      ---
+      duration_ms: 1.29796
+      type: 'test'
+      ...
+    # Subtest: pod trigger click dismisses active greeting bubble and toggles HUD
+    ok 15 - pod trigger click dismisses active greeting bubble and toggles HUD
+      ---
+      duration_ms: 2.839908
+      type: 'test'
+      ...
+    1..15
+ok 36 - ZadaCompanion Master Orchestrator
+  ---
+  duration_ms: 34.511176
+  type: 'test'
+  ...
+# Subtest: ZadaRenderer exports and configuration
+    # Subtest: ZadaRenderer class is exported and configurable
+    ok 1 - ZadaRenderer class is exported and configurable
+      ---
+      duration_ms: 1.21775
+      type: 'test'
+      ...
+    # Subtest: instantiation without container handles safely
+    ok 2 - instantiation without container handles safely
+      ---
+      duration_ms: 0.554563
+      type: 'test'
+      ...
+    1..2
+ok 37 - ZadaRenderer exports and configuration
+  ---
+  duration_ms: 2.970914
+  type: 'test'
+  ...
+# Subtest: ZadaRenderer adaptive DPR capping
+    # Subtest: clamps desktop DPR strictly to <= 1.75
+    ok 1 - clamps desktop DPR strictly to <= 1.75
+      ---
+      duration_ms: 0.159029
+      type: 'test'
+      ...
+    # Subtest: clamps mobile DPR strictly to <= 1.25
+    ok 2 - clamps mobile DPR strictly to <= 1.25
+      ---
+      duration_ms: 0.921755
+      type: 'test'
+      ...
+    1..2
+ok 38 - ZadaRenderer adaptive DPR capping
+  ---
+  duration_ms: 1.584241
+  type: 'test'
+  ...
+# Subtest: ZadaRenderer WebGL initialization and transparent canvas
+    # Subtest: initializes transparent canvas with zero white flash settings
+    ok 1 - initializes transparent canvas with zero white flash settings
+      ---
+      duration_ms: 0.769396
+      type: 'test'
+      ...
+    # Subtest: resize updates camera projection and renderer viewport
+    ok 2 - resize updates camera projection and renderer viewport
+      ---
+      duration_ms: 0.332469
+      type: 'test'
+      ...
+    # Subtest: init accepts subsystem options and assigns them to instance
+    ok 3 - init accepts subsystem options and assigns them to instance
+      ---
+      duration_ms: 0.435334
+      type: 'test'
+      ...
+    1..3
+ok 39 - ZadaRenderer WebGL initialization and transparent canvas
+  ---
+  duration_ms: 2.334258
+  type: 'test'
+  ...
+# Subtest: ZadaRenderer viewport docking transitions
+    # Subtest: setDockMode switches between hero and dock modes safely
+    ok 1 - setDockMode switches between hero and dock modes safely
+      ---
+      duration_ms: 0.125609
+      type: 'test'
+      ...
+    1..1
+ok 40 - ZadaRenderer viewport docking transitions
+  ---
+  duration_ms: 0.31961
+  type: 'test'
+  ...
+# Subtest: ZadaRenderer render loop, sleep, and context recovery
+    # Subtest: start and pause control animation state without duplicate loops
+    ok 1 - start and pause control animation state without duplicate loops
+      ---
+      duration_ms: 2.020586
+      type: 'test'
+      ...
+    # Subtest: document.hidden and out-of-viewport sleep automatically suspends loop
+    ok 2 - document.hidden and out-of-viewport sleep automatically suspends loop
+      ---
+      duration_ms: 0.493151
+      type: 'test'
+      ...
+    # Subtest: webglcontextlost and webglcontextrestored handle safely
+    ok 3 - webglcontextlost and webglcontextrestored handle safely
+      ---
+      duration_ms: 0.47935
+      type: 'test'
+      ...
+    # Subtest: model normalization centers and scales to unit radius
+    ok 4 - model normalization centers and scales to unit radius
+      ---
+      duration_ms: 0.655645
+      type: 'test'
+      ...
+    # Subtest: loadModel resolves model, normalizes it, adds to group, and disposes old model
+    ok 5 - loadModel resolves model, normalizes it, adds to group, and disposes old model
+      ---
+      duration_ms: 1.282938
+      type: 'test'
+      ...
+    # Subtest: loadModel rejects when GLTFLoader is missing or loader fails
+    ok 6 - loadModel rejects when GLTFLoader is missing or loader fails
+      ---
+      duration_ms: 0.816466
+      type: 'test'
+      ...
+    # Subtest: render loop executes render step and interpolates kinematics
+    ok 7 - render loop executes render step and interpolates kinematics
+      ---
+      duration_ms: 0.39275
+      type: 'test'
+      ...
+    # Subtest: clean disposal tears down all resources, document listeners, and DOM bindings
+    ok 8 - clean disposal tears down all resources, document listeners, and DOM bindings
+      ---
+      duration_ms: 0.266129
+      type: 'test'
+      ...
+    1..8
+ok 41 - ZadaRenderer render loop, sleep, and context recovery
+  ---
+  duration_ms: 6.990023
+  type: 'test'
+  ...
+# Subtest: ZadaStateManager deterministic transitions & debouncing
+    # Subtest: initial state defaults to WELCOME or IDLE
+    ok 1 - initial state defaults to WELCOME or IDLE
+      ---
+      duration_ms: 0.591879
+      type: 'test'
+      ...
+    # Subtest: valid transition updates state and notifies subscribers
+    ok 2 - valid transition updates state and notifies subscribers
+      ---
+      duration_ms: 1.017779
+      type: 'test'
+      ...
+    # Subtest: same-state transition returns true and avoids redundant notify
+    ok 3 - same-state transition returns true and avoids redundant notify
+      ---
+      duration_ms: 0.181272
+      type: 'test'
+      ...
+    # Subtest: invalid transition is rejected safely
+    ok 4 - invalid transition is rejected safely
+      ---
+      duration_ms: 0.275944
+      type: 'test'
+      ...
+    # Subtest: debouncing prevents rapid state transitions within debounceMs window
+    ok 5 - debouncing prevents rapid state transitions within debounceMs window
+      ---
+      duration_ms: 0.138448
+      type: 'test'
+      ...
+# Subscriber error in ZadaStateManager: Error: Subscriber failure simulation
+#     at /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/zada-state.test.cjs:105:13
+#     at ZadaStateManager.notify (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/assets/js/zada-state.js:142:9)
+#     at ZadaStateManager.setState (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/assets/js/zada-state.js:93:10)
+#     at TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/zada-state.test.cjs:111:29)
+#     at Test.runInAsyncScope (node:async_hooks:214:14)
+#     at Test.run (node:internal/test_runner/test:1047:25)
+#     at Test.start (node:internal/test_runner/test:944:17)
+#     at TestContext.test (node:internal/test_runner/test:373:20)
+#     at TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/zada-state.test.cjs:100:11)
+#     at async Test.run (node:internal/test_runner/test:1054:7)
+    # Subtest: transition succeeds after debounceMs elapsed
+    ok 6 - transition succeeds after debounceMs elapsed
+      ---
+      duration_ms: 29.898825
+      type: 'test'
+      ...
+    # Subtest: interruption resets active state cleanly
+    ok 7 - interruption resets active state cleanly
+      ---
+      duration_ms: 0.395084
+      type: 'test'
+      ...
+    # Subtest: subscribe returns an unsubscribe function
+    ok 8 - subscribe returns an unsubscribe function
+      ---
+      duration_ms: 0.394273
+      type: 'test'
+      ...
+    # Subtest: subscriber errors do not crash notify loop or state update
+    ok 9 - subscriber errors do not crash notify loop or state update
+      ---
+      duration_ms: 1.069978
+      type: 'test'
+      ...
+    # Subtest: on(event, fn) listens for specific state change or general changes
+    ok 10 - on(event, fn) listens for specific state change or general changes
+      ---
+      duration_ms: 0.523326
+      type: 'test'
+      ...
+    # Subtest: exports valid states and transition map constants
+    ok 11 - exports valid states and transition map constants
+      ---
+      duration_ms: 0.094022
+      type: 'test'
+      ...
+    1..11
+ok 42 - ZadaStateManager deterministic transitions & debouncing
+  ---
+  duration_ms: 36.728938
+  type: 'test'
+  ...
+# Subtest: ZadaVisitorTracker client telemetry & deduplication
+    # Subtest: detects device type accurately based on viewport width and user-agent
+    ok 1 - detects device type accurately based on viewport width and user-agent
+      ---
+      duration_ms: 1.16447
+      type: 'test'
+      ...
+    # Subtest: detects browser name cleanly from user agent
+    ok 2 - detects browser name cleanly from user agent
+      ---
+      duration_ms: 0.307732
+      type: 'test'
+      ...
+    # Subtest: sends visitor beacon on fresh session and records sessionStorage token
+    ok 3 - sends visitor beacon on fresh session and records sessionStorage token
+      ---
+      duration_ms: 14.551685
+      type: 'test'
+      ...
+    # Subtest: respects Do Not Track preference without sending telemetry
+    ok 4 - respects Do Not Track preference without sending telemetry
+      ---
+      duration_ms: 0.167211
+      type: 'test'
+      ...
+    1..4
+ok 43 - ZadaVisitorTracker client telemetry & deduplication
+  ---
+  duration_ms: 17.152493
+  type: 'test'
+  ...
+1..43
+# tests 185
+# suites 0
+# pass 185
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 738.24014

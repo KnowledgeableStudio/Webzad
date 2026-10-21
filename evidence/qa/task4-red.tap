@@ -1,0 +1,1171 @@
+TAP version 13
+# Subtest: one hero h1 and exact approved positioning
+not ok 1 - one hero h1 and exact approved positioning
+  ---
+  duration_ms: 2.693938
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:5:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    + actual - expected
+    
+    + 'Your business deserves a website that feels as serious as you are.'
+    - "We don't just build websites. We build digital experiences."
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: "We don't just build websites. We build digital experiences."
+  actual: 'Your business deserves a website that feels as serious as you are.'
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:5:231)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: existing section IDs and contact field contracts survive
+ok 2 - existing section IDs and contact field contracts survive
+  ---
+  duration_ms: 0.446611
+  type: 'test'
+  ...
+# Subtest: original logo and real direct contact remain
+ok 3 - original logo and real direct contact remain
+  ---
+  duration_ms: 0.103225
+  type: 'test'
+  ...
+# Subtest: hero contains all three working anchor actions
+not ok 4 - hero contains all three working anchor actions
+  ---
+  duration_ms: 0.537948
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /href="#automation"/. Input:
+    
+    '<section class="hero" id="top">\r\n' +
+      '<div class="hero-vw">\r\n' +
+      '<video class="hero-v" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="studio-hero-inset-preview.png">\r\n' +
+      '<source src="Background.mp4" type="video/mp4" />\r\n' +
+      '<track kind="metadata" label="Background video" />\r\n' +
+      '</video>\r\n' +
+      '</div>\r\n' +
+      '<div class="hero-ov"></div>\r\n' +
+      '<div class="hero-g hero-g1"></div>\r\n' +
+      '<div class="hero-g hero-g2"></div>\r\n' +
+      '<div class="hero-c">\r\n' +
+      '<span class="ey" data-r>Freelance Web Design &amp; Development</span>\r\n' +
+      '<h1 data-r data-d="1">Your business deserves a website that feels <span class="ac">as serious as you are.</span></h1>\r\n' +
+      '<p class="hero-sub" data-r data-d="2">I design and build premium websites, landing pages, and digital experiences that make clients trust you before the first conversation.</p>\r\n' +
+      '<div class="hero-a" data-r data-d="3">\r\n' +
+      '<a href="#contact" class="btn btn-p">Start a Project</a>\r\n' +
+      '<a href="#work" class="btn btn-s">View Work</a>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="si" aria-hidden="true"><span></span></div>\r\n' +
+      '</section>'
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <section class="hero" id="top">
+    <div class="hero-vw">
+    <video class="hero-v" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="studio-hero-inset-preview.png">
+    <source src="Background.mp4" type="video/mp4" />
+    <track kind="metadata" label="Background video" />
+    </video>
+    </div>
+    <div class="hero-ov"></div>
+    <div class="hero-g hero-g1"></div>
+    <div class="hero-g hero-g2"></div>
+    <div class="hero-c">
+    <span class="ey" data-r>Freelance Web Design &amp; Development</span>
+    <h1 data-r data-d="1">Your business deserves a website that feels <span class="ac">as serious as you are.</span></h1>
+    <p class="hero-sub" data-r data-d="2">I design and build premium websites, landing pages, and digital experiences that make clients trust you before the first conversation.</p>
+    <div class="hero-a" data-r data-d="3">
+    <a href="#contact" class="btn btn-p">Start a Project</a>
+    <a href="#work" class="btn btn-s">View Work</a>
+    </div>
+    </div>
+    <div class="si" aria-hidden="true"><span></span></div>
+    </section>
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:8:190)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: no duplicate IDs or pretend anchor buttons
+ok 5 - no duplicate IDs or pretend anchor buttons
+  ---
+  duration_ms: 1.405031
+  type: 'test'
+  ...
+# Subtest: each service action has a real preserved select value
+not ok 6 - each service action has a real preserved select value
+  ---
+  duration_ms: 12.785671
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:10:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The expression evaluated to a falsy value:
+    
+      assert.ok(values.length>=6)
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:10:263)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: motion is visible and the hero does not force video download/autoplay
+not ok 7 - motion is visible and the hero does not force video download/autoplay
+  ---
+  duration_ms: 1.882799
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:11:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /<button[^>]*id="motionToggle"/. Input:
+    
+    '<!doctype html>\r\n' +
+      '<html lang="en">\r\n' +
+      '<head>\r\n' +
+      '<meta charset="UTF-8" />\r\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />\r\n' +
+      '<meta name="description" content="Webzad designs and builds premium websites, landing pages, and digital experiences for businesses that need a stronger brand presence." />\r\n' +
+      '<meta property="og:image" content="https://webzad.dev/favicon-google.png" />\r\n' +
+      '<meta property="og:image:type" content="image/png" />\r\n' +
+      '<meta property="og:image:width" content="48" />\r\n' +
+      '<meta property="og:image:height" content="48" />\r\n' +
+      '<meta name="theme-color" content="#050710" />\r\n' +
+      '<meta name="mobile-web-app-capable" content="yes" />\r\n' +
+      `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://webzad.pages.dev; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" />\r\n` +
+      '<meta name="referrer" content="strict-origin-when-cross-origin" />\r\n' +
+      '<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />\r\n' +
+      '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />\r\n' +
+      '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />\r\n' +
+      '<link rel="icon" href="/favicon.ico" sizes="48x48" />\r\n' +
+      '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />\r\n' +
+      '<link rel="manifest" href="/site.webmanifest" />\r\n' +
+      '<link rel="canonical" href="https://webzad.dev/" />\r\n' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com" />\r\n' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\r\n' +
+      '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />\r\n' +
+      '<title>Webzad | Premium Web Design & Development</title>\r\n' +
+      '<link rel="stylesheet" href="assets/css/zada.css" />\r\n' +
+      '<link rel="stylesheet" href="assets/css/main.css" />\r\n' +
+      '</head>\r\n' +
+      '<body>\r\n' +
+      '<a href="#services" class="skip-link">Skip to content</a>\r\n' +
+      '<div class="progress" id="scrollProgress" aria-hidden="true"></div>\r\n' +
+      '<nav class="nav" id="nav">\r\n' +
+      '<div class="nav-i">\r\n' +
+      '<a href="#top" class="nav-logo" translate="no" aria-label="Webzad home"><img src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" width="192" height="192" /></a>\r\n' +
+      '<div class="nav-links">\r\n' +
+      '<a href="#services" class="nav-link">Services</a>\r\n' +
+      '<a href="#automation" class="nav-link">Automation</a>\r\n' +
+      '<a href="#work" class="nav-link">Work</a>\r\n' +
+      '<a href="#process" class="nav-link">Process</a>\r\n' +
+      '<a href="#contact" class="nav-link">Contact</a>\r\n' +
+      '<a href="#contact" class="nav-cta">Start a Project</a>\r\n' +
+      '</div>\r\n' +
+      '<button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">\r\n' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>\r\n' +
+      '</button>\r\n' +
+      '</div>\r\n' +
+      '</nav>\r\n' +
+      '<div class="mm" id="mobileMenu">\r\n' +
+      '<a href="#services">Services</a>\r\n' +
+      '<a href="#automation">Automation</a>\r\n' +
+      '<a href="#work">Work</a>\r\n' +
+      '<a href="#process">Process</a>\r\n' +
+      '<a href="#contact">Contact</a>\r\n' +
+      '<a href="#contact" class="btn btn-p">Start a Project</a>\r\n' +
+      '</div>\r\n' +
+      '<section class="hero" id="top">\r\n' +
+      '<div class="hero-vw">\r\n' +
+      '<video class="hero-v" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="studio-hero-inset-preview.png">\r\n' +
+      '<source src="Background.mp4" type="video/mp4" />\r\n' +
+      '<track kind="metadata" label="Background video" />\r\n' +
+      '</video>\r\n' +
+      '</div>\r\n' +
+      '<div class="hero-ov"></div>\r\n' +
+      '<div class="hero-g hero-g1"></div>\r\n' +
+      '<div class="hero-g hero-g2"></div>\r\n' +
+      '<div class="hero-c">\r\n' +
+      '<span class="ey" data-r>Freelance Web Design &amp; Development</span>\r\n' +
+      '<h1 data-r data-d="1">Your business deserves a website that feels <span class="ac">as serious as you are.</span></h1>\r\n' +
+      '<p class="hero-sub" data-r data-d="2">I design and build premium websites, landing pages, and digital experiences that make clients trust you before the first conversation.</p>\r\n' +
+      '<div class="hero-a" data-r data-d="3">\r\n' +
+      '<a href="#contact" class="btn btn-p">Start a Project</a>\r\n' +
+      '<a href="#work" class="btn btn-s">View Work</a>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="si" aria-hidden="true"><span></span></div>\r\n' +
+      '</section>\r\n' +
+      '\r\n' +
+      '<section class="sec" id="services">\r\n' +
+      '<div class="ct">\r\n' +
+      '<div class="sec-h" data-r>\r\n' +
+      '<span class="ey">Services</span>\r\n' +
+      '<h2>What I can build for you.</h2>\r\n' +
+      '<p>From full website systems to focused landing pages, every project is crafted with precision and designed to elevate your brand.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-grid">\r\n' +
+      '<div class="sv-card" data-r data-d="1">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12l8.58 3.91a2 2 0 0 0 1.66 0L21 12"/><path d="M2 17l8.58 3.91a2 2 0 0 0 1.66 0L21 17"/></svg></div>\r\n' +
+      '<h3>Signature Websites</h3>\r\n' +
+      '<p>Custom marketing websites built to feel sharper, cleaner, and more premium than the competition.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="2">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.16 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.16-1.62 0-5 0-5"/></svg></div>\r\n' +
+      '<h3>Landing Pages</h3>\r\n' +
+      '<p>High-conversion pages for campaigns, offers, and launches where one strong action matters.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="3">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>\r\n' +
+      '<h3>E-Commerce</h3>\r\n' +
+      '<p>Online stores that feel elevated while keeping the path to purchase intuitive and fast.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="4">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>\r\n' +
+      '<h3>Custom Web Apps</h3>\r\n' +
+      '<p>Portals, dashboards, and tailored web interfaces designed with the same premium standard.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="5">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>\r\n' +
+      '<h3>Branding &amp; Graphics</h3>\r\n' +
+      "<p>Logos, flyers, and digital graphics that match your brand's positioning and feel cohesive.</p>\r\n" +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="6">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></div>\r\n' +
+      '<h3>Website Redesigns</h3>\r\n' +
+      '<p>Transform an outdated site into something that commands respect and reflects your quality.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</section>\r\n' +
+      '\r\n' +
+      '<section class="sec" id="automation">\r\n' +
+      '<div class="ct">\r\n' +
+      '<div class="auto-wrap" data-r>\r\n' +
+      '<div class="auto-content">\r\n' +
+      '<span class="ey">Intelligent Automation</span>\r\n' +
+      '<h2>Custom AI workflows that eliminate repetitive work.</h2>\r\n' +
+      '<p>I design and build AI-powered automations, intelligent pipelines, and system integrations that reduce administrative toil, accelerate customer inquiries, and let your business operate at maximum velocity.</p>\r\n' +
+      '<div class="auto-features">\r\n' +
+      '<div class="auto-feat">\r\n' +
+      '<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>\r\n' +
+      '<div>\r\n' +
+      '<h4>Autonomous AI Agents</h4>\r\n' +
+      '<p>Domain-trained AI specialists and knowledge engines that handle customer inquiries and lead triage around the clock.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-feat">\r\n' +
+      '<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>\r\n' +
+      '<div>\r\n' +
+      '<h4>Connected System Integrations</h4>\r\n' +
+      '<p>Direct API synchronization between your website, CRMs, email, payment platforms, and back-office databases.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-feat">\r\n' +
+      '<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>\r\n' +
+      '<div>\r\n' +
+      '<h4>Intelligent Business Scaling</h4>\r\n' +
+      '<p>Replace hours of manual spreadsheets and repetitive data handling with zero-error, reliable automation pipelines.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-actions">\r\n' +
+      '<a href="#contact" class="btn btn-p">Automate Your Operations</a>\r\n' +
+      '<button type="button" class="btn btn-s" id="askZadaAutomationBtn">Ask Zada About Automation</button>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-visual" data-lightbox="assets/automation-visual.jpg" data-caption="Webzad Intelligent AI Automation &amp; Connected Workflows">\r\n' +
+      '<img src="assets/automation-visual.jpg" alt="Intelligent AI Automation and Connected Workflows" loading="lazy" decoding="async" />\r\n' +
+      '<div class="auto-visual-glow" aria-hidden="true"></div>\r\n' +
+      '<div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</section>\r\n' +
+      '\r\n' +
+      '<section '... 8797 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Webzad designs and builds premium websites, landing pages, and digital experiences for businesses that need a stronger brand presence." />
+    <meta property="og:image" content="https://webzad.dev/favicon-google.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="48" />
+    <meta property="og:image:height" content="48" />
+    <meta name="theme-color" content="#050710" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://webzad.pages.dev; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="canonical" href="https://webzad.dev/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Webzad | Premium Web Design & Development</title>
+    <link rel="stylesheet" href="assets/css/zada.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    </head>
+    <body>
+    <a href="#services" class="skip-link">Skip to content</a>
+    <div class="progress" id="scrollProgress" aria-hidden="true"></div>
+    <nav class="nav" id="nav">
+    <div class="nav-i">
+    <a href="#top" class="nav-logo" translate="no" aria-label="Webzad home"><img src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" width="192" height="192" /></a>
+    <div class="nav-links">
+    <a href="#services" class="nav-link">Services</a>
+    <a href="#automation" class="nav-link">Automation</a>
+    <a href="#work" class="nav-link">Work</a>
+    <a href="#process" class="nav-link">Process</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <a href="#contact" class="nav-cta">Start a Project</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+    </button>
+    </div>
+    </nav>
+    <div class="mm" id="mobileMenu">
+    <a href="#services">Services</a>
+    <a href="#automation">Automation</a>
+    <a href="#work">Work</a>
+    <a href="#process">Process</a>
+    <a href="#contact">Contact</a>
+    <a href="#contact" class="btn btn-p">Start a Project</a>
+    </div>
+    <section class="hero" id="top">
+    <div class="hero-vw">
+    <video class="hero-v" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="studio-hero-inset-preview.png">
+    <source src="Background.mp4" type="video/mp4" />
+    <track kind="metadata" label="Background video" />
+    </video>
+    </div>
+    <div class="hero-ov"></div>
+    <div class="hero-g hero-g1"></div>
+    <div class="hero-g hero-g2"></div>
+    <div class="hero-c">
+    <span class="ey" data-r>Freelance Web Design &amp; Development</span>
+    <h1 data-r data-d="1">Your business deserves a website that feels <span class="ac">as serious as you are.</span></h1>
+    <p class="hero-sub" data-r data-d="2">I design and build premium websites, landing pages, and digital experiences that make clients trust you before the first conversation.</p>
+    <div class="hero-a" data-r data-d="3">
+    <a href="#contact" class="btn btn-p">Start a Project</a>
+    <a href="#work" class="btn btn-s">View Work</a>
+    </div>
+    </div>
+    <div class="si" aria-hidden="true"><span></span></div>
+    </section>
+    
+    <section class="sec" id="services">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Services</span>
+    <h2>What I can build for you.</h2>
+    <p>From full website systems to focused landing pages, every project is crafted with precision and designed to elevate your brand.</p>
+    </div>
+    <div class="sv-grid">
+    <div class="sv-card" data-r data-d="1">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12l8.58 3.91a2 2 0 0 0 1.66 0L21 12"/><path d="M2 17l8.58 3.91a2 2 0 0 0 1.66 0L21 17"/></svg></div>
+    <h3>Signature Websites</h3>
+    <p>Custom marketing websites built to feel sharper, cleaner, and more premium than the competition.</p>
+    </div>
+    <div class="sv-card" data-r data-d="2">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.16 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.16-1.62 0-5 0-5"/></svg></div>
+    <h3>Landing Pages</h3>
+    <p>High-conversion pages for campaigns, offers, and launches where one strong action matters.</p>
+    </div>
+    <div class="sv-card" data-r data-d="3">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+    <h3>E-Commerce</h3>
+    <p>Online stores that feel elevated while keeping the path to purchase intuitive and fast.</p>
+    </div>
+    <div class="sv-card" data-r data-d="4">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
+    <h3>Custom Web Apps</h3>
+    <p>Portals, dashboards, and tailored web interfaces designed with the same premium standard.</p>
+    </div>
+    <div class="sv-card" data-r data-d="5">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>
+    <h3>Branding &amp; Graphics</h3>
+    <p>Logos, flyers, and digital graphics that match your brand's positioning and feel cohesive.</p>
+    </div>
+    <div class="sv-card" data-r data-d="6">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></div>
+    <h3>Website Redesigns</h3>
+    <p>Transform an outdated site into something that commands respect and reflects your quality.</p>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="automation">
+    <div class="ct">
+    <div class="auto-wrap" data-r>
+    <div class="auto-content">
+    <span class="ey">Intelligent Automation</span>
+    <h2>Custom AI workflows that eliminate repetitive work.</h2>
+    <p>I design and build AI-powered automations, intelligent pipelines, and system integrations that reduce administrative toil, accelerate customer inquiries, and let your business operate at maximum velocity.</p>
+    <div class="auto-features">
+    <div class="auto-feat">
+    <div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+    <div>
+    <h4>Autonomous AI Agents</h4>
+    <p>Domain-trained AI specialists and knowledge engines that handle customer inquiries and lead triage around the clock.</p>
+    </div>
+    </div>
+    <div class="auto-feat">
+    <div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div>
+    <h4>Connected System Integrations</h4>
+    <p>Direct API synchronization between your website, CRMs, email, payment platforms, and back-office databases.</p>
+    </div>
+    </div>
+    <div class="auto-feat">
+    <div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div>
+    <h4>Intelligent Business Scaling</h4>
+    <p>Replace hours of manual spreadsheets and repetitive data handling with zero-error, reliable automation pipelines.</p>
+    </div>
+    </div>
+    </div>
+    <div class="auto-actions">
+    <a href="#contact" class="btn btn-p">Automate Your Operations</a>
+    <button type="button" class="btn btn-s" id="askZadaAutomationBtn">Ask Zada About Automation</button>
+    </div>
+    </div>
+    <div class="auto-visual" data-lightbox="assets/automation-visual.jpg" data-caption="Webzad Intelligent AI Automation &amp; Connected Workflows">
+    <img src="assets/automation-visual.jpg" alt="Intelligent AI Automation and Connected Workflows" loading="lazy" decoding="async" />
+    <div class="auto-visual-glow" aria-hidden="true"></div>
+    <div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="work">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Selected Work</span>
+    <h2>Projects that show the standard.</h2>
+    <p>Each build balances brand atmosphere, readable structure, and a clear path to action.</p>
+    </div>
+    <div class="wk-grid">
+    <div class="wk-card" data-r data-d="1">
+    <div class="wk-media" data-lightbox="assets/work-professional-services-B68gLSwb.png" data-caption="Professional Services — Authority-driven websites"><img src="assets/work-professional-services-B68gLSwb.png" alt="Professional services website" loading="lazy" decoding="async" /><div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div></div>
+    <div class="wk-body">
+    <span class="wk-label">Professional Services</span>
+    <h3>Authority-Driven Websites</h3>
+    <p>Structured around credibility, differentiation, and a smoother consultation path for expert-led businesses.</p>
+    <div class="wk-tags"><span class="wk-tag">Credibility-first</span><span class="wk-tag">Consultation CTA</span></div>
+    </div>
+    </div>
+    <div class="wk-card" data-r data-d="2">
+    <div class="wk-media" data-lightbox="assets/work-hospitality-lifestyle-BOhuuqm2.png" data-caption="Hospitality & Lifestyle — Brand-rich experiences"><img src="assets/work-hospitality-lifestyle-BOhuuqm2.png" alt="Hospitality and lifestyle website" loading="lazy" decoding="async" /><div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div></div>
+    <div class="wk-body">
+    <span class="wk-label">Hospitality &amp; Lifestyle</span>
+    <h3>Brand-Rich Experiences</h3>
+    <p>Built to make the atmosphere feel elevated before the inquiry ever happens. Perception drives contact.</p>
+    <div class="wk-tags"><span class="wk-tag">Immersive</span><span class="wk-tag">Booking flow</span></div>
+    </div>
+    </div>
+    <div class="wk-card" data-r data-d="3">
+    <div class="wk-media" data-lightbox="assets/work-growth-campaigns-CwnhtZED.png" data-caption="Growth Campaigns — Conversion-focused pages"><img src="assets/work-growth-campaigns-CwnhtZED.png" alt="Growth campaign landing page" loading="lazy" decoding="async" /><div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div></div>
+    <div class="wk-body">
+    <span class="wk-label">Growth Campaigns</span>
+    <h3>Conversion-Focused Pages</h3>
+    <p>Campaign and launch pages designed to support one offer with more clarity, polish, and conversion focus.</p>
+    <div class="wk-tags"><span class="wk-tag">Fast path</span><span class="wk-tag">High clarity</span></div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="process">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Process</span>
+    <h2>From idea to launch in four steps.</h2>
+    <p>A clear, deliberate process that keeps the work focused and the outcome premium.</p>
+    </div>
+    <div class="pr-grid">
+    <div class="pr-step" data-r data-d="1">
+    <div class="pr-num">01</div>
+    <h3>Discovery</h3>
+    <p>Clarify your audience, offer, brand tone, and what the site needs to communicate.</p>
+    </div>
+    <div class="pr-step" data-r data-d="2">
+    <div class="pr-num">02</div>
+    <h3>Strategy</h3>
+    <p>Structure the story, page flow, and conversion paths so the site feels sharper and calmer.</p>
+    </div>
+    <div class="pr-step" data-r data-d="3">
+    <div class="pr-num">03</div>
+    <h3>Design &amp; Build</h3>
+    <p>Craft premium layouts, custom interactions, and responsive implementation with precision.</p>
+    </div>
+    <div class="pr-step" data-r data-d="4">
+    <div class="pr-num">04</div>
+    <h3>Launch</h3>
+    <p>Ship a polished site that's ready to convert, then evolve it as the business grows.</p>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="contact">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Contact</span>
+    <h2>Let's build something worth trusting.</h2>
+    <p>Share your goals and I'll recommend a tailored scope — no rigid packages, no hard sell.</p>
+    </div>
+    <div class="ct-grid">
+    <div class="ct-form-w" data-r data-d="1">
+    <form class="ct-form" id="contactForm">
+    <div class="fd-grid">
+    <label class="fd"><span>Name</span><input type="text" name="name" required autocomplete="name" placeholder="Your name" /></label>
+    <label class="fd"><span>Email</span><input type="email" name="email" required autocomplete="email" spellcheck="false" placeholder="you@company.com" /></label>
+    </div>
+    <div class="fd-grid">
+    <label class="fd"><span>Company</span><input type="text" name="company" autocomplete="organization" placeholder="Company or brand" /></label>
+    <label class="fd"><span>Service</span><select name="service"><option value="">Select a service</option><option>Signature Website</option><option>AI &amp; Workflow Automation</option><option>Website Redesign</option><option>Landing Page</option><option>E-Commerce</option><option>Custom Web App</option><option>Branding &amp; Graphics</option></select></label>
+    </div>
+    <label class="fd"><span>Timeline</span><input type="text" name="timeline" placeholder="Example: within 4-6 weeks" /></label>
+    <label class="fd"><span>Project Goals</span><textarea name="goals" rows="5" required maxlength="4000" placeholder="Tell me what you need, who the site is for, and what a strong outcome looks like…"></textarea></label>
+    <div class="fd-hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+    <button type="submit" class="btn btn-p btn-f" id="submitBtn">Send Project Brief</button>
+    <p class="fm-note">Your information is only used to respond to your inquiry.</p>
+    </form>
+    <div class="fm-ok" id="formSuccess" aria-live="polite">
+    <svg width="56" height="56" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#00f7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+    <h3>Message sent.</h3>
+    <p>I'll get back to you within one business day. Check your inbox for a confirmation.</p>
+    </div>
+    <div class="fm-err" id="formError" aria-live="polite">Something went wrong. Please try again or email knowledgablellc@gmail.com directly.</div>
+    </div>
+    <div class="ct-side" data-r data-d="2">
+    <div class="ct-panel">
+    <h3>What to expect</h3>
+    <ul class="ct-list">
+    <li>A response within one business day</li>
+    <li>A focused conversation about your goals</li>
+    <li>A tailored scope — no rigid packages</li>
+    <li>Clear pricing based on your needs</li>
+    </ul>
+    </div>
+    <div class="ct-panel">
+    <span class="ct-dl">Direct contact</span>
+    <a href="mailto:knowledgablellc@gmail.com" class="ct-de">knowledgablellc@gmail.com</a>
+    <span class="ct-dloc">Based in NYC — working with clients everywhere</span>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <footer class="ft">
+    <div class="ct">
+    <div class="ft-i">
+    <div>
+    <div class="ft-logo" translate="no"><img class="ft-logo-img" src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" height="36" width="36" /><span class="ft-logo-word">Web<span class="ft-logo-accent">zad</span></span></div>
+    <p class="ft-tag">Premium web design &amp; development</p>
+    </div>
+    <div class="ft-links">
+    <a href="#services">Services</a>
+    <a href="#automation">Automation</a>
+    <a href="#work">Work</a>
+    <a href="#process">Process</a>
+    <a href="#contact">Contact</a>
+    </div>
+    <div class="ft-meta">
+    <a href="mailto:knowledgablellc@gmail.com">knowledgablellc@gmail.com</a>
+    <button type="button" class="zada-footer-trigger" id="zadaFooterTrigger" aria-label="Open Zada AI Assistant"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Zada AI Companion</button>
+    <p>&copy; 2025 Webzad. All rights reserved.</p>
+    </div>
+    </div>
+    </div>
+    </footer>
+    
+    <div id="zada-container" class="zada-container" aria-live="polite"></div>
+    
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/zada-visitor.js"></script>
+    <script src="assets/js/zada-state.js"></script>
+    <script src="assets/js/zada-actions.js"></script>
+    <script src="assets/js/zada-motion.js"></script>
+    <script src="assets/js/zada-aura.js"></script>
+    <script src="assets/js/zada-audio.js"></script>
+    <script src="assets/js/zada-renderer.js"></script>
+    <script src="assets/js/zada-holo-ui.js"></script>
+    <script type="module" src="assets/js/zada.js"></script>
+    </body>
+    </html>
+    ><imgcasst-oocassgdclas="f-g-cet
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:11:90)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+# Subtest: site uses actual semantic main, adequate metadata, and no unverified sample metrics
+not ok 8 - site uses actual semantic main, adequate metadata, and no unverified sample metrics
+  ---
+  duration_ms: 0.498319
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:12:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    The input did not match the regular expression /<main\b/. Input:
+    
+    '<!doctype html>\r\n' +
+      '<html lang="en">\r\n' +
+      '<head>\r\n' +
+      '<meta charset="UTF-8" />\r\n' +
+      '<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />\r\n' +
+      '<meta name="description" content="Webzad designs and builds premium websites, landing pages, and digital experiences for businesses that need a stronger brand presence." />\r\n' +
+      '<meta property="og:image" content="https://webzad.dev/favicon-google.png" />\r\n' +
+      '<meta property="og:image:type" content="image/png" />\r\n' +
+      '<meta property="og:image:width" content="48" />\r\n' +
+      '<meta property="og:image:height" content="48" />\r\n' +
+      '<meta name="theme-color" content="#050710" />\r\n' +
+      '<meta name="mobile-web-app-capable" content="yes" />\r\n' +
+      `<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://webzad.pages.dev; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" />\r\n` +
+      '<meta name="referrer" content="strict-origin-when-cross-origin" />\r\n' +
+      '<link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />\r\n' +
+      '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />\r\n' +
+      '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />\r\n' +
+      '<link rel="icon" href="/favicon.ico" sizes="48x48" />\r\n' +
+      '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />\r\n' +
+      '<link rel="manifest" href="/site.webmanifest" />\r\n' +
+      '<link rel="canonical" href="https://webzad.dev/" />\r\n' +
+      '<link rel="preconnect" href="https://fonts.googleapis.com" />\r\n' +
+      '<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />\r\n' +
+      '<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />\r\n' +
+      '<title>Webzad | Premium Web Design & Development</title>\r\n' +
+      '<link rel="stylesheet" href="assets/css/zada.css" />\r\n' +
+      '<link rel="stylesheet" href="assets/css/main.css" />\r\n' +
+      '</head>\r\n' +
+      '<body>\r\n' +
+      '<a href="#services" class="skip-link">Skip to content</a>\r\n' +
+      '<div class="progress" id="scrollProgress" aria-hidden="true"></div>\r\n' +
+      '<nav class="nav" id="nav">\r\n' +
+      '<div class="nav-i">\r\n' +
+      '<a href="#top" class="nav-logo" translate="no" aria-label="Webzad home"><img src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" width="192" height="192" /></a>\r\n' +
+      '<div class="nav-links">\r\n' +
+      '<a href="#services" class="nav-link">Services</a>\r\n' +
+      '<a href="#automation" class="nav-link">Automation</a>\r\n' +
+      '<a href="#work" class="nav-link">Work</a>\r\n' +
+      '<a href="#process" class="nav-link">Process</a>\r\n' +
+      '<a href="#contact" class="nav-link">Contact</a>\r\n' +
+      '<a href="#contact" class="nav-cta">Start a Project</a>\r\n' +
+      '</div>\r\n' +
+      '<button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">\r\n' +
+      '<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>\r\n' +
+      '</button>\r\n' +
+      '</div>\r\n' +
+      '</nav>\r\n' +
+      '<div class="mm" id="mobileMenu">\r\n' +
+      '<a href="#services">Services</a>\r\n' +
+      '<a href="#automation">Automation</a>\r\n' +
+      '<a href="#work">Work</a>\r\n' +
+      '<a href="#process">Process</a>\r\n' +
+      '<a href="#contact">Contact</a>\r\n' +
+      '<a href="#contact" class="btn btn-p">Start a Project</a>\r\n' +
+      '</div>\r\n' +
+      '<section class="hero" id="top">\r\n' +
+      '<div class="hero-vw">\r\n' +
+      '<video class="hero-v" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="studio-hero-inset-preview.png">\r\n' +
+      '<source src="Background.mp4" type="video/mp4" />\r\n' +
+      '<track kind="metadata" label="Background video" />\r\n' +
+      '</video>\r\n' +
+      '</div>\r\n' +
+      '<div class="hero-ov"></div>\r\n' +
+      '<div class="hero-g hero-g1"></div>\r\n' +
+      '<div class="hero-g hero-g2"></div>\r\n' +
+      '<div class="hero-c">\r\n' +
+      '<span class="ey" data-r>Freelance Web Design &amp; Development</span>\r\n' +
+      '<h1 data-r data-d="1">Your business deserves a website that feels <span class="ac">as serious as you are.</span></h1>\r\n' +
+      '<p class="hero-sub" data-r data-d="2">I design and build premium websites, landing pages, and digital experiences that make clients trust you before the first conversation.</p>\r\n' +
+      '<div class="hero-a" data-r data-d="3">\r\n' +
+      '<a href="#contact" class="btn btn-p">Start a Project</a>\r\n' +
+      '<a href="#work" class="btn btn-s">View Work</a>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="si" aria-hidden="true"><span></span></div>\r\n' +
+      '</section>\r\n' +
+      '\r\n' +
+      '<section class="sec" id="services">\r\n' +
+      '<div class="ct">\r\n' +
+      '<div class="sec-h" data-r>\r\n' +
+      '<span class="ey">Services</span>\r\n' +
+      '<h2>What I can build for you.</h2>\r\n' +
+      '<p>From full website systems to focused landing pages, every project is crafted with precision and designed to elevate your brand.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-grid">\r\n' +
+      '<div class="sv-card" data-r data-d="1">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12l8.58 3.91a2 2 0 0 0 1.66 0L21 12"/><path d="M2 17l8.58 3.91a2 2 0 0 0 1.66 0L21 17"/></svg></div>\r\n' +
+      '<h3>Signature Websites</h3>\r\n' +
+      '<p>Custom marketing websites built to feel sharper, cleaner, and more premium than the competition.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="2">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.16 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.16-1.62 0-5 0-5"/></svg></div>\r\n' +
+      '<h3>Landing Pages</h3>\r\n' +
+      '<p>High-conversion pages for campaigns, offers, and launches where one strong action matters.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="3">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>\r\n' +
+      '<h3>E-Commerce</h3>\r\n' +
+      '<p>Online stores that feel elevated while keeping the path to purchase intuitive and fast.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="4">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>\r\n' +
+      '<h3>Custom Web Apps</h3>\r\n' +
+      '<p>Portals, dashboards, and tailored web interfaces designed with the same premium standard.</p>\r\n' +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="5">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>\r\n' +
+      '<h3>Branding &amp; Graphics</h3>\r\n' +
+      "<p>Logos, flyers, and digital graphics that match your brand's positioning and feel cohesive.</p>\r\n" +
+      '</div>\r\n' +
+      '<div class="sv-card" data-r data-d="6">\r\n' +
+      '<div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></div>\r\n' +
+      '<h3>Website Redesigns</h3>\r\n' +
+      '<p>Transform an outdated site into something that commands respect and reflects your quality.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</section>\r\n' +
+      '\r\n' +
+      '<section class="sec" id="automation">\r\n' +
+      '<div class="ct">\r\n' +
+      '<div class="auto-wrap" data-r>\r\n' +
+      '<div class="auto-content">\r\n' +
+      '<span class="ey">Intelligent Automation</span>\r\n' +
+      '<h2>Custom AI workflows that eliminate repetitive work.</h2>\r\n' +
+      '<p>I design and build AI-powered automations, intelligent pipelines, and system integrations that reduce administrative toil, accelerate customer inquiries, and let your business operate at maximum velocity.</p>\r\n' +
+      '<div class="auto-features">\r\n' +
+      '<div class="auto-feat">\r\n' +
+      '<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>\r\n' +
+      '<div>\r\n' +
+      '<h4>Autonomous AI Agents</h4>\r\n' +
+      '<p>Domain-trained AI specialists and knowledge engines that handle customer inquiries and lead triage around the clock.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-feat">\r\n' +
+      '<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>\r\n' +
+      '<div>\r\n' +
+      '<h4>Connected System Integrations</h4>\r\n' +
+      '<p>Direct API synchronization between your website, CRMs, email, payment platforms, and back-office databases.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-feat">\r\n' +
+      '<div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>\r\n' +
+      '<div>\r\n' +
+      '<h4>Intelligent Business Scaling</h4>\r\n' +
+      '<p>Replace hours of manual spreadsheets and repetitive data handling with zero-error, reliable automation pipelines.</p>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-actions">\r\n' +
+      '<a href="#contact" class="btn btn-p">Automate Your Operations</a>\r\n' +
+      '<button type="button" class="btn btn-s" id="askZadaAutomationBtn">Ask Zada About Automation</button>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '<div class="auto-visual" data-lightbox="assets/automation-visual.jpg" data-caption="Webzad Intelligent AI Automation &amp; Connected Workflows">\r\n' +
+      '<img src="assets/automation-visual.jpg" alt="Intelligent AI Automation and Connected Workflows" loading="lazy" decoding="async" />\r\n' +
+      '<div class="auto-visual-glow" aria-hidden="true"></div>\r\n' +
+      '<div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</div>\r\n' +
+      '</section>\r\n' +
+      '\r\n' +
+      '<section '... 8797 more characters
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected:
+  actual: |-
+    <!doctype html>
+    <html lang="en">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="Webzad designs and builds premium websites, landing pages, and digital experiences for businesses that need a stronger brand presence." />
+    <meta property="og:image" content="https://webzad.dev/favicon-google.png" />
+    <meta property="og:image:type" content="image/png" />
+    <meta property="og:image:width" content="48" />
+    <meta property="og:image:height" content="48" />
+    <meta name="theme-color" content="#050710" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; img-src 'self' data: blob:; font-src 'self' https://fonts.gstatic.com; connect-src 'self' blob: https://webzad.pages.dev; media-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self'" />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <link rel="icon" type="image/png" sizes="192x192" href="/favicon-192x192.png" />
+    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="48x48" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+    <link rel="canonical" href="https://webzad.dev/" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <title>Webzad | Premium Web Design & Development</title>
+    <link rel="stylesheet" href="assets/css/zada.css" />
+    <link rel="stylesheet" href="assets/css/main.css" />
+    </head>
+    <body>
+    <a href="#services" class="skip-link">Skip to content</a>
+    <div class="progress" id="scrollProgress" aria-hidden="true"></div>
+    <nav class="nav" id="nav">
+    <div class="nav-i">
+    <a href="#top" class="nav-logo" translate="no" aria-label="Webzad home"><img src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" width="192" height="192" /></a>
+    <div class="nav-links">
+    <a href="#services" class="nav-link">Services</a>
+    <a href="#automation" class="nav-link">Automation</a>
+    <a href="#work" class="nav-link">Work</a>
+    <a href="#process" class="nav-link">Process</a>
+    <a href="#contact" class="nav-link">Contact</a>
+    <a href="#contact" class="nav-cta">Start a Project</a>
+    </div>
+    <button class="nav-toggle" id="navToggle" aria-label="Open menu" aria-expanded="false">
+    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 5h16"/><path d="M4 12h16"/><path d="M4 19h16"/></svg>
+    </button>
+    </div>
+    </nav>
+    <div class="mm" id="mobileMenu">
+    <a href="#services">Services</a>
+    <a href="#automation">Automation</a>
+    <a href="#work">Work</a>
+    <a href="#process">Process</a>
+    <a href="#contact">Contact</a>
+    <a href="#contact" class="btn btn-p">Start a Project</a>
+    </div>
+    <section class="hero" id="top">
+    <div class="hero-vw">
+    <video class="hero-v" id="heroVideo" autoplay muted loop playsinline preload="auto" poster="studio-hero-inset-preview.png">
+    <source src="Background.mp4" type="video/mp4" />
+    <track kind="metadata" label="Background video" />
+    </video>
+    </div>
+    <div class="hero-ov"></div>
+    <div class="hero-g hero-g1"></div>
+    <div class="hero-g hero-g2"></div>
+    <div class="hero-c">
+    <span class="ey" data-r>Freelance Web Design &amp; Development</span>
+    <h1 data-r data-d="1">Your business deserves a website that feels <span class="ac">as serious as you are.</span></h1>
+    <p class="hero-sub" data-r data-d="2">I design and build premium websites, landing pages, and digital experiences that make clients trust you before the first conversation.</p>
+    <div class="hero-a" data-r data-d="3">
+    <a href="#contact" class="btn btn-p">Start a Project</a>
+    <a href="#work" class="btn btn-s">View Work</a>
+    </div>
+    </div>
+    <div class="si" aria-hidden="true"><span></span></div>
+    </section>
+    
+    <section class="sec" id="services">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Services</span>
+    <h2>What I can build for you.</h2>
+    <p>From full website systems to focused landing pages, every project is crafted with precision and designed to elevate your brand.</p>
+    </div>
+    <div class="sv-grid">
+    <div class="sv-card" data-r data-d="1">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"/><path d="M2 12l8.58 3.91a2 2 0 0 0 1.66 0L21 12"/><path d="M2 17l8.58 3.91a2 2 0 0 0 1.66 0L21 17"/></svg></div>
+    <h3>Signature Websites</h3>
+    <p>Custom marketing websites built to feel sharper, cleaner, and more premium than the competition.</p>
+    </div>
+    <div class="sv-card" data-r data-d="2">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z"/><path d="M9 12H4s.55-3.03 2-4c1.62-1.16 5 0 5 0"/><path d="M12 15v5s3.03-.55 4-2c1.16-1.62 0-5 0-5"/></svg></div>
+    <h3>Landing Pages</h3>
+    <p>High-conversion pages for campaigns, offers, and launches where one strong action matters.</p>
+    </div>
+    <div class="sv-card" data-r data-d="3">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><path d="M3 6h18"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div>
+    <h3>E-Commerce</h3>
+    <p>Online stores that feel elevated while keeping the path to purchase intuitive and fast.</p>
+    </div>
+    <div class="sv-card" data-r data-d="4">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m18 16 4-4-4-4"/><path d="m6 8-4 4 4 4"/><path d="m14.5 4-5 16"/></svg></div>
+    <h3>Custom Web Apps</h3>
+    <p>Portals, dashboards, and tailored web interfaces designed with the same premium standard.</p>
+    </div>
+    <div class="sv-card" data-r data-d="5">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .962 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.962 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg></div>
+    <h3>Branding &amp; Graphics</h3>
+    <p>Logos, flyers, and digital graphics that match your brand's positioning and feel cohesive.</p>
+    </div>
+    <div class="sv-card" data-r data-d="6">
+    <div class="sv-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"/><path d="M21 3v5h-5"/><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"/><path d="M3 21v-5h5"/></svg></div>
+    <h3>Website Redesigns</h3>
+    <p>Transform an outdated site into something that commands respect and reflects your quality.</p>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="automation">
+    <div class="ct">
+    <div class="auto-wrap" data-r>
+    <div class="auto-content">
+    <span class="ey">Intelligent Automation</span>
+    <h2>Custom AI workflows that eliminate repetitive work.</h2>
+    <p>I design and build AI-powered automations, intelligent pipelines, and system integrations that reduce administrative toil, accelerate customer inquiries, and let your business operate at maximum velocity.</p>
+    <div class="auto-features">
+    <div class="auto-feat">
+    <div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg></div>
+    <div>
+    <h4>Autonomous AI Agents</h4>
+    <p>Domain-trained AI specialists and knowledge engines that handle customer inquiries and lead triage around the clock.</p>
+    </div>
+    </div>
+    <div class="auto-feat">
+    <div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+    <div>
+    <h4>Connected System Integrations</h4>
+    <p>Direct API synchronization between your website, CRMs, email, payment platforms, and back-office databases.</p>
+    </div>
+    </div>
+    <div class="auto-feat">
+    <div class="auto-feat-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
+    <div>
+    <h4>Intelligent Business Scaling</h4>
+    <p>Replace hours of manual spreadsheets and repetitive data handling with zero-error, reliable automation pipelines.</p>
+    </div>
+    </div>
+    </div>
+    <div class="auto-actions">
+    <a href="#contact" class="btn btn-p">Automate Your Operations</a>
+    <button type="button" class="btn btn-s" id="askZadaAutomationBtn">Ask Zada About Automation</button>
+    </div>
+    </div>
+    <div class="auto-visual" data-lightbox="assets/automation-visual.jpg" data-caption="Webzad Intelligent AI Automation &amp; Connected Workflows">
+    <img src="assets/automation-visual.jpg" alt="Intelligent AI Automation and Connected Workflows" loading="lazy" decoding="async" />
+    <div class="auto-visual-glow" aria-hidden="true"></div>
+    <div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="work">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Selected Work</span>
+    <h2>Projects that show the standard.</h2>
+    <p>Each build balances brand atmosphere, readable structure, and a clear path to action.</p>
+    </div>
+    <div class="wk-grid">
+    <div class="wk-card" data-r data-d="1">
+    <div class="wk-media" data-lightbox="assets/work-professional-services-B68gLSwb.png" data-caption="Professional Services — Authority-driven websites"><img src="assets/work-professional-services-B68gLSwb.png" alt="Professional services website" loading="lazy" decoding="async" /><div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div></div>
+    <div class="wk-body">
+    <span class="wk-label">Professional Services</span>
+    <h3>Authority-Driven Websites</h3>
+    <p>Structured around credibility, differentiation, and a smoother consultation path for expert-led businesses.</p>
+    <div class="wk-tags"><span class="wk-tag">Credibility-first</span><span class="wk-tag">Consultation CTA</span></div>
+    </div>
+    </div>
+    <div class="wk-card" data-r data-d="2">
+    <div class="wk-media" data-lightbox="assets/work-hospitality-lifestyle-BOhuuqm2.png" data-caption="Hospitality & Lifestyle — Brand-rich experiences"><img src="assets/work-hospitality-lifestyle-BOhuuqm2.png" alt="Hospitality and lifestyle website" loading="lazy" decoding="async" /><div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div></div>
+    <div class="wk-body">
+    <span class="wk-label">Hospitality &amp; Lifestyle</span>
+    <h3>Brand-Rich Experiences</h3>
+    <p>Built to make the atmosphere feel elevated before the inquiry ever happens. Perception drives contact.</p>
+    <div class="wk-tags"><span class="wk-tag">Immersive</span><span class="wk-tag">Booking flow</span></div>
+    </div>
+    </div>
+    <div class="wk-card" data-r data-d="3">
+    <div class="wk-media" data-lightbox="assets/work-growth-campaigns-CwnhtZED.png" data-caption="Growth Campaigns — Conversion-focused pages"><img src="assets/work-growth-campaigns-CwnhtZED.png" alt="Growth campaign landing page" loading="lazy" decoding="async" /><div class="wk-zoom-hint"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/><path d="M11 8v6"/><path d="M8 11h6"/></svg>Click to enlarge</div></div>
+    <div class="wk-body">
+    <span class="wk-label">Growth Campaigns</span>
+    <h3>Conversion-Focused Pages</h3>
+    <p>Campaign and launch pages designed to support one offer with more clarity, polish, and conversion focus.</p>
+    <div class="wk-tags"><span class="wk-tag">Fast path</span><span class="wk-tag">High clarity</span></div>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="process">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Process</span>
+    <h2>From idea to launch in four steps.</h2>
+    <p>A clear, deliberate process that keeps the work focused and the outcome premium.</p>
+    </div>
+    <div class="pr-grid">
+    <div class="pr-step" data-r data-d="1">
+    <div class="pr-num">01</div>
+    <h3>Discovery</h3>
+    <p>Clarify your audience, offer, brand tone, and what the site needs to communicate.</p>
+    </div>
+    <div class="pr-step" data-r data-d="2">
+    <div class="pr-num">02</div>
+    <h3>Strategy</h3>
+    <p>Structure the story, page flow, and conversion paths so the site feels sharper and calmer.</p>
+    </div>
+    <div class="pr-step" data-r data-d="3">
+    <div class="pr-num">03</div>
+    <h3>Design &amp; Build</h3>
+    <p>Craft premium layouts, custom interactions, and responsive implementation with precision.</p>
+    </div>
+    <div class="pr-step" data-r data-d="4">
+    <div class="pr-num">04</div>
+    <h3>Launch</h3>
+    <p>Ship a polished site that's ready to convert, then evolve it as the business grows.</p>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <section class="sec" id="contact">
+    <div class="ct">
+    <div class="sec-h" data-r>
+    <span class="ey">Contact</span>
+    <h2>Let's build something worth trusting.</h2>
+    <p>Share your goals and I'll recommend a tailored scope — no rigid packages, no hard sell.</p>
+    </div>
+    <div class="ct-grid">
+    <div class="ct-form-w" data-r data-d="1">
+    <form class="ct-form" id="contactForm">
+    <div class="fd-grid">
+    <label class="fd"><span>Name</span><input type="text" name="name" required autocomplete="name" placeholder="Your name" /></label>
+    <label class="fd"><span>Email</span><input type="email" name="email" required autocomplete="email" spellcheck="false" placeholder="you@company.com" /></label>
+    </div>
+    <div class="fd-grid">
+    <label class="fd"><span>Company</span><input type="text" name="company" autocomplete="organization" placeholder="Company or brand" /></label>
+    <label class="fd"><span>Service</span><select name="service"><option value="">Select a service</option><option>Signature Website</option><option>AI &amp; Workflow Automation</option><option>Website Redesign</option><option>Landing Page</option><option>E-Commerce</option><option>Custom Web App</option><option>Branding &amp; Graphics</option></select></label>
+    </div>
+    <label class="fd"><span>Timeline</span><input type="text" name="timeline" placeholder="Example: within 4-6 weeks" /></label>
+    <label class="fd"><span>Project Goals</span><textarea name="goals" rows="5" required maxlength="4000" placeholder="Tell me what you need, who the site is for, and what a strong outcome looks like…"></textarea></label>
+    <div class="fd-hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off" /></label></div>
+    <button type="submit" class="btn btn-p btn-f" id="submitBtn">Send Project Brief</button>
+    <p class="fm-note">Your information is only used to respond to your inquiry.</p>
+    </form>
+    <div class="fm-ok" id="formSuccess" aria-live="polite">
+    <svg width="56" height="56" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="#00f7ff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/></svg>
+    <h3>Message sent.</h3>
+    <p>I'll get back to you within one business day. Check your inbox for a confirmation.</p>
+    </div>
+    <div class="fm-err" id="formError" aria-live="polite">Something went wrong. Please try again or email knowledgablellc@gmail.com directly.</div>
+    </div>
+    <div class="ct-side" data-r data-d="2">
+    <div class="ct-panel">
+    <h3>What to expect</h3>
+    <ul class="ct-list">
+    <li>A response within one business day</li>
+    <li>A focused conversation about your goals</li>
+    <li>A tailored scope — no rigid packages</li>
+    <li>Clear pricing based on your needs</li>
+    </ul>
+    </div>
+    <div class="ct-panel">
+    <span class="ct-dl">Direct contact</span>
+    <a href="mailto:knowledgablellc@gmail.com" class="ct-de">knowledgablellc@gmail.com</a>
+    <span class="ct-dloc">Based in NYC — working with clients everywhere</span>
+    </div>
+    </div>
+    </div>
+    </div>
+    </section>
+    
+    <footer class="ft">
+    <div class="ct">
+    <div class="ft-i">
+    <div>
+    <div class="ft-logo" translate="no"><img class="ft-logo-img" src="favicon-192x192.png" srcset="favicon-192x192.png 1x, assets/logo-inRUI44V.png 2x" alt="Webzad" height="36" width="36" /><span class="ft-logo-word">Web<span class="ft-logo-accent">zad</span></span></div>
+    <p class="ft-tag">Premium web design &amp; development</p>
+    </div>
+    <div class="ft-links">
+    <a href="#services">Services</a>
+    <a href="#automation">Automation</a>
+    <a href="#work">Work</a>
+    <a href="#process">Process</a>
+    <a href="#contact">Contact</a>
+    </div>
+    <div class="ft-meta">
+    <a href="mailto:knowledgablellc@gmail.com">knowledgablellc@gmail.com</a>
+    <button type="button" class="zada-footer-trigger" id="zadaFooterTrigger" aria-label="Open Zada AI Assistant"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/></svg>Zada AI Companion</button>
+    <p>&copy; 2025 Webzad. All rights reserved.</p>
+    </div>
+    </div>
+    </div>
+    </footer>
+    
+    <div id="zada-container" class="zada-container" aria-live="polite"></div>
+    
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/zada-visitor.js"></script>
+    <script src="assets/js/zada-state.js"></script>
+    <script src="assets/js/zada-actions.js"></script>
+    <script src="assets/js/zada-motion.js"></script>
+    <script src="assets/js/zada-aura.js"></script>
+    <script src="assets/js/zada-audio.js"></script>
+    <script src="assets/js/zada-renderer.js"></script>
+    <script src="assets/js/zada-holo-ui.js"></script>
+    <script type="module" src="assets/js/zada.js"></script>
+    </body>
+    </html>
+    ><imgcasst-oocassgdclas="f-g-cet
+  operator: 'match'
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/page-contract.test.cjs:12:104)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 3
+# fail 5
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 85.817367

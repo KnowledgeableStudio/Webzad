@@ -1,0 +1,31 @@
+TAP version 13
+# Subtest: unavailable sessionStorage cannot crash visitor initialization or the page
+not ok 1 - unavailable sessionStorage cannot crash visitor initialization or the page
+  ---
+  duration_ms: 2.254797
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/visitor-storage-denied.test.cjs:2:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Got unwanted exception.
+    Actual message: "Storage denied"
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  actual:
+  operator: 'doesNotThrow'
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/visitor-storage-denied.test.cjs:2:325)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 66.312963

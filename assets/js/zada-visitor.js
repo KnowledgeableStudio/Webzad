@@ -25,8 +25,10 @@ class ZadaVisitorTracker {
    * @private
    */
   _resolveEnvironment() {
+    let storage = null;
+    try { storage = typeof sessionStorage !== 'undefined' ? sessionStorage : null; } catch {}
     return {
-      sessionStorage: typeof sessionStorage !== 'undefined' ? sessionStorage : null,
+      sessionStorage: storage,
       navigator: typeof navigator !== 'undefined' ? navigator : null,
       screen: typeof screen !== 'undefined' ? screen : null,
       window: typeof window !== 'undefined' ? window : null,

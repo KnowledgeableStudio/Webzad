@@ -1,0 +1,2 @@
+zaddy: NOT CAPTURED — Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at https://zaddy.art/
+Browser policy blocks navigation. Stopping; no attempt to bypass it.

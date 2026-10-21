@@ -1,0 +1,14 @@
+{
+  "name": "webzad-official",
+  "version": "2.0.0",
+  "private": true,
+  "description": "Webzad — cinematic studio website with the original Zada companion and APIs",
+  "engines": { "node": ">=22.16.0" },
+  "scripts": {
+    "dev": "node open-site-server.cjs",
+    "start": "node open-site-server.cjs --open",
+    "test": "node tools/test.cjs",
+    "build": "node deploy-prod.cjs --no-deploy",
+    "check:portfolio": "node tools/check-portfolio.cjs"
+  }
+}

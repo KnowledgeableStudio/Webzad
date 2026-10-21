@@ -1,0 +1,100 @@
+TAP version 13
+# Subtest: one hero h1 and exact approved positioning
+ok 1 - one hero h1 and exact approved positioning
+  ---
+  duration_ms: 1.50508
+  type: 'test'
+  ...
+# Subtest: existing section IDs and contact field contracts survive
+ok 2 - existing section IDs and contact field contracts survive
+  ---
+  duration_ms: 0.969036
+  type: 'test'
+  ...
+# Subtest: original logo and real direct contact remain
+ok 3 - original logo and real direct contact remain
+  ---
+  duration_ms: 0.236084
+  type: 'test'
+  ...
+# Subtest: hero contains all three working anchor actions
+ok 4 - hero contains all three working anchor actions
+  ---
+  duration_ms: 1.285771
+  type: 'test'
+  ...
+# Subtest: no duplicate IDs or pretend anchor buttons
+ok 5 - no duplicate IDs or pretend anchor buttons
+  ---
+  duration_ms: 0.626541
+  type: 'test'
+  ...
+# Subtest: each service action has a real preserved select value
+ok 6 - each service action has a real preserved select value
+  ---
+  duration_ms: 0.417768
+  type: 'test'
+  ...
+# Subtest: motion is visible and the hero does not force video download/autoplay
+ok 7 - motion is visible and the hero does not force video download/autoplay
+  ---
+  duration_ms: 0.620261
+  type: 'test'
+  ...
+# Subtest: site uses actual semantic main, adequate metadata, and no unverified sample metrics
+ok 8 - site uses actual semantic main, adequate metadata, and no unverified sample metrics
+  ---
+  duration_ms: 0.284247
+  type: 'test'
+  ...
+# Subtest: reduced motion prevents autoplay on startup
+ok 9 - reduced motion prevents autoplay on startup
+  ---
+  duration_ms: 1.644109
+  type: 'test'
+  ...
+# Subtest: explicit pause persists without destroying other state
+ok 10 - explicit pause persists without destroying other state
+  ---
+  duration_ms: 0.256125
+  type: 'test'
+  ...
+# Subtest: denied storage does not prevent initial usable policy
+ok 11 - denied storage does not prevent initial usable policy
+  ---
+  duration_ms: 0.188293
+  type: 'test'
+  ...
+# Subtest: hide/show does not override pause and live reduced motion is respected
+ok 12 - hide/show does not override pause and live reduced motion is respected
+  ---
+  duration_ms: 0.267983
+  type: 'test'
+  ...
+# Subtest: unsubscribe and destroy prevent callbacks
+ok 13 - unsubscribe and destroy prevent callbacks
+  ---
+  duration_ms: 0.276776
+  type: 'test'
+  ...
+# Subtest: data-saving connection prevents initial video request
+ok 14 - data-saving connection prevents initial video request
+  ---
+  duration_ms: 0.880462
+  type: 'test'
+  ...
+# Subtest: video loads lazily, pauses offscreen and rejects autoplay without throwing
+ok 15 - video loads lazily, pauses offscreen and rejects autoplay without throwing
+  ---
+  duration_ms: 0.402625
+  type: 'test'
+  ...
+1..15
+# tests 15
+# suites 0
+# pass 15
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 65.189599

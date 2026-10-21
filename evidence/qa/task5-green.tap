@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: real project registry is frozen and maps exactly the approved destinations
+ok 1 - real project registry is frozen and maps exactly the approved destinations
+  ---
+  duration_ms: 2.045564
+  type: 'test'
+  ...
+# Subtest: capture resolver rejects pending, wrong-source, unsafe and incomplete capture data
+ok 2 - capture resolver rejects pending, wrong-source, unsafe and incomplete capture data
+  ---
+  duration_ms: 1.130809
+  type: 'test'
+  ...
+# Subtest: unknown project IDs never produce a default project or dialog
+ok 3 - unknown project IDs never produce a default project or dialog
+  ---
+  duration_ms: 0.717528
+  type: 'test'
+  ...
+# Subtest: legacy study IDs remain separate and mapped to original local assets
+ok 4 - legacy study IDs remain separate and mapped to original local assets
+  ---
+  duration_ms: 0.470146
+  type: 'test'
+  ...
+# Subtest: all static live project links explicitly isolate their new browsing context
+ok 5 - all static live project links explicitly isolate their new browsing context
+  ---
+  duration_ms: 1.487215
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 58.987395

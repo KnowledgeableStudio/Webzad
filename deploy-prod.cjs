@@ -1,80 +1,49 @@
-/**
- * deploy-prod.cjs - Stages only public files into .deploy/ and deploys to Cloudflare Pages.
- *
- * `wrangler pages deploy .` uploads EVERYTHING in the working directory — including
- * .env, .dev.vars, server source, tests, and internal docs (this leaked secrets once).
- * This script copies an explicit allowlist into .deploy/ and deploys that instead.
- *
- * Usage: node deploy-prod.cjs [--no-deploy]   (stage only)
- */
-const fs = require('fs');
-const path = require('path');
-const { execFileSync } = require('child_process');
-
-const ROOT = __dirname;
-const STAGE = path.join(ROOT, '.deploy');
-
-/** Explicit public allowlist — anything not listed is never published. */
-const INCLUDE = [
-  'index.html', '404.html', 'CNAME', '.nojekyll',
-  'robots.txt', 'sitemap.xml', 'site.webmanifest',
-  '_headers', '_routes.json', '_redirects',
-  'Background.mp4',
-  'favicon.ico', 'favicon.png', 'favicon-32x32.png', 'favicon-48x48.png',
-  'favicon-192x192.png', 'favicon-google.png', 'apple-touch-icon.png',
-  'studio-hero-inset-preview.png',
-  'assets', 'functions'
-];
-
-function copyRecursive(src, dest) {
-  const stat = fs.statSync(src);
-  if (stat.isDirectory()) {
-    fs.mkdirSync(dest, { recursive: true });
-    for (const entry of fs.readdirSync(src)) {
-      copyRecursive(path.join(src, entry), path.join(dest, entry));
+'use strict';
+/** Safe, explicit staging. Deployment requires a separate --deploy flag. */
+const fs = require('node:fs');
+const path = require('node:path');
+const { execFileSync } = require('node:child_process');
+const { PUBLIC_ROOT, isPublicRelativePath } = require('./server-public-paths.cjs');
+const ROOT=__dirname, STAGE=path.join(ROOT,'.deploy');
+const HOST_FILES=new Set(['CNAME','.nojekyll','_headers','_routes.json','_redirects']);
+function canStage(relative) {
+  if (isPublicRelativePath(relative) || HOST_FILES.has(relative)) return true;
+  const parts=relative.split('/');
+  return parts[0]==='functions' && parts.every(p=>p && !p.startsWith('.') && !['node_modules','test','tests','docs','evidence'].includes(p)) && relative.endsWith('.js');
+}
+function stage() {
+  fs.rmSync(STAGE,{recursive:true,force:true}); fs.mkdirSync(STAGE,{recursive:true});
+  let copied=0;
+  const walk=(src,relative)=>{
+    const info=fs.lstatSync(src);
+    if (info.isSymbolicLink()) return;
+    if (info.isDirectory()) {
+      for (const name of fs.readdirSync(src)) {
+        if (name.startsWith('.')) continue;
+        walk(path.join(src,name), relative+'/'+name);
+      }
+    } else if (info.isFile() && canStage(relative)) {
+      const dest=path.join(STAGE,relative); fs.mkdirSync(path.dirname(dest),{recursive:true}); fs.copyFileSync(src,dest); copied++;
     }
-  } else {
-    fs.mkdirSync(path.dirname(dest), { recursive: true });
-    fs.copyFileSync(src, dest);
+  };
+  for (const entry of [...PUBLIC_ROOT,...HOST_FILES,'assets','functions']) {
+    const src=path.join(ROOT,entry); if (fs.existsSync(src)) walk(src,entry);
   }
+  console.log(`Staged ${copied} allowlisted files into .deploy/`);
+  return STAGE;
 }
-
-fs.rmSync(STAGE, { recursive: true, force: true });
-fs.mkdirSync(STAGE, { recursive: true });
-
-const staged = [];
-for (const item of INCLUDE) {
-  const src = path.join(ROOT, item);
-  if (!fs.existsSync(src)) continue;
-  copyRecursive(src, path.join(STAGE, item));
-  staged.push(item);
+async function checkRelease(root=ROOT) {
+  const {validatePortfolio}=require('./tools/check-portfolio.cjs');
+  let manifest;try{manifest=JSON.parse(fs.readFileSync(path.join(root,'assets/portfolio/manifest.json'),'utf8'));}catch{return {ok:false,issues:['Capture manifest unavailable']};}
+  return validatePortfolio(manifest,root);
 }
-console.log(`Staged ${staged.length} top-level entries into .deploy/`);
-
-// Guard: fail loudly if anything sensitive slipped into staging.
-const FORBIDDEN = [/^\.(?!nojekyll$)/, /(^|[\\/])(docs|test|node_modules)([\\/]|$)/, /\.(cjs|ps1|cmd|toml|md|log|vars)$/i];
-const offenders = [];
-(function walk(dir) {
-  for (const entry of fs.readdirSync(dir)) {
-    const full = path.join(dir, entry);
-    const rel = path.relative(STAGE, full);
-    if (fs.statSync(full).isDirectory()) walk(full);
-    else if (FORBIDDEN.some(re => re.test(rel))) offenders.push(rel);
-  }
-})(STAGE);
-if (offenders.length) {
-  console.error('Refusing to deploy — forbidden files staged:\n  ' + offenders.join('\n  '));
-  process.exit(1);
+if (require.main===module) {
+  (async()=>{
+    const wantsDeploy=process.argv.includes('--deploy')&&!process.argv.includes('--no-deploy');
+    if(wantsDeploy){const gate=await checkRelease();if(!gate.ok)throw new Error('Deployment blocked: real portfolio capture requirements are incomplete.\n- '+gate.issues.join('\n- '));}
+    stage();
+    if(!wantsDeploy)console.log('Stage-only mode — nothing deployed. Run check:portfolio and browser acceptance before release.');
+    else execFileSync('npx',['--no-install','wrangler','pages','deploy',STAGE,'--project-name','webzad','--branch','main','--commit-dirty=true'],{stdio:'inherit',cwd:ROOT,shell:process.platform==='win32'});
+  })().catch(error=>{console.error(error.message);process.exitCode=1;});
 }
-console.log('Staging check passed: no dotfiles, dev, or doc files staged.');
-
-if (process.argv.includes('--no-deploy')) {
-  console.log('Stage-only mode — skipping deploy.');
-  process.exit(0);
-}
-
-execFileSync('npx', ['wrangler', 'pages', 'deploy', STAGE, '--project-name', 'webzad', '--branch', 'main', '--commit-dirty=true'], {
-  stdio: 'inherit',
-  cwd: ROOT,
-  shell: process.platform === 'win32'
-});
+module.exports={stage,canStage,checkRelease};

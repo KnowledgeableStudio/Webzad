@@ -1,0 +1,338 @@
+{
+  "mode": "offline-owned-document",
+  "apiMode": "intercepted test fixtures; no live provider writes",
+  "fontMode": "system fallback",
+  "checks": [
+    {
+      "name": "No horizontal page overflow at 320px",
+      "passed": true,
+      "detail": {
+        "width": 320,
+        "scrollWidth": 320,
+        "height": 12162
+      }
+    },
+    {
+      "name": "Zada ready without initial model at 320px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Reduced motion respected at 320px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No horizontal page overflow at 390px",
+      "passed": true,
+      "detail": {
+        "width": 390,
+        "scrollWidth": 390,
+        "height": 10314
+      }
+    },
+    {
+      "name": "Zada ready without initial model at 390px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Reduced motion respected at 390px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Mobile menu disclosure opens",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Mobile menu Escape restores focus",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No horizontal page overflow at 768px",
+      "passed": true,
+      "detail": {
+        "width": 768,
+        "scrollWidth": 768,
+        "height": 11371
+      }
+    },
+    {
+      "name": "Zada ready without initial model at 768px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Reduced motion respected at 768px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No horizontal page overflow at 834px",
+      "passed": true,
+      "detail": {
+        "width": 834,
+        "scrollWidth": 834,
+        "height": 6916
+      }
+    },
+    {
+      "name": "Zada ready without initial model at 834px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Reduced motion respected at 834px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No horizontal page overflow at 1440px",
+      "passed": true,
+      "detail": {
+        "width": 1440,
+        "scrollWidth": 1440,
+        "height": 7874
+      }
+    },
+    {
+      "name": "Zada ready without initial model at 1440px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Reduced motion respected at 1440px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Zada uses a focused native dialog",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Project stacks above Zada without deleting messages",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Escape closes only the top project",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Second Escape closes Zada",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "zaddy details and secure real link",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "zaddy restores trigger focus",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "la-socieda details and secure real link",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "la-socieda restores trigger focus",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "one-of-six details and secure real link",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "one-of-six restores trigger focus",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "brg details and secure real link",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "brg restores trigger focus",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Legacy services study retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Legacy hospitality study retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Legacy growth study retained",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Service selects Signature Website",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Service selects Landing Page",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Service selects E-Commerce",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Service selects Custom Web App",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Service selects Branding & Graphics",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Service selects Website Redesign",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Contact failure retains the brief and enables retry",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Contact success makes no confirmation-email promise",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Unavailable AI service is reported honestly",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "200% CSS layout zoom has no horizontal page scroll",
+      "passed": false,
+      "detail": null
+    },
+    {
+      "name": "No horizontal page overflow at 1920px",
+      "passed": true,
+      "detail": {
+        "width": 1920,
+        "scrollWidth": 1920,
+        "height": 8086
+      }
+    },
+    {
+      "name": "Zada ready without initial model at 1920px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "Reduced motion respected at 1920px",
+      "passed": true,
+      "detail": null
+    },
+    {
+      "name": "No unexpected page exceptions",
+      "passed": false,
+      "detail": [
+        "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+        "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+        "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+        "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+        "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+        "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document."
+      ]
+    }
+  ],
+  "viewports": [
+    {
+      "width": 320,
+      "scrollWidth": 320,
+      "height": 12162
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390,
+      "height": 10314
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768,
+      "height": 11371
+    },
+    {
+      "width": 834,
+      "scrollWidth": 834,
+      "height": 6916
+    },
+    {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "height": 7874
+    },
+    {
+      "width": 1920,
+      "scrollWidth": 1920,
+      "height": 8086
+    }
+  ],
+  "screenshots": [
+    "webzad-320.png",
+    "webzad-390.png",
+    "webzad-768.png",
+    "webzad-834.png",
+    "webzad-1440.png",
+    "webzad-desktop-hero.png",
+    "webzad-chat.png",
+    "webzad-1920.png"
+  ],
+  "pageErrors": [
+    "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+    "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+    "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+    "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+    "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document.",
+    "Failed to read the 'sessionStorage' property from 'Window': Access is denied for this document."
+  ],
+  "consoleErrors": [
+    "[Zada] Chat API error: 503 QA fixture: provider not configured",
+    "[Zada] handleUserMessage error: Error: QA fixture: provider not configured\n    at ZadaCompanion.handleUserMessage (<anonymous>:328:15)"
+  ],
+  "unverified": [
+    "real-device browsers",
+    "Firefox/WebKit",
+    "live Gemini responses",
+    "actual email delivery",
+    "real portfolio screenshots",
+    "WebGL model rendering/frame rates",
+    "HTTP browser navigation",
+    "deployed CSP enforcement",
+    "remote font metrics",
+    "actual video playback",
+    "Core Web Vitals"
+  ],
+  "passed": 44,
+  "failed": 2,
+  "productionReady": false
+}

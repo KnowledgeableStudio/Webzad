@@ -1,0 +1,6 @@
+
+> webzad-official@2.0.0 build
+> node deploy-prod.cjs --no-deploy
+
+Staged 62 allowlisted files into .deploy/
+Stage-only mode — nothing deployed. Run check:portfolio and browser acceptance before release.

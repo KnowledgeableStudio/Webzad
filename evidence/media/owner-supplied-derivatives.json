@@ -1,0 +1,66 @@
+{
+  "zaddy": [
+    {
+      "path": "assets/portfolio/zaddy/desktop-home-1200w.webp",
+      "width": 1200,
+      "height": 1043,
+      "sha256": "9c4be40609cbbac84dfe30d80633e211d6023ca94fdb0faca4213360db677059",
+      "bytes": 62226
+    },
+    {
+      "path": "assets/portfolio/zaddy/desktop-home-700w.webp",
+      "width": 700,
+      "height": 609,
+      "sha256": "e5ed25d19938e49e43be45e9a2c7869e5c8e4cb017ff3653a92341365aa2c208",
+      "bytes": 30334
+    }
+  ],
+  "la-socieda": [
+    {
+      "path": "assets/portfolio/la-socieda/desktop-home-1200w.webp",
+      "width": 1200,
+      "height": 995,
+      "sha256": "8c1816d402bab2cfdd0353842359354cc14d8119fd65cae5634fe0f385d9a685",
+      "bytes": 132748
+    },
+    {
+      "path": "assets/portfolio/la-socieda/desktop-home-700w.webp",
+      "width": 700,
+      "height": 580,
+      "sha256": "c616ed2fde0f2d53fcdadc833da9d808b09be3d7f22eb87e2427a11ed8b4b4c7",
+      "bytes": 59746
+    }
+  ],
+  "one-of-six": [
+    {
+      "path": "assets/portfolio/one-of-six/desktop-home-1200w.webp",
+      "width": 1200,
+      "height": 1042,
+      "sha256": "ae1cb2b28c542ebb595059f30730e8a06f30d1cac97438313c30d9a82d4920f2",
+      "bytes": 50768
+    },
+    {
+      "path": "assets/portfolio/one-of-six/desktop-home-700w.webp",
+      "width": 700,
+      "height": 608,
+      "sha256": "73788aa640f82b46d8f445b64c94ee184c4a5bd575ca2fd07c02c2f532d0cb9b",
+      "bytes": 26768
+    }
+  ],
+  "brg": [
+    {
+      "path": "assets/portfolio/brg/desktop-home-1200w.webp",
+      "width": 1200,
+      "height": 888,
+      "sha256": "d1cd97073422bd5c8bd2282cb77454a8464f92a89c5c5ff6729e77ea260c2ddb",
+      "bytes": 52246
+    },
+    {
+      "path": "assets/portfolio/brg/desktop-home-700w.webp",
+      "width": 700,
+      "height": 518,
+      "sha256": "0b513b4bca8b4c848797833239203ac96fdb246c8bccc3aa530bc1e4e793e68e",
+      "bytes": 27676
+    }
+  ]
+}

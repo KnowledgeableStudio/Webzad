@@ -12,3 +12,14 @@ run-webzad-lan-server.cmd
 .dev.vars
 .wrangler/
 .deploy/
+
+# Isolated implementation workspace
+.worktrees/
+.superpowers/
+__pycache__/
+*.pyc
+evidence/qa/functions-build/
+
+# Intermediate offline render images (logs retained)
+evidence/qa/browser-lazy-red/*.png
+evidence/qa/offline/*.png

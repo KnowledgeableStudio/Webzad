@@ -1,0 +1,50 @@
+TAP version 13
+# Subtest: stage-only build includes public assets/functions but not nested private files or symlinks
+not ok 1 - stage-only build includes public assets/functions but not nested private files or symlinks
+  ---
+  duration_ms: 50.938103
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/deploy-staging.test.cjs:8:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Staged 3 top-level entries into .deploy/
+    Refusing to deploy — forbidden files staged:
+      assets/internal/secret.md
+    
+    
+    1 !== 0
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: 0
+  actual: 1
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/deploy-staging.test.cjs:17:12)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.start (node:internal/test_runner/test:944:17)
+    startSubtestAfterBootstrap (node:internal/test_runner/harness:296:17)
+  ...
+# Subtest: npm build explicitly stages only and test command is shell-glob independent
+not ok 2 - npm build explicitly stages only and test command is shell-glob independent
+  ---
+  duration_ms: 0.502014
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/deploy-staging.test.cjs:25:1'
+  failureType: 'testCodeFailure'
+  error: 'package.json missing'
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: true
+  actual: false
+  operator: '=='
+  stack: |-
+    TestContext.<anonymous> (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/deploy-staging.test.cjs:26:58)
+    Test.runInAsyncScope (node:async_hooks:214:14)
+    Test.run (node:internal/test_runner/test:1047:25)
+    Test.processPendingSubtests (node:internal/test_runner/test:744:18)
+    Test.postRun (node:internal/test_runner/test:1173:19)
+    Test.run (node:internal/test_runner/test:1101:12)
+    async startSubtestAfterBootstrap (node:internal/test_runner/harness:296:3)
+  ...

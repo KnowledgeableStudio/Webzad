@@ -1,6 +1,6 @@
 /**
- * ZadaHoloUI - Holographic Conversation HUD & Developer Configuration Modal.
- * Dark glassmorphism dialogue stream, voice mic input, prompt pills, telemetry & local key storage.
+ * ZadaHoloUI - Accessible conversation dialog and voice controls.
+ * Existing dialogue stream, voice mic input, context prompts and truthful interface state. No client-side provider secrets.
  */
 
 /** @readonly */
@@ -67,8 +67,31 @@ class ZadaHoloUI {
     if (this.hudEl?.parentNode === this.container) this.container.removeChild(this.hudEl);
     this.hudEl = this.container = null;
   }
-  open() { this.isOpen = true; this.hudEl?.classList?.add('open'); if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight; this.options.onOpen?.(); }
-  close() { this.isOpen = false; this.hudEl?.classList?.remove('open'); if (this.isListening) this.toggleSpeechRecognition(); this.options.onClose?.(); }
+  open() {
+    if (!this.isOpen && typeof document !== 'undefined') this._restoreFocus = document.activeElement;
+    this.isOpen = true;
+    if (this.hudEl?.showModal && !this.hudEl.open) this.hudEl.showModal();
+    this.hudEl?.classList?.add('open');
+    this.inputEl?.focus?.({preventScroll:true});
+    if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight;
+    this.options.onOpen?.();
+  }
+  close() {
+    this.isOpen = false;
+    this.hudEl?.classList?.remove('open');
+    if (this.hudEl?.open) this.hudEl.close?.();
+    if (this.isListening) this.toggleSpeechRecognition();
+    if (this._restoreFocus?.isConnected) this._restoreFocus.focus?.({preventScroll:true});
+    this.options.onClose?.();
+  }
+  set3DState(state) {
+    this._visualState = state;
+    const messages = {loading:'Loading original 3D companion…',ready:'Original 3D companion',unavailable:'3D unavailable. Chat and voice remain available.'};
+    if (this.visualStatusEl) this.visualStatusEl.textContent = messages[state] || 'Optional visual enhancement';
+    if (this.visualButtonEl) {this.visualButtonEl.disabled = state === 'loading';this.visualButtonEl.hidden = state === 'ready' || state === 'unavailable';}
+    if (this.visualStageEl) this.visualStageEl.classList?.toggle('has-model',state === 'ready' || state === 'loading');
+  }
+
   toggle() { this.isOpen ? this.close() : this.open(); }
   addMessage(role, text, toolCall = null) {
     const validRole = role === 'user' || role === 'zada' ? role : 'system';
@@ -123,7 +146,7 @@ class ZadaHoloUI {
   toggleVoiceMute() {
     if (!this.audioSync) return;
     const nextMuted = !this.audioSync.isMuted(); this.audioSync.setMuted(nextMuted);
-    if (this.muteBtnEl) { this.muteBtnEl.textContent = nextMuted ? '🔇' : '🔊'; this.muteBtnEl.classList.toggle('muted', nextMuted); }
+    if (this.muteBtnEl) { this.muteBtnEl.textContent = nextMuted ? '🔇' : '🔊'; this.muteBtnEl.classList.toggle('muted', nextMuted); this.muteBtnEl.setAttribute('aria-pressed',String(nextMuted)); this.muteBtnEl.setAttribute('aria-label',nextMuted?'Enable spoken replies':'Mute spoken replies'); }
   }
   toggleSpeechRecognition() {
     const SpeechRec = typeof window !== 'undefined' && (window.SpeechRecognition || window.webkitSpeechRecognition);
@@ -135,24 +158,37 @@ class ZadaHoloUI {
       this.recognition = new SpeechRec(); this.recognition.continuous = this.recognition.interimResults = false;
       this.recognition.onstart = () => { this.isListening = true; this.micBtnEl?.classList?.add('active'); this.stateManager?.setState?.('LISTENING'); };
       this.recognition.onresult = (e) => { const t = e.results?.[0]?.[0]?.transcript; if (t && this.inputEl) this.inputEl.value = t; };
-      this.recognition.onend = () => { this.isListening = false; this.micBtnEl?.classList?.remove('active'); };
+      this.recognition.onerror = () => { this.isListening = false; this.micBtnEl?.classList?.remove('active'); if(this.visualStatusEl)this.visualStatusEl.textContent='Voice input unavailable. You can still type your message.'; this.stateManager?.setState?.('IDLE'); };
+      this.recognition.onend = () => { this.isListening = false; this.micBtnEl?.classList?.remove('active'); if(this.stateManager?.getState?.()==='LISTENING')this.stateManager.setState('IDLE'); };
       this.recognition.start();
     } catch { this.isListening = false; }
   }
   _buildHudMarkup(c) {
-    this.hudEl = _createNode(c, 'div', 'zada-hud');
+    this.hudEl = _createNode(c, 'dialog', 'zada-hud', null, null, {'aria-label':'Conversation with Zada AI'});
     const hdr = _createNode(c, 'div', 'zada-hud-header', null, this.hudEl), pill = _createNode(c, 'div', 'zada-status-pill', null, hdr), act = _createNode(c, 'div', 'zada-hud-actions', null, hdr);
     this.statusDotEl = _createNode(c, 'span', 'zada-status-dot', null, pill);
     const nameplate = _createNode(c, 'span', 'zada-status-name', null, pill); nameplate.innerHTML = 'ZADA<span class="zada-status-sub">AI</span>';
     this.statusEl = _createNode(c, 'span', 'zada-status-text', '● READY', pill);
     this.muteBtnEl = _createNode(c, 'button', 'zada-btn-icon zada-btn-mute', '🔊', act, { 'aria-label': 'Toggle Voice' });
     _createNode(c, 'button', 'zada-btn-icon zada-btn-close', '✕', act, { 'aria-label': 'Close HUD' });
-    this.dialogueEl = _createNode(c, 'div', 'zada-dialogue', null, this.hudEl); this.chipsContainerEl = _createNode(c, 'div', 'zada-chips', null, this.hudEl);
+    const visualBar = _createNode(c, 'div', 'zada-visual-bar', null, this.hudEl);
+    this.visualStatusEl = _createNode(c, 'span', 'zada-visual-status', 'Optional visual enhancement', visualBar, {'aria-live':'polite'});
+    this.visualButtonEl = _createNode(c, 'button', 'zada-visual-enable', 'Enable 3D', visualBar, {type:'button','aria-label':'Load original 3D companion; animation follows your motion preference'});
+    this.visualStageEl = _createNode(c, 'div', 'zada-visual-stage', null, this.hudEl, {'aria-hidden':'true'});
+    this.dialogueEl = _createNode(c, 'div', 'zada-dialogue', null, this.hudEl, {role:'log','aria-live':'polite','aria-label':'Conversation history'}); this.chipsContainerEl = _createNode(c, 'div', 'zada-chips', null, this.hudEl);
     const form = _createNode(c, 'form', 'zada-input-form', null, this.hudEl), wrap = _createNode(c, 'div', 'zada-input-wrapper', null, form);
-    this.inputEl = _createNode(c, 'input', 'zada-input-field', null, wrap, { type: 'text', placeholder: 'Ask Zada anything...', 'aria-label': 'Chat input' });
+    this.inputEl = _createNode(c, 'input', 'zada-input-field', null, wrap, { type: 'text', placeholder: 'Tell Zada about your idea…', 'aria-label': 'Chat input', maxlength:'4000', autocomplete:'off' });
     this.micBtnEl = _createNode(c, 'button', 'zada-mic-btn', '🎤', wrap, { type: 'button', 'aria-label': 'Voice Input' }); _createNode(c, 'button', 'zada-send-btn', '➤', wrap, { type: 'submit', 'aria-label': 'Send message' });
   }
   _bindEventListeners() {
+    this.hudEl?.addEventListener?.('cancel', (event) => {event.preventDefault?.();event.stopPropagation?.();this.close();});
+    this.hudEl?.addEventListener?.('close', () => {if(this.isOpen)this.close();});
+    this.visualButtonEl?.addEventListener?.('click', () => this.options.onEnable3D?.());
+    if (typeof window !== 'undefined' && !(window.SpeechRecognition || window.webkitSpeechRecognition) && this.micBtnEl) {
+      this.micBtnEl.disabled = true;
+      this.micBtnEl.setAttribute('aria-label','Voice input is not supported by this browser; please type your message');
+      this.micBtnEl.setAttribute('title','Voice input is not supported by this browser');
+    }
     this.hudEl?.querySelector('.zada-btn-close')?.addEventListener('click', () => this.close());
     this.muteBtnEl?.addEventListener('click', () => this.toggleVoiceMute()); this.micBtnEl?.addEventListener('click', () => this.toggleSpeechRecognition());
     this.hudEl?.querySelector('form')?.addEventListener('submit', (e) => {
@@ -188,7 +224,15 @@ class ZadaHoloUI {
     bubble.innerHTML = html;
     if (this.dialogueEl) this.dialogueEl.scrollTop = this.dialogueEl.scrollHeight;
   }
-  _handleKeyDown(e) { if (e?.key === 'Escape' && this.isOpen) this.close(); }
+  _handleKeyDown(e) {
+    if (e?.key !== 'Escape' || !this.isOpen || e.defaultPrevented) return;
+    if (typeof document !== 'undefined') {
+      const top = [...document.querySelectorAll('dialog[open]')].at(-1);
+      if (top && top !== this.hudEl) return;
+    }
+    e.preventDefault?.();
+    this.close();
+  }
 }
 const _exports = { ZadaHoloUI, ZadaHoloTelemetryMap, DEFAULT_PROMPT_CHIPS, sanitizeMarkdown, escapeHtml };
 if (typeof module !== 'undefined' && module.exports) module.exports = _exports;

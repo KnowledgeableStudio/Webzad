@@ -1,0 +1,38 @@
+FFF
+======================================================================
+FAIL: test_derivatives_keep_raw_file_and_aspect_ratio (test_capture_portfolio.CapturePipelineTests.test_derivatives_keep_raw_file_and_aspect_ratio)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/test_capture_portfolio.py", line 26, in test_derivatives_keep_raw_file_and_aspect_ratio
+    m = self.module()
+  File "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/test_capture_portfolio.py", line 7, in module
+    self.assertTrue(source.exists(), 'capture script is not implemented')
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : capture script is not implemented
+
+======================================================================
+FAIL: test_error_and_loading_pages_are_not_accepted (test_capture_portfolio.CapturePipelineTests.test_error_and_loading_pages_are_not_accepted)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/test_capture_portfolio.py", line 18, in test_error_and_loading_pages_are_not_accepted
+    m = self.module()
+  File "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/test_capture_portfolio.py", line 7, in module
+    self.assertTrue(source.exists(), 'capture script is not implemented')
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : capture script is not implemented
+
+======================================================================
+FAIL: test_exact_four_allowed_destinations (test_capture_portfolio.CapturePipelineTests.test_exact_four_allowed_destinations)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/test_capture_portfolio.py", line 12, in test_exact_four_allowed_destinations
+    m = self.module()
+  File "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/test_capture_portfolio.py", line 7, in module
+    self.assertTrue(source.exists(), 'capture script is not implemented')
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : capture script is not implemented
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.001s
+
+FAILED (failures=3)

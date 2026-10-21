@@ -1,0 +1,12 @@
+[
+  {
+    "url": "https://zaddy.art/",
+    "ok": false,
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at https://zaddy.art/"
+  },
+  {
+    "url": "file:///mnt/data/Webzad-baseline/Webzad/.worktrees/premium/index.html",
+    "ok": false,
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at file:///mnt/data/Webzad-baseline/Webzad/.worktrees/premium/index.html"
+  }
+]

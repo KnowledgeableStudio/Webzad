@@ -1,0 +1,168 @@
+TAP version 13
+# Subtest: frontend and both backend project whitelists agree without removing legacy identifiers
+ok 1 - frontend and both backend project whitelists agree without removing legacy identifiers
+  ---
+  duration_ms: 10.685564
+  type: 'test'
+  ...
+# Subtest: both knowledge bases contain the real destinations and distinguish studies, without divergence
+ok 2 - both knowledge bases contain the real destinations and distinguish studies, without divergence
+  ---
+  duration_ms: 0.775736
+  type: 'test'
+  ...
+# Subtest: missing preview/navigation/form targets produce actual failures
+ok 3 - missing preview/navigation/form targets produce actual failures
+  ---
+  duration_ms: 6.389839
+  type: 'test'
+  ...
+# Subtest: new project actions reach the correct portfolio interface and failed calls do not earn success badges
+ok 4 - new project actions reach the correct portfolio interface and failed calls do not earn success badges
+  ---
+  duration_ms: 0.464157
+  type: 'test'
+  ...
+# Subtest: Zada Humanized AI Persona & Website Knowledge Base
+    # Subtest: SYSTEM_INSTRUCTION contains audited Webzad philosophy and identity
+    ok 1 - SYSTEM_INSTRUCTION contains audited Webzad philosophy and identity
+      ---
+      duration_ms: 0.839822
+      type: 'test'
+      ...
+    # Subtest: SYSTEM_INSTRUCTION contains all core services including automation
+    ok 2 - SYSTEM_INSTRUCTION contains all core services including automation
+      ---
+      duration_ms: 0.442545
+      type: 'test'
+      ...
+    # Subtest: SYSTEM_INSTRUCTION details the 4-step process and client next steps
+    ok 3 - SYSTEM_INSTRUCTION details the 4-step process and client next steps
+      ---
+      duration_ms: 0.178959
+      type: 'test'
+      ...
+    # Subtest: SYSTEM_INSTRUCTION enforces human conversational style and AI identity rules
+    ok 4 - SYSTEM_INSTRUCTION enforces human conversational style and AI identity rules
+      ---
+      duration_ms: 0.282845
+      type: 'test'
+      ...
+    # Subtest: formatGeminiContents formats multi-turn dialogue maintaining conversation context
+    ok 5 - formatGeminiContents formats multi-turn dialogue maintaining conversation context
+      ---
+      duration_ms: 0.327532
+      type: 'test'
+      ...
+    1..5
+ok 5 - Zada Humanized AI Persona & Website Knowledge Base
+  ---
+  duration_ms: 4.738048
+  type: 'test'
+  ...
+# Subtest: ZadaActionDispatcher security whitelist & parameter checking
+    # Subtest: whitelisted scrollToSection with valid section passes
+    ok 1 - whitelisted scrollToSection with valid section passes
+      ---
+      duration_ms: 0.636326
+      type: 'test'
+      ...
+    # Subtest: invalid sectionId in scrollToSection is rejected
+    ok 2 - invalid sectionId in scrollToSection is rejected
+      ---
+      duration_ms: 0.184577
+      type: 'test'
+      ...
+    # Subtest: arbitrary script or eval injection is strictly rejected
+    ok 3 - arbitrary script or eval injection is strictly rejected
+      ---
+      duration_ms: 0.205158
+      type: 'test'
+      ...
+    # Subtest: malformed action objects are rejected safely
+    ok 4 - malformed action objects are rejected safely
+      ---
+      duration_ms: 0.108282
+      type: 'test'
+      ...
+    # Subtest: prefillContactBrief validates serviceType enum and clamps length
+    ok 5 - prefillContactBrief validates serviceType enum and clamps length
+      ---
+      duration_ms: 0.302064
+      type: 'test'
+      ...
+    # Subtest: prefillContactBrief strips HTML tags and uses default serviceType
+    ok 6 - prefillContactBrief strips HTML tags and uses default serviceType
+      ---
+      duration_ms: 0.22686
+      type: 'test'
+      ...
+    # Subtest: prefillContactBrief rejects invalid serviceType
+    ok 7 - prefillContactBrief rejects invalid serviceType
+      ---
+      duration_ms: 1.080573
+      type: 'test'
+      ...
+    # Subtest: openProjectPreview accepts approved projects and rejects unapproved
+    ok 8 - openProjectPreview accepts approved projects and rejects unapproved
+      ---
+      duration_ms: 0.237447
+      type: 'test'
+      ...
+    # Subtest: toggleAudioOutput sanitizes boolean parameter
+    ok 9 - toggleAudioOutput sanitizes boolean parameter
+      ---
+      duration_ms: 0.240531
+      type: 'test'
+      ...
+    # Subtest: rejects removed openDevSettings action
+    ok 10 - rejects removed openDevSettings action
+      ---
+      duration_ms: 0.17323
+      type: 'test'
+      ...
+    # Subtest: dispatch executes registered handler
+    ok 11 - dispatch executes registered handler
+      ---
+      duration_ms: 0.583777
+      type: 'test'
+      ...
+    # Subtest: dispatch throws on invalid action
+    ok 12 - dispatch throws on invalid action
+      ---
+      duration_ms: 0.40559
+      type: 'test'
+      ...
+    # Subtest: dispatch returns default acknowledgment when no handler registered
+    ok 13 - dispatch returns default acknowledgment when no handler registered
+      ---
+      duration_ms: 0.109124
+      type: 'test'
+      ...
+    # Subtest: approved constants are exported and frozen
+    ok 14 - approved constants are exported and frozen
+      ---
+      duration_ms: 0.117096
+      type: 'test'
+      ...
+    # Subtest: automation section and ai-automation service are whitelisted
+    ok 15 - automation section and ai-automation service are whitelisted
+      ---
+      duration_ms: 0.225749
+      type: 'test'
+      ...
+    1..15
+ok 6 - ZadaActionDispatcher security whitelist & parameter checking
+  ---
+  duration_ms: 6.945314
+  type: 'test'
+  ...
+1..6
+# tests 26
+# suites 0
+# pass 26
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 86.652017

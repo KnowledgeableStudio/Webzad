@@ -1,0 +1,8 @@
+[
+  {
+    "project": "zaddy",
+    "attemptedAt": "2026-10-21T08:00:00.559306Z",
+    "success": false,
+    "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at https://zaddy.art/"
+  }
+]

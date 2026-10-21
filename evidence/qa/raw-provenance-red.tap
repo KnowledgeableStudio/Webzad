@@ -1,0 +1,75 @@
+TAP version 13
+# Subtest: four distinct verified capture sets satisfy integrity checks
+ok 1 - four distinct verified capture sets satisfy integrity checks
+  ---
+  duration_ms: 166.275413
+  type: 'test'
+  ...
+# Subtest: missing image fails release
+ok 2 - missing image fails release
+  ---
+  duration_ms: 125.158083
+  type: 'test'
+  ...
+# Subtest: text renamed PNG is rejected even with matching hash
+ok 3 - text renamed PNG is rejected even with matching hash
+  ---
+  duration_ms: 129.573403
+  type: 'test'
+  ...
+# Subtest: duplicate screenshot reuse is rejected
+ok 4 - duplicate screenshot reuse is rejected
+  ---
+  duration_ms: 121.740634
+  type: 'test'
+  ...
+# Subtest: blocked page and incomplete provenance never pass
+ok 5 - blocked page and incomplete provenance never pass
+  ---
+  duration_ms: 125.992301
+  type: 'test'
+  ...
+# Subtest: wrong destination, missing secondary and escaping path are rejected
+ok 6 - wrong destination, missing secondary and escaping path are rejected
+  ---
+  duration_ms: 128.178113
+  type: 'test'
+  ...
+# Subtest: pending screenshots cannot return ok true
+ok 7 - pending screenshots cannot return ok true
+  ---
+  duration_ms: 0.387823
+  type: 'test'
+  ...
+# Subtest: missing or inconsistent raw capture hash is rejected
+not ok 8 - missing or inconsistent raw capture hash is rejected
+  ---
+  duration_ms: 127.434512
+  type: 'test'
+  location: '/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:27:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    Expected values to be strictly equal:
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    /mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:27:146
+    async withFixture (/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/test/portfolio-assets.test.cjs:18:65)
+    async Test.run (node:internal/test_runner/test:1054:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:744:7)
+  ...
+1..8
+# tests 8
+# suites 0
+# pass 7
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 981.776299

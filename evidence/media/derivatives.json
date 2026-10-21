@@ -1,0 +1,129 @@
+{
+  "immutableOriginalHashes": {
+    "Background.mp4": "83e8f441db5474368df01ce220ea04bc95c6e34a39c08994b88b6d059e0d898d",
+    "assets/logo-inRUI44V.png": "7d5710229ab7dbca4d83b794eafe5b0d2af816b3cdd44aedf0fc4afb9b3547b4",
+    "assets/zada-avatar.jpg": "52a9eba221c31fc44eb44df164632f1abc0e59f3228c71108f61ae886d922865",
+    "assets/zada.glb": "96478652bf8eb133ffa0b92865c974fd377fd65daaea8f303bb64ffc178d02a5"
+  },
+  "commands": [
+    [
+      "ffmpeg",
+      "-y",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-ss",
+      "3.0",
+      "-i",
+      "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/Background.mp4",
+      "-frames:v",
+      "1",
+      "-update",
+      "1",
+      "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/evidence/media/original-frame.png"
+    ],
+    [
+      "ffmpeg",
+      "-y",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-i",
+      "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/Background.mp4",
+      "-an",
+      "-vf",
+      "scale=1600:-2",
+      "-c:v",
+      "libx264",
+      "-preset",
+      "medium",
+      "-crf",
+      "26",
+      "-pix_fmt",
+      "yuv420p",
+      "-movflags",
+      "+faststart",
+      "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/assets/media/hero-desktop.mp4"
+    ],
+    [
+      "ffmpeg",
+      "-y",
+      "-hide_banner",
+      "-loglevel",
+      "error",
+      "-i",
+      "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/Background.mp4",
+      "-an",
+      "-vf",
+      "scale=960:-2",
+      "-c:v",
+      "libx264",
+      "-preset",
+      "medium",
+      "-crf",
+      "28",
+      "-pix_fmt",
+      "yuv420p",
+      "-movflags",
+      "+faststart",
+      "/mnt/data/Webzad-baseline/Webzad/.worktrees/premium/assets/media/hero-mobile.mp4"
+    ]
+  ],
+  "outputs": [
+    {
+      "path": "assets/media/automation.webp",
+      "bytes": 93670,
+      "sha256": "7f6b4b1d5a7a63b805869a103e143058686383353acb906bcae555ddbe7674f4"
+    },
+    {
+      "path": "assets/media/hero-desktop.mp4",
+      "bytes": 3612102,
+      "sha256": "61ecf0ca77b7759ce18b251030316874aada7d14fa42aa1f38e999137b968872"
+    },
+    {
+      "path": "assets/media/hero-mobile.mp4",
+      "bytes": 1334099,
+      "sha256": "4fdd8a731790c828469917fedda572e7e8910d08a0a182ca8e94b09751bbb338"
+    },
+    {
+      "path": "assets/media/hero-poster-mobile.webp",
+      "bytes": 119006,
+      "sha256": "0865e0359b1c717344ec957af76369d3ec6edca77d05ded0d861629ddbc33cbc"
+    },
+    {
+      "path": "assets/media/hero-poster.webp",
+      "bytes": 312048,
+      "sha256": "9665298e8afdeeab0a6bcd8c9993986588209f44ba4a924526a9e5ca6415d0bc"
+    },
+    {
+      "path": "assets/media/logo-192.webp",
+      "bytes": 28182,
+      "sha256": "608da35424287655b45383275b612d1887e5750675d40a84389efc42d33a2db8"
+    },
+    {
+      "path": "assets/media/social-preview.jpg",
+      "bytes": 221155,
+      "sha256": "9de734c491472c5ad611b4dfb34d35d7d6f9ebc423f31d36893b8038d82a61cc"
+    },
+    {
+      "path": "assets/media/study-growth.webp",
+      "bytes": 86424,
+      "sha256": "01112d94c147e95bf8436028e531ed31f4a5c28db7645c975b7c2928d8695b36"
+    },
+    {
+      "path": "assets/media/study-hospitality.webp",
+      "bytes": 178242,
+      "sha256": "641491592ce5834c2cce29c1403422c4d33868e443c48f41f3267ae9c789f858"
+    },
+    {
+      "path": "assets/media/study-services.webp",
+      "bytes": 75914,
+      "sha256": "2cdbb625c822653bd0152c7d355e5c935de01615fd69f9f5c3a6354064ee9121"
+    },
+    {
+      "path": "assets/media/zada-portrait.webp",
+      "bytes": 47156,
+      "sha256": "1812083e88559cfe397080e6cc90ccc783545b57c4057d6fe097b26eb0d90e4b"
+    }
+  ]
+}

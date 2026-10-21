@@ -1,0 +1,40 @@
+TAP version 13
+# Subtest: homepage ends cleanly with canonical branding and substantive social preview
+ok 1 - homepage ends cleanly with canonical branding and substantive social preview
+  ---
+  duration_ms: 1.144448
+  type: 'test'
+  ...
+# Subtest: sitemap lists only canonical pages, not in-page fragments
+ok 2 - sitemap lists only canonical pages, not in-page fragments
+  ---
+  duration_ms: 0.213571
+  type: 'test'
+  ...
+# Subtest: fallback is CSP compatible and redirects only known section aliases
+ok 3 - fallback is CSP compatible and redirects only known section aliases
+  ---
+  duration_ms: 0.893711
+  type: 'test'
+  ...
+# Subtest: ordinary build cannot deploy and incomplete capture gate rejects release
+ok 4 - ordinary build cannot deploy and incomplete capture gate rejects release
+  ---
+  duration_ms: 5.66387
+  type: 'test'
+  ...
+# Subtest: unversioned code and capture manifest are revalidated after deployment
+ok 5 - unversioned code and capture manifest are revalidated after deployment
+  ---
+  duration_ms: 0.23301
+  type: 'test'
+  ...
+1..5
+# tests 5
+# suites 0
+# pass 5
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 60.116423

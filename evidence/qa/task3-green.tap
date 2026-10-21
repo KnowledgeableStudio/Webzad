@@ -1,0 +1,52 @@
+TAP version 13
+# Subtest: reduced motion prevents autoplay on startup
+ok 1 - reduced motion prevents autoplay on startup
+  ---
+  duration_ms: 2.29546
+  type: 'test'
+  ...
+# Subtest: explicit pause persists without destroying other state
+ok 2 - explicit pause persists without destroying other state
+  ---
+  duration_ms: 0.290617
+  type: 'test'
+  ...
+# Subtest: denied storage does not prevent initial usable policy
+ok 3 - denied storage does not prevent initial usable policy
+  ---
+  duration_ms: 0.191318
+  type: 'test'
+  ...
+# Subtest: hide/show does not override pause and live reduced motion is respected
+ok 4 - hide/show does not override pause and live reduced motion is respected
+  ---
+  duration_ms: 0.2927
+  type: 'test'
+  ...
+# Subtest: unsubscribe and destroy prevent callbacks
+ok 5 - unsubscribe and destroy prevent callbacks
+  ---
+  duration_ms: 0.2463
+  type: 'test'
+  ...
+# Subtest: data-saving connection prevents initial video request
+ok 6 - data-saving connection prevents initial video request
+  ---
+  duration_ms: 0.963027
+  type: 'test'
+  ...
+# Subtest: video loads lazily, pauses offscreen and rejects autoplay without throwing
+ok 7 - video loads lazily, pauses offscreen and rejects autoplay without throwing
+  ---
+  duration_ms: 0.451469
+  type: 'test'
+  ...
+1..7
+# tests 7
+# suites 0
+# pass 7
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 63.646577
