@@ -27,9 +27,9 @@ const SECTION_PROMPTS = Object.freeze({
   hero: Object.freeze(['What is Webzad?', 'Show Selected Work', 'Start Project Brief']),
   services: Object.freeze(['Explain Signature Websites', 'Custom Web Apps', 'Get Tailored Scope']),
   automation: Object.freeze(['AI Workflow Agents', 'Connect Business Tools', 'Automate Onboarding']),
-  work: Object.freeze(['Authority Websites', 'Hospitality Experience', 'Growth Campaigns']),
+  work: Object.freeze(['Show Zaddy.art', 'La Socieda Record', '1 of 6 Productions', 'BRG Official']),
   process: Object.freeze(['How do we start?', 'Design & Build Phase', 'Turnaround Times']),
-  contact: Object.freeze(['Prefill Signature Website', 'Direct Email', 'Schedule Discovery'])
+  contact: Object.freeze(['Prefill Signature Website', 'Direct Email', 'Help Plan My Project'])
 });
 
 class ZadaCompanion {
@@ -54,38 +54,130 @@ class ZadaCompanion {
   }
 
   async init(containerEl, config = {}) {
-    if (!containerEl) return false;
+    if (!containerEl || this.isInitialized) return this.isInitialized;
+    this._destroyed = false;
+    this._config = config;
     this.container = containerEl;
     this.createElement = config.createElement || this.options.createElement || null;
-    const create = this.createElement || ((t) => (typeof document !== 'undefined' ? document.createElement(t) : null));
+    const create = this.createElement || ((tag) => (typeof document !== 'undefined' ? document.createElement(tag) : null));
+    // Chat is the primary interface; the optional renderer must never block it.
+    this.holoUI?.mount?.(containerEl, config);
     this.canvasWrapper = create('div');
     if (this.canvasWrapper) {
       this.canvasWrapper.className = 'zada-canvas-wrapper';
-      if (containerEl.appendChild) containerEl.appendChild(this.canvasWrapper);
+      this.canvasWrapper.hidden = true;
+      (this.holoUI?.visualStageEl || containerEl).appendChild?.(this.canvasWrapper);
     }
-    if (!config.skipModelLoad && typeof window !== 'undefined') {
-      try {
-        const [threeMod, gltfMod] = await Promise.all([import('../vendor/three.module.js'), import('../vendor/GLTFLoader.js')]);
-        if (this.renderer) {
-          this.renderer.THREE = this.renderer.options.THREE = threeMod;
-          this.renderer.options.GLTFLoader = gltfMod.GLTFLoader;
-        }
-        if (!this.aura && ZadaAura) {
-          this.aura = new ZadaAura(threeMod);
-          if (this.renderer) this.renderer.aura = this.aura;
-        }
-      } catch (e) { console.warn('[Zada] 3D vendor load failed:', e.message); }
+    if (this.holoUI) {
+      this.holoUI.options ||= {};
+      const beforeOpen = this.holoUI.options.onOpen;
+      const beforeClose = this.holoUI.options.onClose;
+      this.holoUI.options.onOpen = () => {
+        beforeOpen?.();
+        if (this._threeReady) this._sync3DVisibility();
+        else if (!config.skipModelLoad && this._motionAllowed()) this.ensure3D();
+      };
+      this.holoUI.options.onClose = () => { beforeClose?.(); this._sync3DVisibility(); };
+      this.holoUI.options.onEnable3D = () => this.ensure3D();
     }
-    if (this.renderer?.init) this.renderer.init(this.canvasWrapper || containerEl);
-    if (this.holoUI?.mount) this.holoUI.mount(containerEl, config);
+    this.motionPolicy = this.options.motionPolicy || (typeof window !== 'undefined' ? window.WebzadMotion : null);
+    this._motionUnsubscribe = this.motionPolicy?.subscribe?.((enabled) => {
+      if (enabled && !this._threeReady && !this._threePromise && !this._config?.skipModelLoad) this.ensure3D();
+      else this._sync3DVisibility();
+    });
     this._mountPodTrigger(containerEl, create);
     this._bindEvents();
-    if (!config.skipModelLoad && typeof window !== 'undefined') await this._loadCompanionModel();
-    this.renderer?.start?.();
     if (this.holoUI?.messages?.length === 0) {
       this.holoUI.addMessage('zada', "Greetings! I'm Zada, your intelligent 3D companion. How can I assist your project today?");
     }
-    return (this.isInitialized = true);
+    this.isInitialized = true;
+    if (!config.skipModelLoad && this._motionAllowed()) this._schedule3DBoot();
+    if (typeof window !== 'undefined') {
+      window.zadaCompanion = this;
+      window.dispatchEvent(new CustomEvent('zada:ready'));
+    }
+    return true;
+  }
+
+  _motionAllowed() {
+    return this.motionPolicy ? this.motionPolicy.enabled : true;
+  }
+
+  /** Defers the optional 3D boot until after first paint so chat stays instant. */
+  _schedule3DBoot() {
+    if (typeof window === 'undefined' || typeof document === 'undefined') return;
+    if (this._threeBootScheduled || this._threeReady || this._threePromise) return;
+    this._threeBootScheduled = true;
+    const idle = typeof window.requestIdleCallback === 'function'
+      ? (cb) => window.requestIdleCallback(cb, { timeout: 2500 })
+      : (cb) => setTimeout(cb, 900);
+    const kick = () => {
+      this._threeBootScheduled = false;
+      if (this._destroyed || this._threeReady || this._threePromise || !this._motionAllowed()) return;
+      this.ensure3D();
+    };
+    if (document.readyState === 'complete') idle(kick);
+    else window.addEventListener('load', () => idle(kick), { once: true });
+  }
+
+  _sync3DVisibility() {
+    if (!this._threeReady || !this.canvasWrapper || this._destroyed) return;
+    const open = Boolean(this.holoUI?.isOpen);
+    const stage = this.holoUI?.visualStageEl;
+    if (open && stage) {
+      if (this.canvasWrapper.parentNode !== stage) stage.appendChild(this.canvasWrapper);
+      this.canvasWrapper.classList?.remove?.('is-floating');
+    } else {
+      if (this.canvasWrapper.parentNode !== this.container) this.container.appendChild(this.canvasWrapper);
+      this.canvasWrapper.classList?.add?.('is-floating');
+    }
+    this.canvasWrapper.hidden = false;
+    if (this._motionAllowed()) this.renderer?.start?.();
+    else { this.renderer?.pause?.(); this.renderer?.renderStatic?.(); }
+    this.renderer?.resize?.();
+  }
+
+  /** Idempotent enhancement: failures leave the conversation and voice controls intact. */
+  ensure3D() {
+    if (this._destroyed || this._config?.skipModelLoad) return Promise.resolve(false);
+    if (this._threePromise) return this._threePromise;
+    this.holoUI?.set3DState?.('loading');
+    this._threePromise = (async () => {
+      try {
+        const load = this.options.loadVendors || (async () => {
+          const [THREE, loader] = await Promise.all([import('../vendor/three.module.js'), import('../vendor/GLTFLoader.js')]);
+          return { THREE, GLTFLoader: loader.GLTFLoader };
+        });
+        const {THREE, GLTFLoader} = await load();
+        if (this._destroyed) return false;
+        if (!this.renderer) throw new Error('3D renderer unavailable');
+        this.renderer.options ||= {};
+        this.renderer.THREE = this.renderer.options.THREE = THREE;
+        this.renderer.options.GLTFLoader = GLTFLoader;
+        this.renderer.options.embeddedStage = true;
+        this.renderer.options.dockTransforms = { hero:{x:0,y:0,z:0,scale:.9}, dock:{x:0,y:0,z:0,scale:.9} };
+        if (!this.aura && ZadaAura) { this.aura = new ZadaAura(THREE); this.renderer.aura = this.aura; }
+        if (this.canvasWrapper) this.canvasWrapper.hidden = false;
+        if (this.renderer.init(this.canvasWrapper || this.container) === false) throw new Error('3D renderer unavailable');
+        const loaded = await this._loadCompanionModel();
+        if (this._destroyed) return false;
+        if (!loaded) throw new Error('3D model unavailable');
+        this._threeReady = true;
+        this.holoUI?.set3DState?.('ready');
+        this.renderer.resize?.();
+        this._sync3DVisibility();
+        return true;
+      } catch (error) {
+        this.renderer?.pause?.();
+        this.renderer?.dispose?.();
+        if (!this._destroyed) {
+          if (this.canvasWrapper) this.canvasWrapper.hidden = true;
+          this.holoUI?.set3DState?.('unavailable');
+        }
+        return false;
+      }
+    })();
+    return this._threePromise;
   }
 
   _mountPodTrigger(containerEl, create) {
@@ -97,8 +189,8 @@ class ZadaCompanion {
     this.podTrigger.setAttribute('title', 'Chat with Zada AI Specialist');
     this.podTrigger.innerHTML = `
       <div class="zada-chat-avatar-wrap">
-        <img src="assets/zada-avatar.jpg" alt="Zada AI Specialist" class="zada-chat-avatar-img" />
-        <div class="zada-chat-online-badge" aria-hidden="true"></div>
+        <img src="assets/media/zada-portrait.webp" alt="Zada AI Specialist" class="zada-chat-avatar-img" />
+        <span class="zada-chat-ai-badge" aria-hidden="true">AI</span>
       </div>
     `;
     this.podTrigger.addEventListener('click', () => {
@@ -121,8 +213,10 @@ class ZadaCompanion {
 
   async _loadCompanionModel() {
     try {
-      if (this.renderer?.loadModel) await this.renderer.loadModel('assets/zada.glb');
-    } catch (e) { console.warn('[Zada] 3D model load failed:', e.message); }
+      if (!this.renderer?.loadModel) return false;
+      await this.renderer.loadModel('assets/zada.glb');
+      return !this._destroyed;
+    } catch { return false; }
   }
 
   handleScroll(scrollY) {
@@ -173,10 +267,11 @@ class ZadaCompanion {
   async _dispatchToolCalls(toolCalls) {
     let primaryTool = null;
     if (!Array.isArray(toolCalls) || toolCalls.length === 0) return null;
-    primaryTool = toolCalls[0];
     for (const call of toolCalls) {
       try {
-        await this.actionDispatcher?.dispatch?.(call);
+        const result = await this.actionDispatcher?.dispatch?.(call);
+        if (!result?.success) continue;
+        if (!primaryTool) primaryTool = call;
         this._lastAction = { name: call.name, params: call.params || call.args || {}, at: Date.now() };
       } catch (e) { console.warn('[Zada] Action rejected:', e.message); }
     }
@@ -297,15 +392,15 @@ class ZadaCompanion {
       this.holoUI?.hideTyping?.();
       console.error('[Zada] handleUserMessage error:', err);
       if (!this.stateManager?.setState?.('ERROR')) this.stateManager?.interrupt?.('ERROR');
-      let notice = "I'm having trouble connecting right now. Please verify your API key in Developer Settings (⚙).";
+      let notice = "I'm having trouble connecting right now. Please try again in a moment, or reach us directly at knowledgablellc@gmail.com.";
       if (err.message && (err.message.toLowerCase().includes('prepayment') || err.message.toLowerCase().includes('credits') || err.message.includes('402'))) {
         notice = "Google AI Studio notice: Your prepayment credits are depleted. Please visit https://ai.studio/projects to manage your project billing.";
       } else if (err.message && (err.message.toLowerCase().includes('high demand') || err.message.includes('503'))) {
         notice = "Google Gemini is currently experiencing a brief demand spike. Please ask again in a moment.";
       } else if (err.message && (err.message.toLowerCase().includes('key') || err.message.includes('401'))) {
-        notice = "Gemini API key is missing or invalid. Please open Developer Settings (⚙) to enter your Gemini API key.";
+        notice = "My AI connection isn't configured on this site right now. You can still reach the team at knowledgablellc@gmail.com.";
       } else if (err.message && !err.message.startsWith('HTTP')) {
-        notice = `I'm having trouble connecting right now: ${err.message}. Please check Developer Settings (⚙).`;
+        notice = `I'm having trouble connecting right now: ${err.message}. You can also reach us at knowledgablellc@gmail.com.`;
       }
       this.holoUI?.addMessage?.('zada', notice);
       const errTimer = setTimeout(() => {
@@ -325,24 +420,35 @@ class ZadaCompanion {
         if (!el && typeof document !== 'undefined') {
           el = document.getElementById(sid) || (sid === 'hero' ? (document.getElementById('top') || document.querySelector('.hero')) : null);
         }
-        el?.scrollIntoView?.({ behavior: 'smooth' });
+        if (!el) return {success:false,reason:'Section unavailable',sectionId:sid};
+        this.holoUI?.close?.();
+        el.scrollIntoView?.({ behavior: this._motionAllowed() ? 'smooth' : 'auto' });
         this.activeSection = sid;
         if (this.holoUI && SECTION_PROMPTS[sid]) this.holoUI.setContextPrompts(SECTION_PROMPTS[sid]);
         return { success: true, sectionId: sid };
       },
       openProjectPreview: async (p) => {
-        const pid = p?.projectId || 'growth';
+        const pid = p?.projectId;
+        const portfolio = this.options.portfolio || (typeof window !== 'undefined' ? window.WebzadPortfolio : null);
+        if (['zaddy','la-socieda','one-of-six','brg'].includes(pid)) {
+          const success = Boolean(portfolio?.openProject?.(pid));
+          return {success,projectId:pid,...(!success?{reason:'Project presentation unavailable'}:{})};
+        }
+        if (portfolio?.openStudy) return {success:Boolean(portfolio.openStudy(pid)),projectId:pid};
         let card = this.options.getProjectCard ? this.options.getProjectCard(pid) : null;
         if (!card && typeof document !== 'undefined') {
-          const sel = { growth: '[data-lightbox*="growth"]', hospitality: '[data-lightbox*="hospitality"]', services: '[data-lightbox*="services"]' }[pid];
-          card = document.querySelector(sel || '[data-lightbox]');
+          const selector = {growth:'[data-study="growth"]',hospitality:'[data-study="hospitality"]',services:'[data-study="services"]'}[pid];
+          if (selector) card = document.querySelector(selector);
         }
-        card?.click?.();
-        return { success: true, projectId: pid };
+        if (!card?.click) return {success:false,projectId:pid,reason:'Design study unavailable'};
+        card.click();
+        return {success:true,projectId:pid};
       },
       prefillContactBrief: async (p) => {
         const form = (this.options.getContactForm ? this.options.getContactForm() : null) || (typeof document !== 'undefined' ? document.getElementById('contactForm') : null);
+        if (!form) return {success:false,reason:'Contact form unavailable'};
         if (form) {
+          this.holoUI?.close?.();
           const set = (sel, v) => { const el = form.querySelector?.(sel); if (el && v) el.value = v; };
           const select = form.querySelector ? form.querySelector('select[name="service"]') : null;
           if (select) {
@@ -362,16 +468,20 @@ class ZadaCompanion {
           set('input[name="timeline"]', p.timeline);
           set('textarea[name="goals"]', p.details);
           const contactSec = (this.options.getElement ? this.options.getElement('contact') : null) || (typeof document !== 'undefined' ? document.getElementById('contact') : null);
-          (contactSec || form).scrollIntoView?.({ behavior: 'smooth' });
+          (contactSec || form).scrollIntoView?.({ behavior: this._motionAllowed() ? 'smooth' : 'auto' });
+          form.querySelector?.('textarea[name="goals"]')?.focus?.({preventScroll:true});
         }
         return { success: true, serviceType: p.serviceType };
       },
       dismissOverlay: async () => {
-        if (typeof document === 'undefined') return { success: true };
-        document.querySelector('.lightbox.open .lightbox-close')?.click?.();
-        document.getElementById('mobileMenu')?.classList?.remove('open');
-        this.hideGreetingBubble();
-        return { success: true };
+        const portfolio = this.options.portfolio || (typeof window !== 'undefined' ? window.WebzadPortfolio : null);
+        if (portfolio?.closeTopOverlay?.()) return {success:true};
+        if (this.holoUI?.isOpen) {this.holoUI.close();return {success:true};}
+        if (typeof document === 'undefined') return {success:false,reason:'No open overlay'};
+        const menu = document.getElementById('mobileMenu');
+        if (menu && !menu.hidden) {document.dispatchEvent(new CustomEvent('webzad:close-menu'));return {success:true};}
+        if (this.greetingBubble) {this.hideGreetingBubble();return {success:true};}
+        return {success:false,reason:'No open overlay'};
       },
       toggleAudioOutput: async (p) => {
         const enabled = Boolean(p?.enabled);
@@ -379,6 +489,8 @@ class ZadaCompanion {
         if (this.holoUI?.muteBtnEl) {
           this.holoUI.muteBtnEl.textContent = !enabled ? '🔇' : '🔊';
           this.holoUI.muteBtnEl.classList.toggle('muted', !enabled);
+          this.holoUI.muteBtnEl.setAttribute?.('aria-pressed', String(!enabled));
+          this.holoUI.muteBtnEl.setAttribute?.('aria-label',enabled?'Mute spoken replies':'Enable spoken replies');
         }
         return { success: true, enabled };
       }
@@ -494,6 +606,8 @@ class ZadaCompanion {
   }
 
   destroy() {
+    this._destroyed = true;
+    this._motionUnsubscribe?.();
     this.hideGreetingBubble();
     if (typeof window !== 'undefined') {
       window.removeEventListener('scroll', this._boundScroll);

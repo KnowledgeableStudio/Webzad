@@ -42,6 +42,11 @@ export async function onRequestPost(context) {
     if (now - lastNotified < VISITOR_COOLDOWN_MS) {
       return json({ success: true, notified: false, reason: 'cooldown' });
     }
+    // Bound dedup memory: entries past cooldown are useless, then cap oldest-first.
+    if (visitorDedupStore.size >= 20000) {
+      for (const [key, ts] of visitorDedupStore) if (now - ts >= VISITOR_COOLDOWN_MS) visitorDedupStore.delete(key);
+      while (visitorDedupStore.size >= 20000) visitorDedupStore.delete(visitorDedupStore.keys().next().value);
+    }
     visitorDedupStore.set(hashKey, now);
 
     const location = extractLocation(request);
@@ -98,7 +103,8 @@ export async function onRequestPost(context) {
         const res = await fetch(endpoint, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-          body: JSON.stringify(payload)
+          body: JSON.stringify(payload),
+          signal: AbortSignal.timeout(10000)
         });
         const ct = res.headers.get('content-type') || '';
         let delivered = res.ok, reason = '';

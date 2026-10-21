@@ -486,6 +486,33 @@
   pointer-events: none;
 }
 
+/* Floating 3D companion - hovers above the pod trigger while the HUD is closed */
+.zada-canvas-wrapper.is-floating {
+  position: fixed;
+  inset: auto;
+  right: max(10px, env(safe-area-inset-right));
+  bottom: 100px;
+  width: 150px;
+  height: 172px;
+  pointer-events: none;
+  z-index: 114;
+}
+@media (min-width: 1200px) {
+  .zada-canvas-wrapper.is-floating {
+    right: max(18px, env(safe-area-inset-right));
+    width: 176px;
+    height: 200px;
+  }
+}
+@media (max-width: 600px) {
+  .zada-canvas-wrapper.is-floating {
+    right: max(8px, env(safe-area-inset-right));
+    bottom: 84px;
+    width: 104px;
+    height: 120px;
+  }
+}
+
 /* --- Floating Companion Pod / Chat Circle Trigger --- */
 .zada-pod-trigger,
 .zada-chat-circle {
@@ -773,3 +800,13 @@
 }
 /* --- Contact form honeypot (anti-spam, visually hidden) --- */
 .fd-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; opacity: 0; }
+
+/* Premium redesign: a real top-layer dialog, independent from optional 3D. */
+.zada-container{z-index:1200;overflow:visible;pointer-events:none}
+.zada-hud{inset:auto max(24px,env(safe-area-inset-right)) max(100px,env(safe-area-inset-bottom)) auto;margin:0;padding:0;width:430px;max-width:calc(100vw - 32px);height:min(660px,calc(100dvh - 130px));max-height:calc(100dvh - 40px);background:linear-gradient(150deg,#09192a,#080d1b 65%);color:#edf4ff;border:1px solid #385471;border-radius:20px;box-shadow:0 25px 100px #000a;backdrop-filter:none;overflow:hidden;z-index:1500;isolation:isolate}
+.zada-hud:not([open]){display:none}.zada-hud[open]{display:flex;flex-direction:column;pointer-events:auto}.zada-hud::backdrop{background:#01061188;backdrop-filter:blur(3px)}
+.zada-hud-header{padding:16px 18px;flex-shrink:0;border-color:#28374c;background:#07111d}.zada-status-name{font:600 14px/1.1 'Space Grotesk',Arial,sans-serif;letter-spacing:.12em}.zada-status-sub{font-size:9px}.zada-status-text{font-size:9px;color:#8bb6cf}.zada-status-dot{background:#59c8db;animation:none;box-shadow:none}.zada-hud-actions{gap:4px}.zada-btn-icon{width:40px;height:40px;border-radius:9px;display:grid;place-items:center;background:#112237;color:#c5d9ed}.zada-btn-icon:hover{background:#193248}.zada-btn-icon:focus-visible,.zada-chip:focus-visible,.zada-send-btn:focus-visible,.zada-mic-btn:focus-visible,.zada-visual-enable:focus-visible{outline:2px solid #37e9f0;outline-offset:2px}
+.zada-visual-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 18px;background:#07121f;border-bottom:1px solid #213148;flex-shrink:0;min-height:40px}.zada-visual-status{font-size:10px;line-height:1.5;color:#a2b5cd}.zada-visual-enable{font-size:10px;font-weight:600;color:#7ee6ef;min-height:28px;white-space:nowrap;padding:4px 9px;border:1px solid #294e63;border-radius:7px}.zada-visual-stage{height:0;min-height:0;position:relative;flex-shrink:0;overflow:hidden;background:radial-gradient(ellipse at 50% 100%,#12485755,transparent 70%)}.zada-visual-stage.has-model{height:150px}.zada-visual-stage .zada-canvas-wrapper{inset:0;width:100%;height:150px;position:absolute}.zada-dialogue{min-height:80px;flex:1 1 auto;padding:20px 18px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#29415b transparent}.zada-msg{max-width:94%;padding:12px 14px;font:400 13px/1.8 'Manrope',Arial,sans-serif;border-radius:12px;overflow-wrap:anywhere}.zada-msg-zada{background:#102238;border:1px solid #28415c;color:#e5eefb}.zada-msg-user{background:#28305a;color:#fff;border:1px solid #404579}.zada-msg a{color:#62dee9;text-decoration:underline}.zada-chips{flex-shrink:0;padding:8px 14px;gap:6px}.zada-chip{min-height:34px;font-size:10px;white-space:normal;color:#b0cfdf;border-color:#2b4761;background:#0b1c2d}.zada-input-form{flex-shrink:0;padding:12px 14px max(14px,env(safe-area-inset-bottom));background:#07121f}.zada-input-field{font-size:16px;min-width:0}.zada-mic-btn,.zada-send-btn{width:40px;height:40px;flex-shrink:0}.zada-mic-btn:disabled{opacity:.4;cursor:not-allowed}
+.zada-chat-circle{width:64px;height:64px;bottom:24px;right:24px;box-shadow:0 6px 32px #0008;border:1px solid #375e78;animation:none}.zada-chat-ai-badge{position:absolute;bottom:-3px;right:-3px;min-width:22px;height:18px;border:1px solid #34738a;border-radius:6px;background:#102536;color:#86e8f2;font:700 9px/16px Arial,sans-serif;text-align:center}.zada-chat-avatar-wrap{overflow:visible}.zada-chat-avatar-img{border-radius:50%}.zada-greeting-bubble{z-index:1300;max-width:min(340px,calc(100vw - 40px));right:24px;bottom:104px}.zada-greeting-text{font-family:'Manrope',Arial,sans-serif}
+@media(max-width:600px){.zada-hud{inset:auto 0 0 0;width:100%;max-width:100%;height:min(78dvh,720px);max-height:calc(100dvh - 20px);border-radius:20px 20px 0 0;border-bottom:0}.zada-hud-header{padding:10px 14px}.zada-visual-stage.has-model,.zada-visual-stage .zada-canvas-wrapper{height:125px}.zada-dialogue{padding:15px}.zada-chat-circle{width:58px;height:58px;right:17px;bottom:max(18px,env(safe-area-inset-bottom))}.zada-greeting-bubble{right:20px;bottom:90px}.zada-status-text{font-size:8px}.zada-status-pill{gap:6px}}
+html[data-motion="off"] .zada-typing-dot,html[data-motion="off"] .zada-greeting-bubble,html[data-motion="off"] .zada-status-dot,html[data-motion="off"] .zada-chat-circle{animation:none;transition:none}

@@ -11,3 +11,12 @@
 
 /api/*
   Cache-Control: no-store
+
+/assets/js/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/css/*
+  Cache-Control: public, max-age=0, must-revalidate
+
+/assets/portfolio/manifest.json
+  Cache-Control: no-cache

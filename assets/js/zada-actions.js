@@ -16,7 +16,7 @@ const APPROVED_SECTIONS = Object.freeze(['hero', 'services', 'automation', 'work
  * @readonly
  * @type {ReadonlyArray<string>}
  */
-const APPROVED_PROJECTS = Object.freeze(['growth', 'hospitality', 'services']);
+const APPROVED_PROJECTS = Object.freeze(['growth', 'hospitality', 'services', 'zaddy', 'la-socieda', 'one-of-six', 'brg']);
 
 /**
  * Whitelist of approved service tier identifiers for contact prefill.
